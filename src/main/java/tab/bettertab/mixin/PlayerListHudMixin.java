@@ -54,6 +54,8 @@ public abstract class PlayerListHudMixin {
 
 	@Shadow private boolean visible;
 
+	@Shadow public abstract Text getPlayerName(PlayerListEntry entry);
+
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
 		List<PlayerListEntry> list = this.collectPlayerEntries();
@@ -80,7 +82,7 @@ public abstract class PlayerListHudMixin {
 				difference = i;
 			}
 
-			Text playerName = list.get(i).getDisplayName() != null ? list.get(i).getDisplayName() : Text.of(list.get(i).getProfile().getName());
+			Text playerName = this.getPlayerName(list.get(i));
 			widths.add(client.textRenderer.getWidth(playerName) + 10 + 8 + 2);
 			column.add(list.get(i));
 		}
@@ -158,7 +160,7 @@ public abstract class PlayerListHudMixin {
 				context.fill(x - 1, y, x + useMaxes.get(i), y + entryHeight, this.client.options.getTextBackgroundColor(553648127));
 				RenderSystem.enableBlend();
 
-				Text playerName = col.get(j).getDisplayName() != null ? col.get(j).getDisplayName() : Text.of(col.get(j).getProfile().getName());
+				Text playerName = this.getPlayerName(col.get(j));
 
 				PlayerSkinDrawer.draw(context, col.get(j).getSkinTextures().texture(), x, y + 1, 8, true, false);
 				context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + 8, y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
@@ -180,7 +182,7 @@ public abstract class PlayerListHudMixin {
 		List<PlayerListEntry> playerList = new ArrayList<>(cir.getReturnValue());
 
 		for (int i = 1; i <= 200; i++) {
-			String fakePlayerName = "EXAMPLEPLAYER" + i;
+			String fakePlayerName = "ExamplePlayer" + i;
 			UUID fakeUUID = UUID.nameUUIDFromBytes(fakePlayerName.getBytes());
 
 			GameProfile fakeProfile = new GameProfile(fakeUUID, fakePlayerName);
