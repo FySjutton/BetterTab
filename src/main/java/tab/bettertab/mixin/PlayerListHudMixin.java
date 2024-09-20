@@ -31,19 +31,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.*;
 
 import static tab.bettertab.BetterTab.LOGGER;
+import static tab.bettertab.BetterTab.tabScroll;
 
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
 
-	@Shadow @Final private static Comparator<PlayerListEntry> ENTRY_ORDERING;
+	@Shadow
+	@Final
+	private static Comparator<PlayerListEntry> ENTRY_ORDERING;
+	@Shadow
+	private MinecraftClient client;
 
-	@Shadow private MinecraftClient client;
+	@Shadow
+	protected abstract List<PlayerListEntry> collectPlayerEntries();
 
-	@Shadow protected abstract List<PlayerListEntry> collectPlayerEntries();
+	@Shadow
+	@Nullable
+	private Text header;
+	@Shadow
+	@Nullable
+	private Text footer;
 
-	@Shadow @Nullable private Text header;
-
-	@Shadow @Nullable private Text footer;
+	@Shadow private boolean visible;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
@@ -64,22 +73,61 @@ public abstract class PlayerListHudMixin {
 
 		for (int i = 0; i < list.size(); i++) {
 			if ((entryHeight + 2) * (i - difference) >= windowHeight / 2) {
-				if (maxPerColumn.stream().mapToInt(a -> a).sum() + Collections.max(widths) < windowWidth) {
-					maxPerColumn.add(Collections.max(widths));
-					widths = new ArrayList<>();
-					columns.add(column);
-					column = new ArrayList<>();
-					difference = i;
-				}
+				maxPerColumn.add(Collections.max(widths));
+				widths = new ArrayList<>();
+				columns.add(column);
+				column = new ArrayList<>();
+				difference = i;
 			}
 
 			Text playerName = list.get(i).getDisplayName() != null ? list.get(i).getDisplayName() : Text.of(list.get(i).getProfile().getName());
 			widths.add(client.textRenderer.getWidth(playerName) + 10 + 8 + 2);
 			column.add(list.get(i));
 		}
+		columns.add(column);
+		maxPerColumn.add(Collections.max(widths));
 
-		int totalColWidth = maxPerColumn.stream().mapToInt(a -> a + 2).sum();
-		int totalRowHeight = columns.get(0).size() * (entryHeight + 1);
+		List<Integer> useMaxes;
+		List<ArrayList<PlayerListEntry>> useColumns;
+
+		int scroll = tabScroll >= 0 ? (int) Math.floor(tabScroll) : 0;
+		scroll = Math.min(scroll, maxPerColumn.size()); // Makes sure the scroll doesn't get above the max amount of columns
+		tabScroll = scroll;
+
+		List<Integer> testScrollList = maxPerColumn.subList(scroll, maxPerColumn.size());
+		int a = 0;
+		int extraCols = 0;
+		boolean found = false;
+		for (int b : testScrollList) {
+			if (a + b < windowWidth) {
+				a += b;
+				extraCols++;
+			} else {
+				found = true;
+				break;
+			}
+		}
+		if (found) {
+			useMaxes = maxPerColumn.subList(scroll, scroll + extraCols);
+			useColumns = columns.subList(scroll, scroll + extraCols);
+		} else {
+			int d = 0;
+			int index = maxPerColumn.size();
+			for (Integer c : maxPerColumn.reversed()) {
+				if (d + c < windowWidth) {
+					d += c;
+					index--;
+				} else {
+					break;
+				}
+			}
+			useMaxes = maxPerColumn.subList(index, maxPerColumn.size());
+			useColumns = columns.subList(index, maxPerColumn.size());
+			tabScroll = maxPerColumn.size() - useMaxes.size();
+		}
+
+		int totalColWidth = useMaxes.stream().mapToInt(b -> b + 2).sum();
+		int totalRowHeight = useColumns.get(0).size() * (entryHeight + 1);
 
 		List<OrderedText> headerList = List.of();
 		if (this.header != null) {
@@ -100,14 +148,14 @@ public abstract class PlayerListHudMixin {
 		}
 		startY -= 9;
 
-		for (int i = 0; i < columns.size(); i++) {
-			ArrayList<PlayerListEntry> col = columns.get(i);
+		for (int i = 0; i < useColumns.size(); i++) {
+			ArrayList<PlayerListEntry> col = useColumns.get(i);
 
 			int y = startY;
 			for (int j = 0; j < col.size(); j++) {
 				y += entryHeight + 1;
 
-				context.fill(x - 1, y, x + maxPerColumn.get(i), y + entryHeight, this.client.options.getTextBackgroundColor(553648127));
+				context.fill(x - 1, y, x + useMaxes.get(i), y + entryHeight, this.client.options.getTextBackgroundColor(553648127));
 				RenderSystem.enableBlend();
 
 				Text playerName = col.get(j).getDisplayName() != null ? col.get(j).getDisplayName() : Text.of(col.get(j).getProfile().getName());
@@ -116,7 +164,7 @@ public abstract class PlayerListHudMixin {
 				context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + 8, y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
 			}
 
-			x += maxPerColumn.get(i) + 2;
+			x += useMaxes.get(i) + 2;
 		}
 
 		int y = startY + 5 + totalRowHeight;
@@ -145,5 +193,10 @@ public abstract class PlayerListHudMixin {
 		cir.setReturnValue(playerList);
 	}
 
-
+	@Inject(method = "setVisible", at = @At("HEAD"))
+	private void onEnable(boolean visible, CallbackInfo ci) {
+		if (this.visible != visible) {
+			tabScroll = 0;
+		}
+	}
 }

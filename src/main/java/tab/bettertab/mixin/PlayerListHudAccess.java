@@ -6,8 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PlayerListHud.class)
 public interface PlayerListHudAccess {
-
     @Accessor
     boolean getVisible();
-
 }

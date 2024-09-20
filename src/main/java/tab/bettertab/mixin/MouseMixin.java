@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static tab.bettertab.BetterTab.LOGGER;
+import static tab.bettertab.BetterTab.tabScroll;
 
 @Mixin(Mouse.class)
 public class MouseMixin {
@@ -24,10 +25,7 @@ public class MouseMixin {
         PlayerListHud playerListHud = client.inGameHud.getPlayerListHud();
 
         if (((PlayerListHudAccess)playerListHud).getVisible()) {
-            LOGGER.info("here");
-            LOGGER.info(String.valueOf(vertical));
-            LOGGER.info(String.valueOf(horizontal));
-            LOGGER.info(String.valueOf(window));
+            tabScroll += vertical;
             ci.cancel();
         }
     }
