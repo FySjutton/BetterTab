@@ -23,6 +23,9 @@ public class BetterTab implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static double tabScroll = 0;
 
+	public static boolean useExamples = false;
+	public static boolean renderColumnNumbers = true;
+
 	public static final KeyBinding rightScroll = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			"Scroll Right",
 			InputUtil.Type.KEYSYM,
@@ -35,6 +38,12 @@ public class BetterTab implements ModInitializer {
 			GLFW.GLFW_KEY_LEFT,
 			"BetterTab"
 	));
+	public static final KeyBinding useExamplesBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			"Use Examples",
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_KP_3,
+			"BetterTab"
+	));
 
 	@Override
 	public void onInitialize() {
@@ -45,6 +54,9 @@ public class BetterTab implements ModInitializer {
 				}
 				if (leftScroll.wasPressed()) {
 					tabScroll --;
+				}
+				if (useExamplesBind.wasPressed()) {
+					useExamples = !useExamples;
 				}
 			}
 		});
