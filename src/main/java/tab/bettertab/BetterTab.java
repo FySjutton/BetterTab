@@ -55,6 +55,8 @@ public class BetterTab implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		new ConfigSystem().checkConfig();
+
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible()) {
 				if (rightScroll.wasPressed()) {

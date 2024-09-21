@@ -34,6 +34,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import static tab.bettertab.BetterTab.*;
+import static tab.bettertab.ConfigSystem.configFile;
 
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
@@ -67,6 +68,9 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
+		if (!configFile.getAsJsonObject().get("enable_mod").getAsBoolean()) {
+			return;
+		}
 		List<PlayerListEntry> list = this.collectPlayerEntries();
 
 		if (Calendar.getInstance().getTimeInMillis() - lastCheck > 530) {
@@ -252,8 +256,11 @@ public abstract class PlayerListHudMixin {
 			}
 		}
 
-//		cir.setReturnValue(playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList());
-		cir.setReturnValue(playerList);
+		if (configFile.getAsJsonObject().get("enable_mod").getAsBoolean()) {
+			cir.setReturnValue(playerList);
+		} else {
+			cir.setReturnValue(playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList());
+		}
 	}
 
 	@Inject(method = "setVisible", at = @At("HEAD"))

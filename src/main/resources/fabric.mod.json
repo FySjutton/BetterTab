@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"tab.bettertab.BetterTab"
+		],
+		"modmenu": [
+			"tab.bettertab.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -28,7 +31,7 @@
 		"java": ">=21",
 		"fabric-api": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
+	"recommends": {
+		"modmenu": ">=11.0.0"
 	}
 }
