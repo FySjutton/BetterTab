@@ -25,6 +25,8 @@ public class BetterTab implements ModInitializer {
 
 	public static boolean useExamples = false;
 	public static boolean renderColumnNumbers = true;
+	public static boolean renderPing = true;
+	public static boolean useNumericalPing = true;
 
 	public static final KeyBinding rightScroll = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			"Scroll Right",
@@ -44,6 +46,12 @@ public class BetterTab implements ModInitializer {
 			GLFW.GLFW_KEY_KP_3,
 			"BetterTab"
 	));
+	public static final KeyBinding numericalPing = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			"Numerical Ping",
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_KP_4,
+			"BetterTab"
+	));
 
 	@Override
 	public void onInitialize() {
@@ -57,6 +65,9 @@ public class BetterTab implements ModInitializer {
 				}
 				if (useExamplesBind.wasPressed()) {
 					useExamples = !useExamples;
+				}
+				if (numericalPing.wasPressed()) {
+					useNumericalPing = !useNumericalPing;
 				}
 			}
 		});

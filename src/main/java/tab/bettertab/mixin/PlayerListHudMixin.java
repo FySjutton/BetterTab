@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.text.NumberFormat;
 import java.util.*;
 
 import static tab.bettertab.BetterTab.*;
@@ -56,6 +57,8 @@ public abstract class PlayerListHudMixin {
 	@Shadow private boolean visible;
 
 	@Shadow public abstract Text getPlayerName(PlayerListEntry entry);
+
+	@Shadow protected abstract void renderLatencyIcon(DrawContext context, int width, int x, int y, PlayerListEntry entry);
 
 	@Unique
 	private boolean showArrows = false;
@@ -98,11 +101,10 @@ public abstract class PlayerListHudMixin {
 			}
 
 			Text playerName = this.getPlayerName(list.get(i));
-			widths.add(client.textRenderer.getWidth(playerName) + 10 + 8 + 2);
+			widths.add(client.textRenderer.getWidth(playerName) + 10 + 8 + 2 + (renderPing ? (useNumericalPing ? client.textRenderer.getWidth(String.valueOf(list.get(i).getLatency())) : 10) : 0));
 			column.add(list.get(i));
 		}
 		if (!columns.isEmpty()) {
-
 			int emptyLinesNeeded = columns.getFirst().size() - column.size();
 			for (int k = 0; k < emptyLinesNeeded; k++) {
 				String fakePlayerName = "";
@@ -207,6 +209,14 @@ public abstract class PlayerListHudMixin {
 				if (!playerName.getString().isEmpty()) {
 					PlayerSkinDrawer.draw(context, col.get(j).getSkinTextures().texture(), x, y + 1, 8, true, false);
 					context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + 8, y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? 0x90FFFFFF : -1);
+					if (renderPing) {
+						if (useNumericalPing) {
+							String ping = String.valueOf(col.get(j).getLatency());
+							context.drawTextWithShadow(this.client.textRenderer, ping, x + useMaxes.get(i) - this.client.textRenderer.getWidth(ping) - 2, y + 2, numericalColoriser(Integer.parseInt(ping)));
+						} else {
+							this.renderLatencyIcon(context, useMaxes.get(i), x, y, col.get(j));
+						}
+					}
 				} else {
 					context.fill(x + 2, y + 2 + 3, x + useMaxes.get(i) - 3, y + 2 + 4, 0x66FFFFFF);
 				}
@@ -251,5 +261,17 @@ public abstract class PlayerListHudMixin {
 		if (this.visible != visible) {
 			tabScroll = 0;
 		}
+	}
+
+	@Unique
+	private int numericalColoriser(int ping) {
+		if (ping <= 0) {
+			return 0xFFB0B0B0;
+		} else if (ping > 300) {
+			return 0xFFFF7070;
+		} else if (ping > 150) {
+			return 0xFFFFCD70;
+		}
+		return 0xFF7EFF70;
 	}
 }
