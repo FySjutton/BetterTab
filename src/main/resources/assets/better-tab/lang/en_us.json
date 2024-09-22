@@ -5,5 +5,8 @@
   "tab.bettertab.config.button_text.on": "On",
   "tab.bettertab.config.button_text.off": "Off",
 
-  "tab.bettertab.config.option.enable_mod": "Enable Mod"
+  "tab.bettertab.config.option.enable_mod": "Enable Mod",
+  "tab.bettertab.config.option.render_heads": "Render Heads",
+  "tab.bettertab.config.option.render_ping": "Render Ping",
+  "tab.bettertab.config.option.use_numeric": "Use Numeric Ping"
 }

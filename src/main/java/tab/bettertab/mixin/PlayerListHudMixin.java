@@ -39,36 +39,26 @@ import static tab.bettertab.ConfigSystem.configFile;
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
 
-	@Shadow
-	@Final
-	private static Comparator<PlayerListEntry> ENTRY_ORDERING;
-	@Shadow
-	private MinecraftClient client;
-
-	@Shadow
-	protected abstract List<PlayerListEntry> collectPlayerEntries();
-
-	@Shadow
-	@Nullable
-	private Text header;
-	@Shadow
-	@Nullable
-	private Text footer;
-
+	@Shadow @Final private static Comparator<PlayerListEntry> ENTRY_ORDERING;
+	@Shadow private MinecraftClient client;
+	@Shadow protected abstract List<PlayerListEntry> collectPlayerEntries();
+	@Shadow @Nullable private Text header;
+	@Shadow @Nullable private Text footer;
 	@Shadow private boolean visible;
-
 	@Shadow public abstract Text getPlayerName(PlayerListEntry entry);
-
 	@Shadow protected abstract void renderLatencyIcon(DrawContext context, int width, int x, int y, PlayerListEntry entry);
 
-	@Unique
-	private boolean showArrows = false;
-	@Unique
-	private long lastCheck = 0;
+	@Unique private boolean showArrows = false;
+	@Unique private long lastCheck = 0;
+
+	@Unique private boolean ENABLE_MOD;
+	@Unique private boolean RENDER_HEADS;
+	@Unique private boolean RENDER_PING;
+	@Unique private boolean USE_NUMERIC;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
-		if (!configFile.getAsJsonObject().get("enable_mod").getAsBoolean()) {
+		if (!ENABLE_MOD) {
 			return;
 		}
 		List<PlayerListEntry> list = this.collectPlayerEntries();
@@ -105,7 +95,7 @@ public abstract class PlayerListHudMixin {
 			}
 
 			Text playerName = this.getPlayerName(list.get(i));
-			widths.add(client.textRenderer.getWidth(playerName) + 10 + 8 + 2 + (renderPing ? (useNumericalPing ? client.textRenderer.getWidth(String.valueOf(list.get(i).getLatency())) : 10) : 0));
+			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.valueOf(list.get(i).getLatency())) : 10) : 0));
 			column.add(list.get(i));
 		}
 		if (!columns.isEmpty()) {
@@ -153,7 +143,7 @@ public abstract class PlayerListHudMixin {
 			int d = 0;
 			int index = maxPerColumn.size();
 			for (Integer c : maxPerColumn.reversed()) {
-				if (d + c + 20 < windowWidth) { // 10 for extra padding/
+				if (d + c + 20 < windowWidth) { // 20 for extra padding/
 					d += c + 2;
 					index--;
 				} else {
@@ -211,14 +201,16 @@ public abstract class PlayerListHudMixin {
 				Text playerName = this.getPlayerName(col.get(j));
 
 				if (!playerName.getString().isEmpty()) {
-					PlayerSkinDrawer.draw(context, col.get(j).getSkinTextures().texture(), x, y + 1, 8, true, false);
-					context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + 8, y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? 0x90FFFFFF : -1);
-					if (renderPing) {
-						if (useNumericalPing) {
+					if (RENDER_HEADS) {
+						PlayerSkinDrawer.draw(context, col.get(j).getSkinTextures().texture(), x, y + 1, 8, true, false);
+					}
+					context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? 0x90FFFFFF : -1);
+					if (RENDER_PING) {
+						if (USE_NUMERIC) {
 							String ping = String.valueOf(col.get(j).getLatency());
 							context.drawTextWithShadow(this.client.textRenderer, ping, x + useMaxes.get(i) - this.client.textRenderer.getWidth(ping) - 2, y + 2, numericalColoriser(Integer.parseInt(ping)));
 						} else {
-							this.renderLatencyIcon(context, useMaxes.get(i), x, y, col.get(j));
+							this.renderLatencyIcon(context, useMaxes.get(i), x, y + 1, col.get(j));
 						}
 					}
 				} else {
@@ -256,7 +248,7 @@ public abstract class PlayerListHudMixin {
 			}
 		}
 
-		if (configFile.getAsJsonObject().get("enable_mod").getAsBoolean()) {
+		if (ENABLE_MOD) {
 			cir.setReturnValue(playerList);
 		} else {
 			cir.setReturnValue(playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList());
@@ -267,6 +259,10 @@ public abstract class PlayerListHudMixin {
 	private void onEnable(boolean visible, CallbackInfo ci) {
 		if (this.visible != visible) {
 			tabScroll = 0;
+			ENABLE_MOD = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
+			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
+			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
+			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
 		}
 	}
 

@@ -1,3 +1,6 @@
 {
-  "enable_mod": true
+  "enable_mod": true,
+  "render_heads": true,
+  "render_ping": true,
+  "use_numeric": true
 }

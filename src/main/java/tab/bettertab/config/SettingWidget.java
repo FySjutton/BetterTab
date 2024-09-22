@@ -20,7 +20,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;
 
     public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF) {
-        super(MinecraftClient.getInstance(), width, height - 24 - 35, 24, 20);
+        super(MinecraftClient.getInstance(), width, height - 24 - 35, 24, 25);
 
         editedConfigFile = eCF;
         JsonObject obj = configFile.getAsJsonObject();
@@ -89,17 +89,19 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     }
 
     private void buttonHandler(ButtonWidget button, String setting) {
-        if (setting.equals("enable_mod")) {
+        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric").contains(setting)) {
             editedConfigFile.addProperty(setting, !editedConfigFile.get(setting).getAsBoolean());
         }
         displayButtonValue(button, setting);
     }
 
     private void displayButtonValue(ButtonWidget button, String setting) {
-        Text result = null;
-        if (setting.equals("enable_mod")) {
+        Text result;
+        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric").contains(setting)) {
             result = Text.translatable("tab.bettertab.config.button_text." + (editedConfigFile.get(setting).getAsBoolean() ? "on" : "off"));
+        } else {
+            result = Text.of("Error?");
         }
-        button.setMessage(Text.of(result));
+        button.setMessage(result);
     }
 }

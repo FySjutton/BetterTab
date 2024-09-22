@@ -28,7 +28,7 @@ public class ConfigScreen extends Screen {
     @Override
     public void init() {
         Tab[] tabs = new Tab[1];
-        tabs[0] = new newTab(Text.translatable("tab.bettertab.config.tabs.general").getString(), new ArrayList<>(List.of("enable_mod")));
+        tabs[0] = new newTab(Text.translatable("tab.bettertab.config.tabs.general").getString(), new ArrayList<>(List.of("enable_mod", "render_heads", "render_ping", "use_numeric")));
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
         this.addDrawableChild(tabNavigation);
