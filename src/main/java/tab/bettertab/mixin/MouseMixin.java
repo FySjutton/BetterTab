@@ -10,17 +10,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static tab.bettertab.BetterTab.LOGGER;
 import static tab.bettertab.BetterTab.tabScroll;
+import static tab.bettertab.ConfigSystem.configFile;
 
 @Mixin(Mouse.class)
 public class MouseMixin {
     @Inject(method = "onMouseScroll", at = @At("HEAD"), cancellable = true)
     public void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        PlayerListHud playerListHud = client.inGameHud.getPlayerListHud();
+        if (configFile.getAsJsonObject().get("scroll_with_mouse").getAsBoolean()) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            PlayerListHud playerListHud = client.inGameHud.getPlayerListHud();
 
-        if (((PlayerListHudAccess)playerListHud).getVisible()) {
-            tabScroll -= vertical;
-            ci.cancel();
+            if (((PlayerListHudAccess)playerListHud).getVisible()) {
+                tabScroll -= vertical;
+                ci.cancel();
+            }
         }
     }
 }

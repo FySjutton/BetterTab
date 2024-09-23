@@ -26,9 +26,18 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void init() {
-        Tab[] tabs = new Tab[2];
-        tabs[0] = new newTab(Text.translatable("tab.bettertab.config.tabs.general").getString(), new ArrayList<>(List.of("enable_mod", "render_heads", "render_ping", "use_numeric")));
-        tabs[1] = new newTab(Text.translatable("tab.bettertab.config.tabs.colors").getString(), new ArrayList<>(List.of("background_color", "cell_color", "name_color", "spectator_color", "ping_color_none", "ping_color_low", "ping_color_medium", "ping_color_high")));
+        Tab[] tabs = new Tab[5];
+        tabs[0] = new newTab(Text.translatable("tab.bettertab.config.tabs.general").getString(), new ArrayList<>(List.of("enable_mod", "render_heads", "scroll_with_mouse", "column_numbers")));
+        tabs[1] = new newTab(Text.translatable("tab.bettertab.config.tabs.styling").getString(), new ArrayList<>(List.of("background_color", "cell_color", "name_color", "spectator_color")));
+        tabs[2] = new newTab(Text.translatable("tab.bettertab.config.tabs.ping").getString(), new ArrayList<>(List.of("render_ping", "use_numeric", "ping_color_none", "ping_color_low", "ping_color_medium", "ping_color_high")));
+        tabs[3] = new newTab(Text.translatable("tab.bettertab.config.tabs.keybinds").getString(), new ArrayList<>(List.of()));
+        tabs[4] = new newTab(Text.translatable("tab.bettertab.config.tabs.advanced").getString(), new ArrayList<>(List.of()));
+        // Bypass scroll-with-mouse: ctrl
+        // Left / Right scroll button
+        // Scroll type (column/page)
+        // Open config keybind
+        // Toggle mod keybind
+
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
         this.addDrawableChild(tabNavigation);
 

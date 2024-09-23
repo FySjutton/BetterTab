@@ -1,14 +1,16 @@
 {
   "enable_mod": true,
   "render_heads": true,
-  "render_ping": true,
-  "use_numeric": true,
+  "scroll_with_mouse": true,
+  "column_numbers": 1,
 
   "background_color": "#00000080",
   "cell_color": "#FFFFFF20",
   "name_color": "#FFFFFFFF",
   "spectator_color": "#FFFFFF90",
 
+  "render_ping": true,
+  "use_numeric": true,
   "ping_color_none": "#B0B0B0FF",
   "ping_color_low": "#7EFF70FF",
   "ping_color_medium": "#FFCD70FF",

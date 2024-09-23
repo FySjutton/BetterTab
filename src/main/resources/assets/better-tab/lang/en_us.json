@@ -1,6 +1,14 @@
 {
+  "tab.better.tab.keybind.title": "Better Tab",
+  "tab.better.tab.keybind.open_config": "Open Config",
+  "tab.better.tab.keybind.scroll_left": "Scroll Left",
+  "tab.better.tab.keybind.scroll_right": "Scroll Right",
+
   "tab.bettertab.config.tabs.general": "General",
-  "tab.bettertab.config.tabs.colors": "Colors",
+  "tab.bettertab.config.tabs.styling": "Styling",
+  "tab.bettertab.config.tabs.ping": "Ping",
+  "tab.bettertab.config.tabs.keybinds": "Keybinds",
+  "tab.bettertab.config.tabs.advanced": "Advanced",
 
   "tab.bettertab.config.button_text.done": "Done",
   "tab.bettertab.config.button_text.on": "On",
@@ -8,6 +16,7 @@
 
   "tab.bettertab.config.option.enable_mod": "Enable Mod",
   "tab.bettertab.config.option.render_heads": "Render Heads",
+  "tab.bettertab.config.option.scroll_with_mouse": "Scroll with mouse",
   "tab.bettertab.config.option.render_ping": "Render Ping",
   "tab.bettertab.config.option.use_numeric": "Use Numeric Ping",
 

@@ -6,17 +6,17 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static tab.bettertab.BetterTab.LOGGER;
 
 public class ConfigSystem {
     public static JsonElement configFile;
+    public static JsonObject defaultConfig;
 
     public void checkConfig() {
         Path configDir = FabricLoader.getInstance().getConfigDir();
@@ -37,6 +37,15 @@ public class ConfigSystem {
     }
 
     private void generateConfigArray() {
+        InputStream resource = ConfigSystem.class.getResourceAsStream("/assets/better-tab/default_config/betterTab.json");
+        Reader reader = new InputStreamReader(resource);
+        defaultConfig = JsonParser.parseReader(reader).getAsJsonObject();
+        try {
+            reader.close();
+        } catch (IOException e) {
+            LOGGER.error("BetterTab: Failed to close reader?");
+            e.printStackTrace();
+        }
         Path configDir = FabricLoader.getInstance().getConfigDir();
 
         try {
@@ -60,6 +69,11 @@ public class ConfigSystem {
                 obj.get("ping_color_low").getAsString();
                 obj.get("ping_color_medium").getAsString();
                 obj.get("ping_color_high").getAsString();
+                obj.get("scroll_with_mouse").getAsBoolean();
+                if (!new ArrayList<>(List.of(0, 1, 2)).contains(obj.get("column_numbers").getAsInt())) {
+                    // 0: Disabled, 1: Render on scroll, 2: Render Always (1 default)
+                    throw new RuntimeException("Invalid column number");
+                }
             } catch (Exception e) {
                 LOGGER.error("BetterTab: The configuration file does not appear to follow the required format. This might be caused by a missing key or similar. For help, join our discord server. You can try to delete the configuration file and than restart your game.");
                 LOGGER.error("The error above is critical, and the game will automatically close now.");

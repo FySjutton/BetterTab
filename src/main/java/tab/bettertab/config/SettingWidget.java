@@ -9,7 +9,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.List;
 
 import static tab.bettertab.ConfigSystem.configFile;
 
-import static tab.bettertab.BetterTab.LOGGER;
+import static tab.bettertab.ConfigSystem.defaultConfig;
 
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;
@@ -48,6 +47,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
 
     public class Entry extends ElementListWidget.Entry<Entry> {
         private ButtonWidget button;
+        private ButtonWidget resetButton;
         public TextFieldWidget textField;
         public String setting;
         private String displayText;
@@ -57,14 +57,21 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         public Entry(String setting) {
             this.setting = setting;
             this.displayText = Text.translatable("tab.bettertab.config.option." + setting).getString();
-            if (setting.contains("_color")) {
+
+            this.resetButton = ButtonWidget.builder(Text.of("Reset"), btn -> resetButton(this.textField, this.button, setting, btn))
+                    .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth("Reset") + 5, 20)
+                    .build();
+
+            if (setting.contains("_color") || setting.equals("column_numbers")) {
                 this.textField = new TextFieldWidget(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting));
                 this.textField.setText(editedConfigFile.get(setting).getAsString());
+                this.textField.setChangedListener(newValue -> textChanged(setting, newValue, null, this.resetButton));
+                textChanged(setting, this.textField.getText(), null, this.resetButton);
             } else {
-                this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting))
+                this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting, this.resetButton))
                         .dimensions(width / 2 + width / 4 - 50, 0, 100, 20)
                         .build();
-                displayButtonValue(this.button, setting);
+                displayButtonValue(this.button, setting, this.resetButton);
             }
         }
 
@@ -77,6 +84,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             if (textField != null) {
                 children.add(textField);
             }
+            children.add(resetButton);
             return children;
         }
 
@@ -89,6 +97,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             if (textField != null) {
                 children.add(textField);
             }
+            children.add(resetButton);
             return children;
         }
 
@@ -102,24 +111,52 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                 textField.setY(y);
                 textField.render(context, mouseX, mouseY, tickDelta);
             }
+            resetButton.setY(y);
+            resetButton.render(context, mouseX, mouseY, tickDelta);
             context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2, 0xFFFFFF);
         }
     }
 
-    private void buttonHandler(ButtonWidget button, String setting) {
-        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric").contains(setting)) {
-            editedConfigFile.addProperty(setting, !editedConfigFile.get(setting).getAsBoolean());
+    private void buttonHandler(ButtonWidget button, String setting, ButtonWidget resetButton) {
+        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse").contains(setting)) {
+            boolean newValue = !editedConfigFile.get(setting).getAsBoolean();
+            editedConfigFile.addProperty(setting, newValue);
+        } else if (setting.equals("column_numbers")) {
+            int newValue = editedConfigFile.get(setting).getAsInt();
+            editedConfigFile.addProperty(setting, (newValue == 0 ? 1 : (newValue == 1 ? 2 : 0)));
         }
-        displayButtonValue(button, setting);
+        displayButtonValue(button, setting, resetButton);
     }
 
-    private void displayButtonValue(ButtonWidget button, String setting) {
+    private void displayButtonValue(ButtonWidget button, String setting, ButtonWidget resetButton) {
         Text result;
-        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric").contains(setting)) {
+        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse").contains(setting)) {
             result = Text.translatable("tab.bettertab.config.button_text." + (editedConfigFile.get(setting).getAsBoolean() ? "on" : "off"));
+            textChanged(setting, null, editedConfigFile.get(setting).getAsBoolean(), resetButton);
+        } else if (setting.equals("column_numbers")) {
+            int newValue = editedConfigFile.get(setting).getAsInt();
+            result = Text.of(newValue == 0 ? "Disabled" : (newValue == 1 ? "On Scroll" : "Always"));
         } else {
             result = Text.of("Error?");
         }
         button.setMessage(result);
+    }
+
+    private void resetButton(TextFieldWidget textField, ButtonWidget button, String setting, ButtonWidget resetButton) {
+        if (textField != null) {
+            textField.setText(defaultConfig.get(setting).getAsString());
+        } else if (button != null) {
+            editedConfigFile.addProperty(setting, defaultConfig.get(setting).getAsBoolean()); // INT SUPPORT
+            displayButtonValue(button, setting, resetButton);
+        }
+    }
+
+    private void textChanged(String setting, String newSValue, Boolean newBvalue, ButtonWidget resetButton) {
+        // INT SUPPORT
+        if (newSValue != null) {
+            resetButton.active = !newSValue.equals(defaultConfig.get(setting).getAsString());
+        } else if (newBvalue != null) {
+            resetButton.active = newBvalue != defaultConfig.get(setting).getAsBoolean();
+        }
     }
 }
