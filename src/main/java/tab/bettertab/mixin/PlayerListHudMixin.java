@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import tab.bettertab.BetterTab;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -55,6 +56,15 @@ public abstract class PlayerListHudMixin {
 	@Unique private boolean RENDER_HEADS;
 	@Unique private boolean RENDER_PING;
 	@Unique private boolean USE_NUMERIC;
+	@Unique private int BACKGROUND_COLOR;
+	@Unique private int CELL_COLOR;
+	@Unique private int NAME_COLOR;
+	@Unique private int SPECTATOR_COLOR;
+	@Unique private int PING_COLOR_NONE;
+	@Unique private int PING_COLOR_LOW;
+	@Unique private int PING_COLOR_MEDIUM;
+	@Unique private int PING_COLOR_HIGH;
+//	@Unique private boolean USE_NUMERIC;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
@@ -172,7 +182,7 @@ public abstract class PlayerListHudMixin {
 		int x = (windowWidth - totalColWidth) / 2;
 
 		int charWidth = client.textRenderer.getWidth("<");
-		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + totalColWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (pRenderColumnNumbers ? 3 + 5 : 0), 0x80000000);
+		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + totalColWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (pRenderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
 		if (showArrows) {
 			if (canScrollLeft) {
 				context.drawTextWrapped(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
@@ -195,7 +205,7 @@ public abstract class PlayerListHudMixin {
 			for (int j = 0; j < col.size(); j++) {
 				y += entryHeight + 1;
 
-				context.fill(x - 1, y, x + useMaxes.get(i), y + entryHeight, 0x20FFFFFF);
+				context.fill(x - 1, y, x + useMaxes.get(i), y + entryHeight, CELL_COLOR);
 				RenderSystem.enableBlend();
 
 				Text playerName = this.getPlayerName(col.get(j));
@@ -204,7 +214,7 @@ public abstract class PlayerListHudMixin {
 					if (RENDER_HEADS) {
 						PlayerSkinDrawer.draw(context, col.get(j).getSkinTextures().texture(), x, y + 1, 8, true, false);
 					}
-					context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? 0x90FFFFFF : -1);
+					context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? SPECTATOR_COLOR : NAME_COLOR);
 					if (RENDER_PING) {
 						if (USE_NUMERIC) {
 							String ping = String.valueOf(col.get(j).getLatency());
@@ -263,18 +273,26 @@ public abstract class PlayerListHudMixin {
 			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
 			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
 			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
+			BACKGROUND_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
+			CELL_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
+			NAME_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());
+			SPECTATOR_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("spectator_color").getAsString());
+			PING_COLOR_NONE = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_none").getAsString());
+			PING_COLOR_LOW = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_low").getAsString());
+			PING_COLOR_MEDIUM = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_medium").getAsString());
+			PING_COLOR_HIGH = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_high").getAsString());
 		}
 	}
 
 	@Unique
 	private int numericalColoriser(int ping) {
 		if (ping <= 0) {
-			return 0xFFB0B0B0;
+			return PING_COLOR_NONE;
 		} else if (ping > 300) {
-			return 0xFFFF7070;
+			return PING_COLOR_HIGH;
 		} else if (ping > 150) {
-			return 0xFFFFCD70;
+			return PING_COLOR_MEDIUM;
 		}
-		return 0xFF7EFF70;
+		return PING_COLOR_LOW;
 	}
 }

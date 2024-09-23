@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static tab.bettertab.ConfigSystem.configFile;
+
+import static tab.bettertab.BetterTab.LOGGER;
 
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;
@@ -45,7 +48,8 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
 
     public class Entry extends ElementListWidget.Entry<Entry> {
         private ButtonWidget button;
-        private String setting;
+        public TextFieldWidget textField;
+        public String setting;
         private String displayText;
 
         private final TextRenderer textRenderer = client.textRenderer;
@@ -53,11 +57,15 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         public Entry(String setting) {
             this.setting = setting;
             this.displayText = Text.translatable("tab.bettertab.config.option." + setting).getString();
-
-            this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting))
-                .dimensions(width / 2 + width / 4 - 50, 0, 100, 20)
-                .build();
-            displayButtonValue(this.button, setting);
+            if (setting.contains("_color")) {
+                this.textField = new TextFieldWidget(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting));
+                this.textField.setText(editedConfigFile.get(setting).getAsString());
+            } else {
+                this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting))
+                        .dimensions(width / 2 + width / 4 - 50, 0, 100, 20)
+                        .build();
+                displayButtonValue(this.button, setting);
+            }
         }
 
         @Override
@@ -65,6 +73,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             List<Selectable> children = new ArrayList<>();
             if (button != null) {
                 children.add(button);
+            }
+            if (textField != null) {
+                children.add(textField);
             }
             return children;
         }
@@ -75,6 +86,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             if (button != null) {
                 children.add(button);
             }
+            if (textField != null) {
+                children.add(textField);
+            }
             return children;
         }
 
@@ -83,6 +97,10 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             if (button != null) {
                 button.setY(y);
                 button.render(context, mouseX, mouseY, tickDelta);
+            }
+            if (textField != null) {
+                textField.setY(y);
+                textField.render(context, mouseX, mouseY, tickDelta);
             }
             context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2, 0xFFFFFF);
         }

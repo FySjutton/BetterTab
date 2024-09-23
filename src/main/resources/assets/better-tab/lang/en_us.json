@@ -1,5 +1,6 @@
 {
   "tab.bettertab.config.tabs.general": "General",
+  "tab.bettertab.config.tabs.colors": "Colors",
 
   "tab.bettertab.config.button_text.done": "Done",
   "tab.bettertab.config.button_text.on": "On",
@@ -8,5 +9,14 @@
   "tab.bettertab.config.option.enable_mod": "Enable Mod",
   "tab.bettertab.config.option.render_heads": "Render Heads",
   "tab.bettertab.config.option.render_ping": "Render Ping",
-  "tab.bettertab.config.option.use_numeric": "Use Numeric Ping"
+  "tab.bettertab.config.option.use_numeric": "Use Numeric Ping",
+
+  "tab.bettertab.config.option.background_color": "Background Color",
+  "tab.bettertab.config.option.cell_color": "Cell Color",
+  "tab.bettertab.config.option.name_color": "Name Color",
+  "tab.bettertab.config.option.spectator_color": "Spectator Color",
+  "tab.bettertab.config.option.ping_color_none": "Ping Color None",
+  "tab.bettertab.config.option.ping_color_low": "Ping Color Low",
+  "tab.bettertab.config.option.ping_color_medium": "Ping Color Medium",
+  "tab.bettertab.config.option.ping_color_high": "Ping Color High"
 }
