@@ -64,6 +64,7 @@ public abstract class PlayerListHudMixin {
 	@Unique private int PING_COLOR_LOW;
 	@Unique private int PING_COLOR_MEDIUM;
 	@Unique private int PING_COLOR_HIGH;
+	@Unique private int COLUMN_NUMBERS;
 //	@Unique private boolean USE_NUMERIC;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
@@ -82,7 +83,9 @@ public abstract class PlayerListHudMixin {
 
 		boolean canScrollLeft;
 		boolean canScrollRight = false;
-		boolean pRenderColumnNumbers = renderColumnNumbers;
+
+		boolean overWriteRenderColumn = COLUMN_NUMBERS == 2;
+		boolean renderColumnNumbers = COLUMN_NUMBERS == 1 || COLUMN_NUMBERS == 2;
 
 		ArrayList<ArrayList<PlayerListEntry>> columns = new ArrayList<>();
 		ArrayList<PlayerListEntry> column = new ArrayList<>();
@@ -165,7 +168,7 @@ public abstract class PlayerListHudMixin {
 			tabScroll = maxPerColumn.size() - useMaxes.size();
 		}
 
-		pRenderColumnNumbers = (canScrollRight || canScrollLeft) && pRenderColumnNumbers;
+		renderColumnNumbers = ((canScrollRight || canScrollLeft) && renderColumnNumbers) || overWriteRenderColumn;
 		int totalColWidth = useMaxes.stream().mapToInt(b -> b + 2).sum();
 		int totalRowHeight = useColumns.getFirst().size() * (entryHeight + 1);
 
@@ -182,7 +185,7 @@ public abstract class PlayerListHudMixin {
 		int x = (windowWidth - totalColWidth) / 2;
 
 		int charWidth = client.textRenderer.getWidth("<");
-		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + totalColWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (pRenderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
+		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + totalColWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
 		if (showArrows) {
 			if (canScrollLeft) {
 				context.drawTextWrapped(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
@@ -227,14 +230,14 @@ public abstract class PlayerListHudMixin {
 					context.fill(x + 2, y + 2 + 3, x + useMaxes.get(i) - 3, y + 2 + 4, 0x66FFFFFF);
 				}
 			}
-			if (pRenderColumnNumbers) {
+			if (renderColumnNumbers) {
 				context.drawCenteredTextWithShadow(this.client.textRenderer, String.valueOf(columns.indexOf(useColumns.get(i)) + 1), x + useMaxes.get(i) / 2 + 1, y + entryHeight + 3, 0x66FFFFFF);
 			}
 
 			x += useMaxes.get(i) + 2;
 		}
 
-		int y = startY + 5 + totalRowHeight + (pRenderColumnNumbers ? 3 + 5 : 0);
+		int y = startY + 5 + totalRowHeight + (renderColumnNumbers ? 3 + 5 : 0);
 		for (OrderedText line : footerList) {
 			y += 9;
 			context.drawTextWithShadow(this.client.textRenderer, line, windowWidth / 2 - client.textRenderer.getWidth(line) / 2, y, -1);
@@ -273,6 +276,7 @@ public abstract class PlayerListHudMixin {
 			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
 			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
 			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
+			COLUMN_NUMBERS = configFile.getAsJsonObject().get("column_numbers").getAsInt();
 			BACKGROUND_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
 			CELL_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
 			NAME_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());

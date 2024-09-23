@@ -62,16 +62,16 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                     .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth("Reset") + 5, 20)
                     .build();
 
-            if (setting.contains("_color") || setting.equals("column_numbers")) {
+            if (setting.contains("_color")) {
                 this.textField = new TextFieldWidget(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting));
                 this.textField.setText(editedConfigFile.get(setting).getAsString());
-                this.textField.setChangedListener(newValue -> textChanged(setting, newValue, null, this.resetButton));
-                textChanged(setting, this.textField.getText(), null, this.resetButton);
+                this.textField.setChangedListener(newValue -> textChanged(setting, newValue, this.resetButton));
+                textChanged(setting, this.textField.getText(), this.resetButton);
             } else {
                 this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting, this.resetButton))
                         .dimensions(width / 2 + width / 4 - 50, 0, 100, 20)
                         .build();
-                displayButtonValue(this.button, setting, this.resetButton);
+                displayButtonValue(this.button, setting, resetButton);
             }
         }
 
@@ -131,13 +131,16 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private void displayButtonValue(ButtonWidget button, String setting, ButtonWidget resetButton) {
         Text result;
         if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse").contains(setting)) {
-            result = Text.translatable("tab.bettertab.config.button_text." + (editedConfigFile.get(setting).getAsBoolean() ? "on" : "off"));
-            textChanged(setting, null, editedConfigFile.get(setting).getAsBoolean(), resetButton);
+            boolean newValue = editedConfigFile.get(setting).getAsBoolean();
+            result = Text.translatable("tab.bettertab.config.button_text." + (newValue ? "on" : "off"));
+            resetButton.active = newValue != defaultConfig.get(setting).getAsBoolean();
         } else if (setting.equals("column_numbers")) {
             int newValue = editedConfigFile.get(setting).getAsInt();
             result = Text.of(newValue == 0 ? "Disabled" : (newValue == 1 ? "On Scroll" : "Always"));
+            resetButton.active = newValue != defaultConfig.get(setting).getAsInt();
         } else {
             result = Text.of("Error?");
+            resetButton.active = false;
         }
         button.setMessage(result);
     }
@@ -145,18 +148,18 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private void resetButton(TextFieldWidget textField, ButtonWidget button, String setting, ButtonWidget resetButton) {
         if (textField != null) {
             textField.setText(defaultConfig.get(setting).getAsString());
+            resetButton.active = false;
         } else if (button != null) {
-            editedConfigFile.addProperty(setting, defaultConfig.get(setting).getAsBoolean()); // INT SUPPORT
+            if (setting.equals("column_numbers")) {
+                editedConfigFile.addProperty(setting, defaultConfig.get(setting).getAsInt());
+            } else {
+                editedConfigFile.addProperty(setting, defaultConfig.get(setting).getAsBoolean());
+            }
             displayButtonValue(button, setting, resetButton);
         }
     }
 
-    private void textChanged(String setting, String newSValue, Boolean newBvalue, ButtonWidget resetButton) {
-        // INT SUPPORT
-        if (newSValue != null) {
-            resetButton.active = !newSValue.equals(defaultConfig.get(setting).getAsString());
-        } else if (newBvalue != null) {
-            resetButton.active = newBvalue != defaultConfig.get(setting).getAsBoolean();
-        }
+    private void textChanged(String setting, String newSvalue, ButtonWidget resetButton) {
+        resetButton.active = !newSvalue.equals(defaultConfig.get(setting).getAsString());
     }
 }

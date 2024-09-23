@@ -25,7 +25,6 @@ public class BetterTab implements ModInitializer {
 	public static double tabScroll = 0;
 
 	public static boolean useExamples = false;
-	public static boolean renderColumnNumbers = true;
 
 	public static final KeyBinding openConfig = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			Text.translatable("tab.better.tab.keybind.open_config").getString(),
