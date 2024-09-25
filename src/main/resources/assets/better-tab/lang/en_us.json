@@ -19,6 +19,7 @@
   "tab.bettertab.config.option.scroll_with_mouse": "Scroll with mouse",
   "tab.bettertab.config.option.render_ping": "Render Ping",
   "tab.bettertab.config.option.use_numeric": "Use Numeric Ping",
+  "tab.bettertab.config.option.column_numbers": "Display Column Numbers",
 
   "tab.bettertab.config.option.background_color": "Background Color",
   "tab.bettertab.config.option.cell_color": "Cell Color",

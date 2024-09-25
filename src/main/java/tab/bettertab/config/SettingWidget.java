@@ -124,6 +124,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         } else if (setting.equals("column_numbers")) {
             int newValue = editedConfigFile.get(setting).getAsInt();
             editedConfigFile.addProperty(setting, (newValue == 0 ? 1 : (newValue == 1 ? 2 : 0)));
+        } else if (setting.equals("scroll_type")) {
+            int newValue = editedConfigFile.get(setting).getAsInt();
+            editedConfigFile.addProperty(setting, (newValue == 0 ? 1 : 0));
         }
         displayButtonValue(button, setting, resetButton);
     }
@@ -138,6 +141,10 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             int newValue = editedConfigFile.get(setting).getAsInt();
             result = Text.of(newValue == 0 ? "Disabled" : (newValue == 1 ? "On Scroll" : "Always"));
             resetButton.active = newValue != defaultConfig.get(setting).getAsInt();
+        } else if (setting.equals("scroll_type")) {
+            int newValue = editedConfigFile.get(setting).getAsInt();
+            result = Text.of(newValue == 0 ? "Column" : "Page");
+            resetButton.active = newValue != defaultConfig.get(setting).getAsInt();
         } else {
             result = Text.of("Error?");
             resetButton.active = false;
@@ -150,7 +157,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             textField.setText(defaultConfig.get(setting).getAsString());
             resetButton.active = false;
         } else if (button != null) {
-            if (setting.equals("column_numbers")) {
+            if (new ArrayList<>(List.of("column_numbers", "scroll_type")).contains(setting)) {
                 editedConfigFile.addProperty(setting, defaultConfig.get(setting).getAsInt());
             } else {
                 editedConfigFile.addProperty(setting, defaultConfig.get(setting).getAsBoolean());

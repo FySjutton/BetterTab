@@ -74,6 +74,10 @@ public class ConfigSystem {
                     // 0: Disabled, 1: Render on scroll, 2: Render Always (1 default)
                     throw new RuntimeException("Invalid column number");
                 }
+                if (!new ArrayList<>(List.of(0, 1)).contains(obj.get("scroll_type").getAsInt())) {
+                    // 0: Column, 1: Page (0 default)
+                    throw new RuntimeException("Invalid column number");
+                }
             } catch (Exception e) {
                 LOGGER.error("BetterTab: The configuration file does not appear to follow the required format. This might be caused by a missing key or similar. For help, join our discord server. You can try to delete the configuration file and than restart your game.");
                 LOGGER.error("The error above is critical, and the game will automatically close now.");

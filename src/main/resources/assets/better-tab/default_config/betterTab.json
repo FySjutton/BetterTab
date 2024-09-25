@@ -1,5 +1,6 @@
 {
   "enable_mod": true,
+  "scroll_type": 0,
   "render_heads": true,
   "scroll_with_mouse": true,
   "column_numbers": 1,

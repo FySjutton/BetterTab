@@ -53,6 +53,7 @@ public abstract class PlayerListHudMixin {
 	@Unique private long lastCheck = 0;
 
 	@Unique private boolean ENABLE_MOD;
+	@Unique private int SCROLL_TYPE;
 	@Unique private boolean RENDER_HEADS;
 	@Unique private boolean RENDER_PING;
 	@Unique private boolean USE_NUMERIC;
@@ -73,6 +74,9 @@ public abstract class PlayerListHudMixin {
 			return;
 		}
 		List<PlayerListEntry> list = this.collectPlayerEntries();
+		if (list.isEmpty()) { // Should not really be possible, but still
+			return;
+		}
 
 		if (Calendar.getInstance().getTimeInMillis() - lastCheck > 530) {
 			lastCheck = Calendar.getInstance().getTimeInMillis();
@@ -83,9 +87,6 @@ public abstract class PlayerListHudMixin {
 
 		boolean canScrollLeft;
 		boolean canScrollRight = false;
-
-		boolean overWriteRenderColumn = COLUMN_NUMBERS == 2;
-		boolean renderColumnNumbers = COLUMN_NUMBERS == 1 || COLUMN_NUMBERS == 2;
 
 		ArrayList<ArrayList<PlayerListEntry>> columns = new ArrayList<>();
 		ArrayList<PlayerListEntry> column = new ArrayList<>();
@@ -99,17 +100,16 @@ public abstract class PlayerListHudMixin {
 		int startY = 10;
 
 		for (int i = 0; i < list.size(); i++) {
+			Text playerName = this.getPlayerName(list.get(i));
+			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.valueOf(list.get(i).getLatency())) : 10) : 0));
+			column.add(list.get(i));
+
 			if ((entryHeight + 2) * (i - difference) >= windowHeight / 2) {
 				maxPerColumn.add(Collections.max(widths));
-				widths = new ArrayList<>();
 				columns.add(column);
 				column = new ArrayList<>();
 				difference = i;
 			}
-
-			Text playerName = this.getPlayerName(list.get(i));
-			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.valueOf(list.get(i).getLatency())) : 10) : 0));
-			column.add(list.get(i));
 		}
 		if (!columns.isEmpty()) {
 			int emptyLinesNeeded = columns.getFirst().size() - column.size();
@@ -120,55 +120,96 @@ public abstract class PlayerListHudMixin {
 				GameProfile fakeProfile = new GameProfile(fakeUUID, fakePlayerName);
 				PlayerListEntry fakeEntry = new PlayerListEntry(fakeProfile, false);
 				column.add(fakeEntry);
-
 			}
 		}
 		columns.add(column);
 		maxPerColumn.add(Collections.max(widths));
 
-		List<Integer> useMaxes;
-		List<ArrayList<PlayerListEntry>> useColumns;
+		List<Integer> useMaxes = List.of();
+		List<ArrayList<PlayerListEntry>> useColumns = List.of();
 
 		int scroll = tabScroll >= 0 ? (int) Math.floor(tabScroll) : 0;
-		scroll = Math.min(scroll, maxPerColumn.size()); // Makes sure the scroll doesn't get above the max amount of columns
-		tabScroll = scroll;
+		if (SCROLL_TYPE == 0) {
+			scroll = Math.min(scroll, maxPerColumn.size()); // Makes sure the scroll doesn't get above the max amount of columns
+			tabScroll = scroll;
 
-		canScrollLeft = scroll > 0;
-
-		List<Integer> testScrollList = maxPerColumn.subList(scroll, maxPerColumn.size());
-		int a = 0;
-		int extraCols = 0;
-		boolean found = false;
-		for (int b : testScrollList) {
-			if (a + b + 20 < windowWidth) { // 20 for extra padding
-				a += b + 2;
-				extraCols++;
-			} else {
-				found = true;
-				break;
-			}
-		}
-		if (found) {
-			useMaxes = maxPerColumn.subList(scroll, scroll + extraCols);
-			useColumns = columns.subList(scroll, scroll + extraCols);
-			canScrollRight = true;
-		} else {
-			int d = 0;
-			int index = maxPerColumn.size();
-			for (Integer c : maxPerColumn.reversed()) {
-				if (d + c + 20 < windowWidth) { // 20 for extra padding/
-					d += c + 2;
-					index--;
+			List<Integer> testScrollList = maxPerColumn.subList(scroll, maxPerColumn.size());
+			int a = 0;
+			int extraCols = 0;
+			boolean found = false;
+			for (int b : testScrollList) {
+				if (a + b + 20 < windowWidth) { // 20 for extra padding
+					a += b + 2;
+					extraCols++;
 				} else {
+					found = true;
 					break;
 				}
 			}
-			useMaxes = maxPerColumn.subList(index, maxPerColumn.size());
-			useColumns = columns.subList(index, maxPerColumn.size());
-			tabScroll = maxPerColumn.size() - useMaxes.size();
+			if (found) {
+				useMaxes = maxPerColumn.subList(scroll, scroll + extraCols);
+				useColumns = columns.subList(scroll, scroll + extraCols);
+				canScrollRight = true;
+			} else {
+				int d = 0;
+				int index = maxPerColumn.size();
+				for (Integer c : maxPerColumn.reversed()) {
+					if (d + c + 20 < windowWidth) { // 20 for extra padding/
+						d += c + 2;
+						index--;
+					} else {
+						break;
+					}
+				}
+				useMaxes = maxPerColumn.subList(index, maxPerColumn.size());
+				useColumns = columns.subList(index, maxPerColumn.size());
+				tabScroll = maxPerColumn.size() - useMaxes.size();
+				scroll = (int) tabScroll;
+			}
+		} else if (SCROLL_TYPE == 1) {
+			int total = 0;
+			int scrolled = 0;
+			int usedStart = 0;
+			int usedEnd = 0;
+			boolean found = false;
+			for (int x : maxPerColumn) {
+				if (total + x + 20 < windowWidth) { // 20 for extra padding
+					total += x + 2;
+					usedEnd ++;
+				} else {
+					total = x + 2;
+					if (scroll == scrolled) {
+						useMaxes = maxPerColumn.subList(usedStart, usedEnd);
+						useColumns = columns.subList(usedStart, usedEnd);
+						if (usedEnd + 1 < maxPerColumn.size()) {
+							canScrollRight = true;
+						}
+						found = true;
+						break;
+					} else if (usedEnd + 1 < maxPerColumn.size()) {
+//						total = 0;
+						scrolled ++;
+						usedStart = usedEnd;
+					}
+				}
+			}
+			if (!found) {
+				LOGGER.info("a");
+				LOGGER.info(String.valueOf(usedStart));
+				LOGGER.info(String.valueOf(usedEnd));
+				useMaxes = maxPerColumn.subList(usedStart, usedEnd);
+				useColumns = columns.subList(usedStart, usedEnd);
+			}
+//			tabScroll = maxPerColumn.size() - scrolled;
+//			scroll = (int) tabScroll;
 		}
 
-		renderColumnNumbers = ((canScrollRight || canScrollLeft) && renderColumnNumbers) || overWriteRenderColumn;
+		LOGGER.info(String.valueOf(useMaxes.size()));
+
+		canScrollLeft = scroll > 0;
+		boolean renderColumnNumbers;
+		renderColumnNumbers = ((canScrollRight || canScrollLeft) && COLUMN_NUMBERS == 1) || COLUMN_NUMBERS == 2;
+
 		int totalColWidth = useMaxes.stream().mapToInt(b -> b + 2).sum();
 		int totalRowHeight = useColumns.getFirst().size() * (entryHeight + 1);
 
@@ -273,6 +314,7 @@ public abstract class PlayerListHudMixin {
 		if (this.visible != visible) {
 			tabScroll = 0;
 			ENABLE_MOD = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
+			SCROLL_TYPE = configFile.getAsJsonObject().get("scroll_type").getAsInt();
 			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
 			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
 			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
