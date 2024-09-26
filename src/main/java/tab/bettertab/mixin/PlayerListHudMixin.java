@@ -66,7 +66,6 @@ public abstract class PlayerListHudMixin {
 	@Unique private int PING_COLOR_MEDIUM;
 	@Unique private int PING_COLOR_HIGH;
 	@Unique private int COLUMN_NUMBERS;
-//	@Unique private boolean USE_NUMERIC;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
@@ -84,204 +83,174 @@ public abstract class PlayerListHudMixin {
 		}
 
 		int entryHeight = 10;
-
-		boolean canScrollLeft;
-		boolean canScrollRight = false;
-
-		ArrayList<ArrayList<PlayerListEntry>> columns = new ArrayList<>();
-		ArrayList<PlayerListEntry> column = new ArrayList<>();
-		ArrayList<Integer> widths = new ArrayList<>();
-		ArrayList<Integer> maxPerColumn = new ArrayList<>();
-
-		int difference = 0;
 		int windowHeight = client.getWindow().getScaledHeight();
-		int windowWidth = client.getWindow().getScaledWidth();
 
-		int startY = 10;
+		int columnHeight = 0;
+		int pageWidth = 0;
+		ArrayList<PlayerListEntry> column = new ArrayList<>();
+		ArrayList<ArrayList<PlayerListEntry>> columns = new ArrayList<>();
+		ArrayList<ArrayList<PlayerListEntry>> allColumns = new ArrayList<>();
+		ArrayList<Integer> widths = new ArrayList<>();
+		ArrayList<Integer> columnsWidths = new ArrayList<>();
 
-		for (int i = 0; i < list.size(); i++) {
-			Text playerName = this.getPlayerName(list.get(i));
-			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.valueOf(list.get(i).getLatency())) : 10) : 0));
-			column.add(list.get(i));
+		int pages = 0;
+		boolean correctPage = false;
 
-			if ((entryHeight + 2) * (i - difference) >= windowHeight / 2) {
-				maxPerColumn.add(Collections.max(widths));
-				columns.add(column);
-				column = new ArrayList<>();
-				difference = i;
-			}
-		}
-		if (!columns.isEmpty()) {
-			int emptyLinesNeeded = columns.getFirst().size() - column.size();
-			for (int k = 0; k < emptyLinesNeeded; k++) {
-				String fakePlayerName = "";
-				UUID fakeUUID = UUID.nameUUIDFromBytes(fakePlayerName.getBytes());
-
-				GameProfile fakeProfile = new GameProfile(fakeUUID, fakePlayerName);
-				PlayerListEntry fakeEntry = new PlayerListEntry(fakeProfile, false);
-				column.add(fakeEntry);
-			}
-		}
-		columns.add(column);
-		maxPerColumn.add(Collections.max(widths));
-
-		List<Integer> useMaxes = List.of();
-		List<ArrayList<PlayerListEntry>> useColumns = List.of();
-
-		int scroll = tabScroll >= 0 ? (int) Math.floor(tabScroll) : 0;
-		if (SCROLL_TYPE == 0) {
-			scroll = Math.min(scroll, maxPerColumn.size()); // Makes sure the scroll doesn't get above the max amount of columns
-			tabScroll = scroll;
-
-			List<Integer> testScrollList = maxPerColumn.subList(scroll, maxPerColumn.size());
-			int a = 0;
-			int extraCols = 0;
-			boolean found = false;
-			for (int b : testScrollList) {
-				if (a + b + 20 < windowWidth) { // 20 for extra padding
-					a += b + 2;
-					extraCols++;
+		tabScroll = tabScroll < 0 ? 0 : tabScroll;
+		for (PlayerListEntry player : list) {
+			Text playerName = this.getPlayerName(player);
+			if (columnHeight + entryHeight + 1 >= windowHeight / 2) {
+				columnHeight = 0;
+				if (Collections.max(widths) + pageWidth + 20 > scaledWindowWidth) {
+					if (SCROLL_TYPE == 1) {
+						if (tabScroll == pages) {
+							correctPage = true;
+							break;
+						} else {
+							columns = new ArrayList<>();
+							columnsWidths = new ArrayList<>();
+							pages ++;
+							pageWidth = Collections.max(widths) + 2; // 0 or thihs
+						}
+					}
 				} else {
-					found = true;
+					pageWidth += Collections.max(widths) + 2;
+				}
+				columns.add(column);
+				allColumns.add(column);
+				columnsWidths.add(Collections.max(widths));
+				widths = new ArrayList<>();
+				column = new ArrayList<>();
+			}
+			columnHeight += entryHeight + 1;
+			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.valueOf(player.getLatency())) : 10) : 0));
+			column.add(player);
+		}
+		if (!column.isEmpty() && !correctPage) {
+			if (!columns.isEmpty()) {
+				int emptyLinesNeeded = columns.getFirst().size() - column.size();
+				for (int i = 0; i < emptyLinesNeeded; i++) {
+					String emptyText = "";
+					UUID emptyUUID = UUID.nameUUIDFromBytes(emptyText.getBytes());
+
+					GameProfile emptyLine = new GameProfile(emptyUUID, emptyText);
+					PlayerListEntry emptyEntry = new PlayerListEntry(emptyLine, false);
+
+					column.add(emptyEntry);
+				}
+			}
+			columns.add(column);
+			allColumns.add(column);
+			columnsWidths.add(Collections.max(widths));
+			pageWidth += Collections.max(widths) + 2;
+		}
+		boolean canScrollLeft;
+		boolean canScrollRight;
+		if (SCROLL_TYPE == 0) {
+			int maxVisibleColumns = 0;
+			int currentWidth = 0;
+
+			for (int colWidth : columnsWidths) {
+				if (currentWidth + colWidth + 2 > scaledWindowWidth) {
 					break;
 				}
+				currentWidth += colWidth + 2;
+				maxVisibleColumns++;
 			}
-			if (found) {
-				useMaxes = maxPerColumn.subList(scroll, scroll + extraCols);
-				useColumns = columns.subList(scroll, scroll + extraCols);
-				canScrollRight = true;
-			} else {
-				int d = 0;
-				int index = maxPerColumn.size();
-				for (Integer c : maxPerColumn.reversed()) {
-					if (d + c + 20 < windowWidth) { // 20 for extra padding/
-						d += c + 2;
-						index--;
-					} else {
-						break;
-					}
-				}
-				useMaxes = maxPerColumn.subList(index, maxPerColumn.size());
-				useColumns = columns.subList(index, maxPerColumn.size());
-				tabScroll = maxPerColumn.size() - useMaxes.size();
-				scroll = (int) tabScroll;
-			}
-		} else if (SCROLL_TYPE == 1) {
-			int total = 0;
-			int scrolled = 0;
-			int usedStart = 0;
-			int usedEnd = 0;
-			boolean found = false;
-			for (int x : maxPerColumn) {
-				if (total + x + 20 < windowWidth) { // 20 for extra padding
-					total += x + 2;
-					usedEnd ++;
-				} else {
-					total = x + 2;
-					if (scroll == scrolled) {
-						useMaxes = maxPerColumn.subList(usedStart, usedEnd);
-						useColumns = columns.subList(usedStart, usedEnd);
-						if (usedEnd + 1 < maxPerColumn.size()) {
-							canScrollRight = true;
-						}
-						found = true;
-						break;
-					} else if (usedEnd + 1 < maxPerColumn.size()) {
-//						total = 0;
-						scrolled ++;
-						usedStart = usedEnd;
-					}
-				}
-			}
-			if (!found) {
-				LOGGER.info("a");
-				LOGGER.info(String.valueOf(usedStart));
-				LOGGER.info(String.valueOf(usedEnd));
-				useMaxes = maxPerColumn.subList(usedStart, usedEnd);
-				useColumns = columns.subList(usedStart, usedEnd);
-			}
-//			tabScroll = maxPerColumn.size() - scrolled;
-//			scroll = (int) tabScroll;
+
+			tabScroll = Math.min(tabScroll, columns.size() - maxVisibleColumns);
+			int columnSize = columns.size();
+
+			int startIndex = (int) tabScroll;
+			int endIndex = (int) Math.min(tabScroll + maxVisibleColumns, columns.size());
+
+			columns = new ArrayList<>(columns.subList(startIndex, endIndex));
+			columnsWidths = new ArrayList<>(columnsWidths.subList(startIndex, endIndex));
+
+			pageWidth = 0;
+            for (Integer columnsWidth : columnsWidths) {
+                pageWidth += columnsWidth + 2;
+            }
+			canScrollLeft = tabScroll > 0;
+			canScrollRight = columnSize > endIndex;
+		} else {
+			tabScroll = tabScroll > pages ? pages : tabScroll;
+			canScrollLeft = pages > 0;
+			canScrollRight = correctPage;
 		}
 
-		LOGGER.info(String.valueOf(useMaxes.size()));
+		int x = (scaledWindowWidth - pageWidth) / 2;
+		int startY = 10;
+		int totalRowHeight = columns.getFirst().size() * (entryHeight + 1);
 
-		canScrollLeft = scroll > 0;
-		boolean renderColumnNumbers;
-		renderColumnNumbers = ((canScrollRight || canScrollLeft) && COLUMN_NUMBERS == 1) || COLUMN_NUMBERS == 2;
-
-		int totalColWidth = useMaxes.stream().mapToInt(b -> b + 2).sum();
-		int totalRowHeight = useColumns.getFirst().size() * (entryHeight + 1);
+		boolean renderColumnNumbers = ((canScrollRight || canScrollLeft) && COLUMN_NUMBERS == 1) || COLUMN_NUMBERS == 2;
 
 		List<OrderedText> headerList = List.of();
 		if (this.header != null) {
-			headerList = client.textRenderer.wrapLines(this.header, totalColWidth);
+			headerList = client.textRenderer.wrapLines(this.header, pageWidth);
 		}
 
 		List<OrderedText> footerList = List.of();
 		if (this.footer != null) {
-			footerList = client.textRenderer.wrapLines(this.footer, totalColWidth);
+			footerList = client.textRenderer.wrapLines(this.footer, pageWidth);
 		}
 
-		int x = (windowWidth - totalColWidth) / 2;
-
 		int charWidth = client.textRenderer.getWidth("<");
-		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + totalColWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
+		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + pageWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
 		if (showArrows) {
 			if (canScrollLeft) {
 				context.drawTextWrapped(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
 			}
 			if (canScrollRight) {
-				context.drawTextWrapped(client.textRenderer, StringVisitable.plain(">>>"), x + totalColWidth + 5, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
+				context.drawTextWrapped(client.textRenderer, StringVisitable.plain(">>>"), x + pageWidth + 5, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
 			}
 		}
 
 		for (OrderedText line : headerList) {
-			context.drawTextWithShadow(this.client.textRenderer, line, windowWidth / 2 - client.textRenderer.getWidth(line) / 2, startY, -1);
+			context.drawTextWithShadow(this.client.textRenderer, line, scaledWindowWidth / 2 - client.textRenderer.getWidth(line) / 2, startY, -1);
 			startY += 9;
 		}
 		startY -= 9;
 
-		for (int i = 0; i < useColumns.size(); i++) {
-			ArrayList<PlayerListEntry> col = useColumns.get(i);
+		for (int i = 0; i < columns.size(); i++) {
+			ArrayList<PlayerListEntry> col = columns.get(i);
 
 			int y = startY;
-			for (int j = 0; j < col.size(); j++) {
-				y += entryHeight + 1;
+            for (PlayerListEntry playerListEntry : col) {
+                y += entryHeight + 1;
 
-				context.fill(x - 1, y, x + useMaxes.get(i), y + entryHeight, CELL_COLOR);
-				RenderSystem.enableBlend();
+                context.fill(x - 1, y, x + columnsWidths.get(i), y + entryHeight, CELL_COLOR);
+                RenderSystem.enableBlend();
 
-				Text playerName = this.getPlayerName(col.get(j));
+                Text playerName = this.getPlayerName(playerListEntry);
 
-				if (!playerName.getString().isEmpty()) {
-					if (RENDER_HEADS) {
-						PlayerSkinDrawer.draw(context, col.get(j).getSkinTextures().texture(), x, y + 1, 8, true, false);
-					}
-					context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, col.get(j).getGameMode() == GameMode.SPECTATOR ? SPECTATOR_COLOR : NAME_COLOR);
-					if (RENDER_PING) {
-						if (USE_NUMERIC) {
-							String ping = String.valueOf(col.get(j).getLatency());
-							context.drawTextWithShadow(this.client.textRenderer, ping, x + useMaxes.get(i) - this.client.textRenderer.getWidth(ping) - 2, y + 2, numericalColoriser(Integer.parseInt(ping)));
-						} else {
-							this.renderLatencyIcon(context, useMaxes.get(i), x, y + 1, col.get(j));
-						}
-					}
-				} else {
-					context.fill(x + 2, y + 2 + 3, x + useMaxes.get(i) - 3, y + 2 + 4, 0x66FFFFFF);
-				}
-			}
+                if (!playerName.getString().isEmpty()) {
+                    if (RENDER_HEADS) {
+                        PlayerSkinDrawer.draw(context, playerListEntry.getSkinTextures().texture(), x, y + 1, 8, true, false);
+                    }
+                    context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, playerListEntry.getGameMode() == GameMode.SPECTATOR ? SPECTATOR_COLOR : NAME_COLOR);
+                    if (RENDER_PING) {
+                        if (USE_NUMERIC) {
+                            String ping = String.valueOf(playerListEntry.getLatency());
+                            context.drawTextWithShadow(this.client.textRenderer, ping, x + columnsWidths.get(i) - this.client.textRenderer.getWidth(ping) - 2, y + 2, numericalColoriser(Integer.parseInt(ping)));
+                        } else {
+                            this.renderLatencyIcon(context, columnsWidths.get(i), x, y + 1, playerListEntry);
+                        }
+                    }
+                } else {
+                    context.fill(x + 2, y + 2 + 3, x + columnsWidths.get(i) - 3, y + 2 + 4, 0x66FFFFFF);
+                }
+            }
 			if (renderColumnNumbers) {
-				context.drawCenteredTextWithShadow(this.client.textRenderer, String.valueOf(columns.indexOf(useColumns.get(i)) + 1), x + useMaxes.get(i) / 2 + 1, y + entryHeight + 3, 0x66FFFFFF);
+				context.drawCenteredTextWithShadow(this.client.textRenderer, String.valueOf(allColumns.indexOf(columns.get(i)) + 1), x + columnsWidths.get(i) / 2 + 1, y + entryHeight + 3, 0x66FFFFFF);
 			}
-
-			x += useMaxes.get(i) + 2;
+			x += columnsWidths.get(i) + 2;
 		}
 
 		int y = startY + 5 + totalRowHeight + (renderColumnNumbers ? 3 + 5 : 0);
 		for (OrderedText line : footerList) {
 			y += 9;
-			context.drawTextWithShadow(this.client.textRenderer, line, windowWidth / 2 - client.textRenderer.getWidth(line) / 2, y, -1);
+			context.drawTextWithShadow(this.client.textRenderer, line, scaledWindowWidth / 2 - client.textRenderer.getWidth(line) / 2, y, -1);
 		}
 		ci.cancel();
 	}
