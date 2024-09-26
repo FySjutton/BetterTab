@@ -15,6 +15,7 @@
   "tab.bettertab.config.button_text.off": "Off",
 
   "tab.bettertab.config.option.enable_mod": "Enable Mod",
+  "tab.bettertab.config.option.scroll_type": "Scroll Type",
   "tab.bettertab.config.option.render_heads": "Render Heads",
   "tab.bettertab.config.option.scroll_with_mouse": "Scroll with mouse",
   "tab.bettertab.config.option.render_ping": "Render Ping",
