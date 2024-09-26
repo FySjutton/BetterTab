@@ -3,16 +3,16 @@
 	"id": "better-tab",
 	"version": "${version}",
 	"name": "Better Tab",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Better Tab is a mod that makes the playerlist scrollable and adds numeric ping display.",
 	"authors": [
-		"Fy17!"
+		"Fy17"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"issues": "https://discord.gg/6gBT2CgqQj",
+		"sources": "https://github.com/FySjutton/BetterTab"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/better-tab/icon.png",
+	"icon": "assets/better-tab/mod_icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
