@@ -3,7 +3,7 @@
 	"id": "better-tab",
 	"version": "${version}",
 	"name": "Better Tab",
-	"description": "Better Tab is a mod that makes the playerlist scrollable and adds numeric ping display.",
+	"description": "Makes the playerlist scrollable and adds numeric ping display.",
 	"authors": [
 		"Fy17"
 	],
@@ -13,7 +13,7 @@
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/better-tab/mod_icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"tab.bettertab.BetterTab"
