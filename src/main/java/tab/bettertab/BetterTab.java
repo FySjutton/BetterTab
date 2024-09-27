@@ -71,7 +71,8 @@ public class BetterTab implements ModInitializer {
 				boolean modEnabled = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
 				configFile.getAsJsonObject().addProperty("enable_mod", !modEnabled);
 				new ConfigSystem().saveElementFiles(configFile);
-				new Tools().sendToast("Mod has been toggled!", "The mod is now " + (modEnabled ? "disabled." : "enabled."));
+				new Tools().sendToast("BetterTab has been toggled!", "The mod is now " + (modEnabled ? "disabled." : "enabled."));
+				client.inGameHud.getPlayerListHud().setVisible(false);
 			}
 			if (((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible()) {
 				if (rightScroll.wasPressed()) {

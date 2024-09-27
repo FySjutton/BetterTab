@@ -11,6 +11,7 @@ public class Tools {
         try {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.textRenderer != null) {
+                client.getToastManager().clear();
                 client.getToastManager().add(
                         new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION,
                                 Text.literal(title),
