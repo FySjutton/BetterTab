@@ -66,6 +66,8 @@ public abstract class PlayerListHudMixin {
 	@Unique private int PING_COLOR_MEDIUM;
 	@Unique private int PING_COLOR_HIGH;
 	@Unique private int COLUMN_NUMBERS;
+	@Unique private int EMPTY_CELL_LINE_COLOR;
+	@Unique private int COLUMN_NUMBER_COLOR;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
@@ -238,11 +240,11 @@ public abstract class PlayerListHudMixin {
                         }
                     }
                 } else {
-                    context.fill(x + 2, y + 2 + 3, x + columnsWidths.get(i) - 3, y + 2 + 4, 0x66FFFFFF);
+                    context.fill(x + 2, y + 2 + 3, x + columnsWidths.get(i) - 3, y + 2 + 4, EMPTY_CELL_LINE_COLOR);
                 }
             }
 			if (renderColumnNumbers) {
-				context.drawCenteredTextWithShadow(this.client.textRenderer, String.valueOf(allColumns.indexOf(columns.get(i)) + 1), x + columnsWidths.get(i) / 2 + 1, y + entryHeight + 3, 0x66FFFFFF);
+				context.drawCenteredTextWithShadow(this.client.textRenderer, String.valueOf(allColumns.indexOf(columns.get(i)) + 1), x + columnsWidths.get(i) / 2 + 1, y + entryHeight + 3, COLUMN_NUMBER_COLOR);
 			}
 			x += columnsWidths.get(i) + 2;
 		}
@@ -261,13 +263,7 @@ public abstract class PlayerListHudMixin {
 
 		if (useExamples) {
 			for (int i = 1; i <= 200; i++) {
-				String fakePlayerName = "ExamplePlayer" + i;
-				UUID fakeUUID = UUID.nameUUIDFromBytes(fakePlayerName.getBytes());
-
-				GameProfile fakeProfile = new GameProfile(fakeUUID, fakePlayerName);
-				PlayerListEntry fakeEntry = new PlayerListEntry(fakeProfile, false);
-
-				playerList.add(fakeEntry);
+				playerList.add(fakePlayer("ExamplePlayer" + i));
 			}
 		}
 
@@ -289,6 +285,9 @@ public abstract class PlayerListHudMixin {
 			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
 			COLUMN_NUMBERS = configFile.getAsJsonObject().get("column_numbers").getAsInt();
 			BACKGROUND_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
+			EMPTY_CELL_LINE_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("empty_cell_line_color").getAsString());
+			COLUMN_NUMBER_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("column_number_color").getAsString());
+
 			CELL_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
 			NAME_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());
 			SPECTATOR_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("spectator_color").getAsString());
@@ -309,5 +308,11 @@ public abstract class PlayerListHudMixin {
 			return PING_COLOR_MEDIUM;
 		}
 		return PING_COLOR_LOW;
+	}
+
+	private PlayerListEntry fakePlayer(String fakePlayerName) {
+		UUID fakeUUID = UUID.nameUUIDFromBytes(fakePlayerName.getBytes());
+		GameProfile fakeProfile = new GameProfile(fakeUUID, fakePlayerName);
+        return new PlayerListEntry(fakeProfile, false);
 	}
 }

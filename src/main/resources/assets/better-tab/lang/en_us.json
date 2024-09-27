@@ -1,8 +1,9 @@
 {
-  "tab.better.tab.keybind.title": "Better Tab",
-  "tab.better.tab.keybind.open_config": "Open Config",
-  "tab.better.tab.keybind.scroll_left": "Scroll Left",
-  "tab.better.tab.keybind.scroll_right": "Scroll Right",
+  "tab.bettertab.keybind.title": "Better Tab",
+  "tab.bettertab.keybind.toggle_mod": "Toggle Mod",
+  "tab.bettertab.keybind.open_config": "Open Config",
+  "tab.bettertab.keybind.scroll_left": "Scroll Left",
+  "tab.bettertab.keybind.scroll_right": "Scroll Right",
 
   "tab.bettertab.config.tabs.general": "General",
   "tab.bettertab.config.tabs.styling": "Styling",
@@ -26,6 +27,8 @@
   "tab.bettertab.config.option.cell_color": "Cell Color",
   "tab.bettertab.config.option.name_color": "Name Color",
   "tab.bettertab.config.option.spectator_color": "Spectator Color",
+  "tab.bettertab.config.option.empty_cell_line_color": "Empty Cell Line Color",
+  "tab.bettertab.config.option.column_number_color": "Column Number Color",
   "tab.bettertab.config.option.ping_color_none": "Ping Color None",
   "tab.bettertab.config.option.ping_color_low": "Ping Color Low",
   "tab.bettertab.config.option.ping_color_medium": "Ping Color Medium",

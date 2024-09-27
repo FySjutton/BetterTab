@@ -9,6 +9,8 @@
   "cell_color": "#FFFFFF20",
   "name_color": "#FFFFFFFF",
   "spectator_color": "#FFFFFF90",
+  "column_number_color": "#FFFFFF66",
+  "empty_cell_line_color": "#FFFFFF66",
 
   "render_ping": true,
   "use_numeric": true,

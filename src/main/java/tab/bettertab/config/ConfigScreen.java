@@ -19,23 +19,24 @@ import tab.bettertab.ConfigSystem;
 public class ConfigScreen extends Screen {
     private final TabManager tabManager = new TabManager(this::addDrawableChild, this::remove);
     private final JsonObject editedConfigFile = new JsonObject();
+    private final Screen PARENT;
 
     public ConfigScreen(Screen screen) {
         super(Text.of("BetterStats"));
+        this.PARENT = screen;
     }
 
     @Override
     public void init() {
         Tab[] tabs = new Tab[5];
         tabs[0] = new newTab(Text.translatable("tab.bettertab.config.tabs.general").getString(), new ArrayList<>(List.of("enable_mod", "scroll_type", "render_heads", "scroll_with_mouse", "column_numbers")));
-        tabs[1] = new newTab(Text.translatable("tab.bettertab.config.tabs.styling").getString(), new ArrayList<>(List.of("background_color", "cell_color", "name_color", "spectator_color")));
+        tabs[1] = new newTab(Text.translatable("tab.bettertab.config.tabs.styling").getString(), new ArrayList<>(List.of("background_color", "cell_color", "name_color", "spectator_color", "column_number_color", "empty_cell_line_color")));
         tabs[2] = new newTab(Text.translatable("tab.bettertab.config.tabs.ping").getString(), new ArrayList<>(List.of("render_ping", "use_numeric", "ping_color_none", "ping_color_low", "ping_color_medium", "ping_color_high")));
         tabs[3] = new newTab(Text.translatable("tab.bettertab.config.tabs.keybinds").getString(), new ArrayList<>(List.of()));
         tabs[4] = new newTab(Text.translatable("tab.bettertab.config.tabs.advanced").getString(), new ArrayList<>(List.of()));
         // Bypass scroll-with-mouse: ctrl
         // Left / Right scroll button
         // Scroll type (column/page)
-        // Open config keybind
         // Toggle mod keybind
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
@@ -51,6 +52,11 @@ public class ConfigScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void close() {
+        client.setScreen(PARENT);
     }
 
     private class newTab extends GridScreenTab {

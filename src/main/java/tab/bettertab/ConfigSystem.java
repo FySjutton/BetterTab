@@ -70,6 +70,8 @@ public class ConfigSystem {
                 obj.get("ping_color_medium").getAsString();
                 obj.get("ping_color_high").getAsString();
                 obj.get("scroll_with_mouse").getAsBoolean();
+                obj.get("empty_cell_line_color").getAsString();
+                obj.get("column_number_color").getAsString();
                 if (!new ArrayList<>(List.of(0, 1, 2)).contains(obj.get("column_numbers").getAsInt())) {
                     // 0: Disabled, 1: Render on scroll, 2: Render Always (1 default)
                     throw new RuntimeException("Invalid column number");

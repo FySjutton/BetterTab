@@ -18,6 +18,8 @@ import tab.bettertab.config.ConfigScreen;
 import tab.bettertab.mixin.PlayerListHudAccess;
 import tab.bettertab.mixin.PlayerListHudMixin;
 
+import static tab.bettertab.ConfigSystem.configFile;
+
 public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "better-tab";
 
@@ -26,40 +28,52 @@ public class BetterTab implements ModInitializer {
 
 	public static boolean useExamples = false;
 
-	public static final KeyBinding openConfig = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			Text.translatable("tab.better.tab.keybind.open_config").getString(),
+	public static final KeyBinding toggleMod = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			Text.translatable("tab.bettertab.keybind.toggle_mod").getString(),
 			InputUtil.Type.KEYSYM,
-			GLFW.GLFW_KEY_LEFT,
-			Text.translatable("tab.better.tab.keybind.title").getString()
+			GLFW.GLFW_KEY_UNKNOWN,
+			Text.translatable("tab.bettertab.keybind.title").getString()
+	));
+	public static final KeyBinding openConfig = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			Text.translatable("tab.bettertab.keybind.open_config").getString(),
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_N,
+			Text.translatable("tab.bettertab.keybind.title").getString()
 	));
 	public static final KeyBinding rightScroll = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			Text.translatable("tab.better.tab.keybind.scroll_right").getString(),
+			Text.translatable("tab.bettertab.keybind.scroll_right").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_RIGHT,
-			Text.translatable("tab.better.tab.keybind.title").getString()
+			Text.translatable("tab.bettertab.keybind.title").getString()
 	));
 	public static final KeyBinding leftScroll = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			Text.translatable("tab.better.tab.keybind.scroll_left").getString(),
+			Text.translatable("tab.bettertab.keybind.scroll_left").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_LEFT,
-			Text.translatable("tab.better.tab.keybind.title").getString()
+			Text.translatable("tab.bettertab.keybind.title").getString()
 	));
 	public static final KeyBinding useExamplesBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			"Use Examples",
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_KP_3,
 			"BetterTab"
-	));
+	)); // REMOVE BEFORE RELEASE
 
 	@Override
 	public void onInitialize() {
 		new ConfigSystem().checkConfig();
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			if (openConfig.wasPressed()) {
+				MinecraftClient.getInstance().setScreen(new ConfigScreen(null));
+			}
+			if (toggleMod.wasPressed()) {
+				boolean modEnabled = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
+				configFile.getAsJsonObject().addProperty("enable_mod", !modEnabled);
+				new ConfigSystem().saveElementFiles(configFile);
+				new Tools().sendToast("Mod has been toggled!", "The mod is now " + (modEnabled ? "disabled." : "enabled."));
+			}
 			if (((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible()) {
-				if (openConfig.wasPressed()) {
-					MinecraftClient.getInstance().setScreen(new ConfigScreen(null));
-				}
 				if (rightScroll.wasPressed()) {
 					tabScroll ++;
 				}
