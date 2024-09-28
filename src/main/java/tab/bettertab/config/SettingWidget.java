@@ -6,9 +6,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -48,6 +47,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     public class Entry extends ElementListWidget.Entry<Entry> {
         private ButtonWidget button;
         private ButtonWidget resetButton;
+        private CustomSliderWidget slider;
         public TextFieldWidget textField;
         public String setting;
         private String displayText;
@@ -58,15 +58,22 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             this.setting = setting;
             this.displayText = Text.translatable("tab.bettertab.config.option." + setting).getString();
 
-            this.resetButton = ButtonWidget.builder(Text.of("Reset"), btn -> resetButton(this.textField, this.button, setting, btn))
+            this.resetButton = ButtonWidget.builder(Text.of("Reset"), btn -> resetButton(this.textField, this.button, this.slider, setting, btn))
                     .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth("Reset") + 5, 20)
                     .build();
-
-            if (setting.contains("_color")) {
+            if (setting.contains("_color") || setting.equals("numeric_format") || setting.equals("example_text")) {
                 this.textField = new TextFieldWidget(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting));
                 this.textField.setText(editedConfigFile.get(setting).getAsString());
                 this.textField.setChangedListener(newValue -> textChanged(setting, newValue, this.resetButton));
                 textChanged(setting, this.textField.getText(), this.resetButton);
+            } else if (List.of("max_row_height", "max_width", "example_amount", "start_y").contains(setting)) {
+                if (setting.equals("max_row_height") || setting.equals("max_width")) {
+                    this.slider = new CustomSliderWidget(width / 2 + width / 4 - 50, 0, 100, 20, Text.empty(), editedConfigFile.get(setting).getAsDouble(), 0.10, 0.95, true, editedConfigFile, setting, resetButton);
+                } else if (setting.equals("example_amount") || setting.equals("start_y")) {
+                    this.slider = new CustomSliderWidget(width / 2 + width / 4 - 50, 0, 100, 20, Text.empty(), editedConfigFile.get(setting).getAsDouble(), (setting.equals("example_amount") ? 1 : 0), (setting.equals("example_amount") ? 500 : 200), false, editedConfigFile, setting, resetButton);
+                }
+                this.slider.updateMessage();
+                this.slider.updateResetButton();
             } else {
                 this.button = ButtonWidget.builder(Text.empty(), btn -> buttonHandler(btn, setting, this.resetButton))
                         .dimensions(width / 2 + width / 4 - 50, 0, 100, 20)
@@ -84,6 +91,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             if (textField != null) {
                 children.add(textField);
             }
+            if (slider != null) {
+                children.add(slider);
+            }
             children.add(resetButton);
             return children;
         }
@@ -96,6 +106,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             }
             if (textField != null) {
                 children.add(textField);
+            }
+            if (slider != null) {
+                children.add(slider);
             }
             children.add(resetButton);
             return children;
@@ -111,6 +124,10 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
                 textField.setY(y);
                 textField.render(context, mouseX, mouseY, tickDelta);
             }
+            if (slider != null) {
+                slider.setY(y);
+                slider.render(context, mouseX, mouseY, tickDelta);
+            }
             resetButton.setY(y);
             resetButton.render(context, mouseX, mouseY, tickDelta);
             context.drawCenteredTextWithShadow(textRenderer, displayText, width / 4, y + entryHeight / 2, 0xFFFFFF);
@@ -118,7 +135,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     }
 
     private void buttonHandler(ButtonWidget button, String setting, ButtonWidget resetButton) {
-        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse").contains(setting)) {
+        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse", "use_examples").contains(setting)) {
             boolean newValue = !editedConfigFile.get(setting).getAsBoolean();
             editedConfigFile.addProperty(setting, newValue);
         } else if (setting.equals("column_numbers")) {
@@ -133,7 +150,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
 
     private void displayButtonValue(ButtonWidget button, String setting, ButtonWidget resetButton) {
         Text result;
-        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse").contains(setting)) {
+        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse", "use_examples").contains(setting)) {
             boolean newValue = editedConfigFile.get(setting).getAsBoolean();
             result = Text.translatable("tab.bettertab.config.button_text." + (newValue ? "on" : "off"));
             resetButton.active = newValue != defaultConfig.get(setting).getAsBoolean();
@@ -152,8 +169,13 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
         button.setMessage(result);
     }
 
-    private void resetButton(TextFieldWidget textField, ButtonWidget button, String setting, ButtonWidget resetButton) {
-        if (textField != null) {
+    private void resetButton(TextFieldWidget textField, ButtonWidget button, CustomSliderWidget slider, String setting, ButtonWidget resetButton) {
+        if (slider != null) {
+            slider.setValueFromDisplayNumber(defaultConfig.get(setting).getAsDouble());
+            slider.updateMessage();
+            slider.applyValue();
+            resetButton.active = false;
+        } else if (textField != null) {
             textField.setText(defaultConfig.get(setting).getAsString());
             resetButton.active = false;
         } else if (button != null) {

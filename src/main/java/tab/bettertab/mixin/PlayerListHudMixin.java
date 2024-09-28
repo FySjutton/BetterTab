@@ -11,6 +11,7 @@ import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.entity.ai.brain.task.WanderIndoorsTask;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.scoreboard.Scoreboard;
@@ -54,9 +55,14 @@ public abstract class PlayerListHudMixin {
 
 	@Unique private boolean ENABLE_MOD;
 	@Unique private int SCROLL_TYPE;
+	@Unique private double MAX_ROW_HEIGHT;
+	@Unique private double MAX_WIDTH;
 	@Unique private boolean RENDER_HEADS;
 	@Unique private boolean RENDER_PING;
 	@Unique private boolean USE_NUMERIC;
+	@Unique private String NUMERIC_FORMAT;
+	@Unique private int COLUMN_NUMBERS;
+	@Unique private int START_Y;
 	@Unique private int BACKGROUND_COLOR;
 	@Unique private int CELL_COLOR;
 	@Unique private int NAME_COLOR;
@@ -65,9 +71,11 @@ public abstract class PlayerListHudMixin {
 	@Unique private int PING_COLOR_LOW;
 	@Unique private int PING_COLOR_MEDIUM;
 	@Unique private int PING_COLOR_HIGH;
-	@Unique private int COLUMN_NUMBERS;
 	@Unique private int EMPTY_CELL_LINE_COLOR;
 	@Unique private int COLUMN_NUMBER_COLOR;
+	@Unique private boolean USE_EXAMPLES;
+	@Unique private String EXAMPLE_TEXT;
+	@Unique private int EXAMPLE_AMOUNT;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
@@ -97,13 +105,14 @@ public abstract class PlayerListHudMixin {
 
 		int pages = 0;
 		boolean correctPage = false;
+		int charWidth = client.textRenderer.getWidth("<");
 
 		tabScroll = tabScroll < 0 ? 0 : tabScroll;
 		for (PlayerListEntry player : list) {
 			Text playerName = this.getPlayerName(player);
-			if (columnHeight + entryHeight + 1 >= windowHeight / 2) {
+			if (columnHeight + entryHeight + 1 >= windowHeight * MAX_ROW_HEIGHT) {
 				columnHeight = 0;
-				if (Collections.max(widths) + pageWidth + 20 > scaledWindowWidth) {
+				if (Collections.max(widths) + pageWidth + 10 + charWidth * 2 > scaledWindowWidth * MAX_WIDTH) {
 					if (SCROLL_TYPE == 1) {
 						if (tabScroll == pages) {
 							correctPage = true;
@@ -112,7 +121,7 @@ public abstract class PlayerListHudMixin {
 							columns = new ArrayList<>();
 							columnsWidths = new ArrayList<>();
 							pages ++;
-							pageWidth = Collections.max(widths) + 2; // 0 or thihs
+							pageWidth = Collections.max(widths) + 2;
 						}
 					}
 				} else {
@@ -125,7 +134,7 @@ public abstract class PlayerListHudMixin {
 				column = new ArrayList<>();
 			}
 			columnHeight += entryHeight + 1;
-			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.valueOf(player.getLatency())) : 10) : 0));
+			widths.add(client.textRenderer.getWidth(playerName) + 10 + 2 + (RENDER_HEADS ? 8 : 0) + (RENDER_PING ? (USE_NUMERIC ? client.textRenderer.getWidth(String.format(NUMERIC_FORMAT, player.getLatency())) : 10) : 0));
 			column.add(player);
 		}
 		if (!column.isEmpty() && !correctPage) {
@@ -153,7 +162,7 @@ public abstract class PlayerListHudMixin {
 			int currentWidth = 0;
 
 			for (int colWidth : columnsWidths) {
-				if (currentWidth + colWidth + 2 > scaledWindowWidth) {
+				if (currentWidth + colWidth + 10 + charWidth * 2  > scaledWindowWidth * MAX_WIDTH) {
 					break;
 				}
 				currentWidth += colWidth + 2;
@@ -182,7 +191,7 @@ public abstract class PlayerListHudMixin {
 		}
 
 		int x = (scaledWindowWidth - pageWidth) / 2;
-		int startY = 10;
+		int startY = START_Y;
 		int totalRowHeight = columns.getFirst().size() * (entryHeight + 1);
 
 		boolean renderColumnNumbers = ((canScrollRight || canScrollLeft) && COLUMN_NUMBERS == 1) || COLUMN_NUMBERS == 2;
@@ -197,7 +206,6 @@ public abstract class PlayerListHudMixin {
 			footerList = client.textRenderer.wrapLines(this.footer, pageWidth);
 		}
 
-		int charWidth = client.textRenderer.getWidth("<");
 		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + pageWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
 		if (showArrows) {
 			if (canScrollLeft) {
@@ -233,8 +241,9 @@ public abstract class PlayerListHudMixin {
                     context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, playerListEntry.getGameMode() == GameMode.SPECTATOR ? SPECTATOR_COLOR : NAME_COLOR);
                     if (RENDER_PING) {
                         if (USE_NUMERIC) {
-                            String ping = String.valueOf(playerListEntry.getLatency());
-                            context.drawTextWithShadow(this.client.textRenderer, ping, x + columnsWidths.get(i) - this.client.textRenderer.getWidth(ping) - 2, y + 2, numericalColoriser(Integer.parseInt(ping)));
+                            int ping = playerListEntry.getLatency();
+							String pingText = String.format(NUMERIC_FORMAT, ping);
+                            context.drawTextWithShadow(this.client.textRenderer, pingText, x + columnsWidths.get(i) - this.client.textRenderer.getWidth(pingText) - 2, y + 2, numericalColoriser(ping));
                         } else {
                             this.renderLatencyIcon(context, columnsWidths.get(i), x, y + 1, playerListEntry);
                         }
@@ -261,13 +270,12 @@ public abstract class PlayerListHudMixin {
 	private void onCollectPlayerEntries(CallbackInfoReturnable<List<PlayerListEntry>> cir) {
 		List<PlayerListEntry> playerList = new ArrayList<>(client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList());
 
-		if (useExamples) {
-			for (int i = 1; i <= 200; i++) {
-				playerList.add(fakePlayer("ExamplePlayer" + i));
-			}
-		}
-
 		if (ENABLE_MOD) {
+			if (USE_EXAMPLES) {
+				for (int i = 0; i < EXAMPLE_AMOUNT; i++) {
+					playerList.add(fakePlayer(String.format(EXAMPLE_TEXT, i + 1)));
+				}
+			}
 			cir.setReturnValue(playerList);
 		} else {
 			cir.setReturnValue(playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList());
@@ -280,14 +288,17 @@ public abstract class PlayerListHudMixin {
 			tabScroll = 0;
 			ENABLE_MOD = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
 			SCROLL_TYPE = configFile.getAsJsonObject().get("scroll_type").getAsInt();
+			MAX_ROW_HEIGHT = configFile.getAsJsonObject().get("max_row_height").getAsDouble();
+			MAX_WIDTH = configFile.getAsJsonObject().get("max_width").getAsDouble();
 			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
 			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
 			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
+			NUMERIC_FORMAT = configFile.getAsJsonObject().get("numeric_format").getAsString();
 			COLUMN_NUMBERS = configFile.getAsJsonObject().get("column_numbers").getAsInt();
+			START_Y = configFile.getAsJsonObject().get("start_y").getAsInt();
 			BACKGROUND_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
 			EMPTY_CELL_LINE_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("empty_cell_line_color").getAsString());
 			COLUMN_NUMBER_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("column_number_color").getAsString());
-
 			CELL_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
 			NAME_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());
 			SPECTATOR_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("spectator_color").getAsString());
@@ -295,6 +306,9 @@ public abstract class PlayerListHudMixin {
 			PING_COLOR_LOW = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_low").getAsString());
 			PING_COLOR_MEDIUM = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_medium").getAsString());
 			PING_COLOR_HIGH = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_high").getAsString());
+			USE_EXAMPLES = configFile.getAsJsonObject().get("use_examples").getAsBoolean();
+			EXAMPLE_TEXT = configFile.getAsJsonObject().get("example_text").getAsString();
+			EXAMPLE_AMOUNT = configFile.getAsJsonObject().get("example_amount").getAsInt();
 		}
 	}
 

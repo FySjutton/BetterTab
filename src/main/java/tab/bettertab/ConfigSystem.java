@@ -60,6 +60,7 @@ public class ConfigSystem {
                 obj.get("enable_mod").getAsBoolean();
                 obj.get("render_heads").getAsBoolean();
                 obj.get("use_numeric").getAsBoolean();
+                obj.get("numeric_format").getAsBoolean();
                 obj.get("render_ping").getAsBoolean();
                 obj.get("background_color").getAsString();
                 obj.get("cell_color").getAsString();
@@ -79,6 +80,20 @@ public class ConfigSystem {
                 if (!new ArrayList<>(List.of(0, 1)).contains(obj.get("scroll_type").getAsInt())) {
                     // 0: Column, 1: Page (0 default)
                     throw new RuntimeException("Invalid column number");
+                }
+                if (!(obj.get("max_row_height").getAsDouble() > 0 && obj.get("max_row_height").getAsDouble() < 2)) {
+                    throw new RuntimeException("Invalid max height, 0 < max_row_height < 2");
+                }
+                if (!(obj.get("max_width").getAsDouble() > 0 && obj.get("max_width").getAsDouble() < 2)) {
+                    throw new RuntimeException("Invalid max width, 0 < max_width < 2");
+                }
+                obj.get("use_examples").getAsBoolean();
+                obj.get("example_text").getAsString();
+                if (!(obj.get("example_amount").getAsInt() > 0 && obj.get("example_amount").getAsInt() <= 500)) {
+                    throw new RuntimeException("Invalid example amount, 0 < example_amount <= 500");
+                }
+                if (!(obj.get("start_y").getAsInt() >= 0 && obj.get("start_y").getAsInt() <= 200)) {
+                    throw new RuntimeException("Invalid example amount, 0 <= start_y <= 200");
                 }
             } catch (Exception e) {
                 LOGGER.error("BetterTab: The configuration file does not appear to follow the required format. This might be caused by a missing key or similar. For help, join our discord server. You can try to delete the configuration file and than restart your game.");

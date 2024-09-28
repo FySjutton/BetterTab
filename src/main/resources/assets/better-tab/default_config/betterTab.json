@@ -1,21 +1,31 @@
 {
   "enable_mod": true,
   "scroll_type": 0,
+  "max_row_height": 0.5,
+  "max_width": 0.95,
   "render_heads": true,
-  "scroll_with_mouse": true,
+  "render_header": true,
+  "render_footer": true,
   "column_numbers": 1,
+  "start_y": 10,
+  "scroll_with_mouse": true,
 
   "background_color": "#00000080",
   "cell_color": "#FFFFFF20",
   "name_color": "#FFFFFFFF",
   "spectator_color": "#FFFFFF90",
   "column_number_color": "#FFFFFF66",
-  "empty_cell_line_color": "#FFFFFF66",
+  "empty_cell_line_color": "#FFFFFF25",
 
   "render_ping": true,
   "use_numeric": true,
+  "numeric_format": "%dms",
   "ping_color_none": "#B0B0B0FF",
   "ping_color_low": "#7EFF70FF",
   "ping_color_medium": "#FFCD70FF",
-  "ping_color_high": "#FF7070FF"
+  "ping_color_high": "#FF7070FF",
+
+  "use_examples": false,
+  "example_text": "ExamplePlayer%d",
+  "example_amount": 200
 }
