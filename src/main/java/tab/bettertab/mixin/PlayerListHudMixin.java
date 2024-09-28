@@ -148,13 +148,7 @@ public abstract class PlayerListHudMixin {
 			if (!columns.isEmpty()) {
 				int emptyLinesNeeded = columns.getFirst().size() - column.size();
 				for (int i = 0; i < emptyLinesNeeded; i++) {
-					String emptyText = "";
-					UUID emptyUUID = UUID.nameUUIDFromBytes(emptyText.getBytes());
-
-					GameProfile emptyLine = new GameProfile(emptyUUID, emptyText);
-					PlayerListEntry emptyEntry = new PlayerListEntry(emptyLine, false);
-
-					column.add(emptyEntry);
+					column.add(fakePlayer(""));
 				}
 			}
 			columns.add(column);
