@@ -58,19 +58,21 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             this.setting = setting;
             this.displayText = Text.translatable("tab.bettertab.config.option." + setting).getString();
 
-            this.resetButton = ButtonWidget.builder(Text.of("Reset"), btn -> resetButton(this.textField, this.button, this.slider, setting, btn))
-                    .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth("Reset") + 5, 20)
+            this.resetButton = ButtonWidget.builder(Text.translatable("tab.bettertab.config.button_text.reset"), btn -> resetButton(this.textField, this.button, this.slider, setting, btn))
+                    .dimensions(width / 2 + width / 4 - 50 + 100 + 3, 0, textRenderer.getWidth(Text.translatable("tab.bettertab.config.button_text.reset")) + 7, 20)
                     .build();
             if (setting.contains("_color") || setting.equals("numeric_format") || setting.equals("example_text")) {
                 this.textField = new TextFieldWidget(textRenderer, width / 2 + width / 4 - 50, 0, 100, 20, Text.of(setting));
                 this.textField.setText(editedConfigFile.get(setting).getAsString());
                 this.textField.setChangedListener(newValue -> textChanged(setting, newValue, this.resetButton));
                 textChanged(setting, this.textField.getText(), this.resetButton);
-            } else if (List.of("max_row_height", "max_width", "example_amount", "start_y").contains(setting)) {
+            } else if (List.of("max_row_height", "max_width", "example_amount", "start_y", "scroll_indicator_flash_speed", "high_ping_minimum", "medium_ping_minimum").contains(setting)) {
                 if (setting.equals("max_row_height") || setting.equals("max_width")) {
                     this.slider = new CustomSliderWidget(width / 2 + width / 4 - 50, 0, 100, 20, Text.empty(), editedConfigFile.get(setting).getAsDouble(), 0.10, 0.95, true, editedConfigFile, setting, resetButton);
-                } else if (setting.equals("example_amount") || setting.equals("start_y")) {
-                    this.slider = new CustomSliderWidget(width / 2 + width / 4 - 50, 0, 100, 20, Text.empty(), editedConfigFile.get(setting).getAsDouble(), (setting.equals("example_amount") ? 1 : 0), (setting.equals("example_amount") ? 500 : 200), false, editedConfigFile, setting, resetButton);
+                } else if (setting.equals("example_amount") || setting.equals("start_y") || setting.equals("scroll_indicator_flash_speed")) {
+                    this.slider = new CustomSliderWidget(width / 2 + width / 4 - 50, 0, 100, 20, Text.empty(), editedConfigFile.get(setting).getAsDouble(), (setting.equals("start_y") ? 0 : 1), (setting.equals("example_amount") ? 500 : (setting.equals("start_y") ? 200 : 4000)), false, editedConfigFile, setting, resetButton);
+                } else {
+                    this.slider = new CustomSliderWidget(width / 2 + width / 4 - 50, 0, 100, 20, Text.empty(), editedConfigFile.get(setting).getAsDouble(), (setting.equals("medium_ping_minimum") ? 5 : 10), (setting.equals("medium_ping_minimum") ? 2000 : 4000), false, editedConfigFile, setting, resetButton);
                 }
                 this.slider.updateMessage();
                 this.slider.updateResetButton();
@@ -135,26 +137,22 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     }
 
     private void buttonHandler(ButtonWidget button, String setting, ButtonWidget resetButton) {
-        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse", "use_examples").contains(setting)) {
-            boolean newValue = !editedConfigFile.get(setting).getAsBoolean();
-            editedConfigFile.addProperty(setting, newValue);
-        } else if (setting.equals("column_numbers")) {
+        if (setting.equals("column_numbers")) {
             int newValue = editedConfigFile.get(setting).getAsInt();
             editedConfigFile.addProperty(setting, (newValue == 0 ? 1 : (newValue == 1 ? 2 : 0)));
         } else if (setting.equals("scroll_type")) {
             int newValue = editedConfigFile.get(setting).getAsInt();
             editedConfigFile.addProperty(setting, (newValue == 0 ? 1 : 0));
+        } else {
+            boolean newValue = !editedConfigFile.get(setting).getAsBoolean();
+            editedConfigFile.addProperty(setting, newValue);
         }
         displayButtonValue(button, setting, resetButton);
     }
 
     private void displayButtonValue(ButtonWidget button, String setting, ButtonWidget resetButton) {
         Text result;
-        if (List.of("enable_mod", "render_heads", "render_ping", "use_numeric", "scroll_with_mouse", "use_examples").contains(setting)) {
-            boolean newValue = editedConfigFile.get(setting).getAsBoolean();
-            result = Text.translatable("tab.bettertab.config.button_text." + (newValue ? "on" : "off"));
-            resetButton.active = newValue != defaultConfig.get(setting).getAsBoolean();
-        } else if (setting.equals("column_numbers")) {
+        if (setting.equals("column_numbers")) {
             int newValue = editedConfigFile.get(setting).getAsInt();
             result = Text.of(newValue == 0 ? "Disabled" : (newValue == 1 ? "On Scroll" : "Always"));
             resetButton.active = newValue != defaultConfig.get(setting).getAsInt();
@@ -163,8 +161,9 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
             result = Text.of(newValue == 0 ? "Column" : "Page");
             resetButton.active = newValue != defaultConfig.get(setting).getAsInt();
         } else {
-            result = Text.of("Error?");
-            resetButton.active = false;
+            boolean newValue = editedConfigFile.get(setting).getAsBoolean();
+            result = Text.translatable("tab.bettertab.config.button_text." + (newValue ? "on" : "off"));
+            resetButton.active = newValue != defaultConfig.get(setting).getAsBoolean();
         }
         button.setMessage(result);
     }

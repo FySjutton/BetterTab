@@ -58,8 +58,11 @@ public abstract class PlayerListHudMixin {
 	@Unique private double MAX_ROW_HEIGHT;
 	@Unique private double MAX_WIDTH;
 	@Unique private boolean RENDER_HEADS;
+	@Unique private boolean RENDER_HEADER;
+	@Unique private boolean RENDER_FOOTER;
 	@Unique private boolean RENDER_PING;
 	@Unique private boolean USE_NUMERIC;
+	@Unique private boolean SCROLL_INDICATORS;
 	@Unique private String NUMERIC_FORMAT;
 	@Unique private int COLUMN_NUMBERS;
 	@Unique private int START_Y;
@@ -67,15 +70,19 @@ public abstract class PlayerListHudMixin {
 	@Unique private int CELL_COLOR;
 	@Unique private int NAME_COLOR;
 	@Unique private int SPECTATOR_COLOR;
+	@Unique private int SCROLL_INDICATOR_COLOR;
 	@Unique private int PING_COLOR_NONE;
 	@Unique private int PING_COLOR_LOW;
 	@Unique private int PING_COLOR_MEDIUM;
 	@Unique private int PING_COLOR_HIGH;
 	@Unique private int EMPTY_CELL_LINE_COLOR;
 	@Unique private int COLUMN_NUMBER_COLOR;
+	@Unique private int MEDIUM_PING_MINIMUM;
+	@Unique private int HIGH_PING_MINIMUM;
 	@Unique private boolean USE_EXAMPLES;
 	@Unique private String EXAMPLE_TEXT;
 	@Unique private int EXAMPLE_AMOUNT;
+	@Unique private int SCROLL_INDICATOR_FLASH_SPEED;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
@@ -87,7 +94,7 @@ public abstract class PlayerListHudMixin {
 			return;
 		}
 
-		if (Calendar.getInstance().getTimeInMillis() - lastCheck > 530) {
+		if (Calendar.getInstance().getTimeInMillis() - lastCheck > SCROLL_INDICATOR_FLASH_SPEED) {
 			lastCheck = Calendar.getInstance().getTimeInMillis();
 			showArrows = !showArrows;
 		}
@@ -197,35 +204,37 @@ public abstract class PlayerListHudMixin {
 		boolean renderColumnNumbers = ((canScrollRight || canScrollLeft) && COLUMN_NUMBERS == 1) || COLUMN_NUMBERS == 2;
 
 		List<OrderedText> headerList = List.of();
-		if (this.header != null) {
+		if (this.header != null && RENDER_HEADER) {
 			headerList = client.textRenderer.wrapLines(this.header, pageWidth);
 		}
 
 		List<OrderedText> footerList = List.of();
-		if (this.footer != null) {
+		if (this.footer != null && RENDER_FOOTER) {
 			footerList = client.textRenderer.wrapLines(this.footer, pageWidth);
 		}
 
-		context.fill(x - 5 - (canScrollLeft ? 5 + charWidth : 0), startY - 5, x + pageWidth + 5 + (canScrollRight ? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
-		if (showArrows) {
+		context.fill(x - 5 - (canScrollLeft && SCROLL_INDICATORS ? 5 + charWidth : 0), startY - 5, x + pageWidth + 5 + (canScrollRight && SCROLL_INDICATORS? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
+		if (showArrows && SCROLL_INDICATORS) {
 			if (canScrollLeft) {
-				context.drawTextWrapped(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
+				context.drawTextWrapped(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, SCROLL_INDICATOR_COLOR);
 			}
 			if (canScrollRight) {
-				context.drawTextWrapped(client.textRenderer, StringVisitable.plain(">>>"), x + pageWidth + 5, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, 0xFFFFFFFF);
+				context.drawTextWrapped(client.textRenderer, StringVisitable.plain(">>>"), x + pageWidth + 5, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, SCROLL_INDICATOR_COLOR);
 			}
 		}
 
-		for (OrderedText line : headerList) {
-			context.drawTextWithShadow(this.client.textRenderer, line, scaledWindowWidth / 2 - client.textRenderer.getWidth(line) / 2, startY, -1);
-			startY += 9;
+		if (!headerList.isEmpty() && RENDER_HEADER) {
+			for (OrderedText line : headerList) {
+				context.drawTextWithShadow(this.client.textRenderer, line, scaledWindowWidth / 2 - client.textRenderer.getWidth(line) / 2, startY, -1);
+				startY += 9;
+			}
 		}
 		startY -= 9;
 
 		for (int i = 0; i < columns.size(); i++) {
 			ArrayList<PlayerListEntry> col = columns.get(i);
 
-			int y = startY;
+			int y = startY - 1;
             for (PlayerListEntry playerListEntry : col) {
                 y += entryHeight + 1;
 
@@ -258,10 +267,12 @@ public abstract class PlayerListHudMixin {
 			x += columnsWidths.get(i) + 2;
 		}
 
-		int y = startY + 5 + totalRowHeight + (renderColumnNumbers ? 3 + 5 : 0);
-		for (OrderedText line : footerList) {
-			y += 9;
-			context.drawTextWithShadow(this.client.textRenderer, line, scaledWindowWidth / 2 - client.textRenderer.getWidth(line) / 2, y, -1);
+		if (!footerList.isEmpty() && RENDER_FOOTER) {
+			int y = startY + 5 + totalRowHeight + (renderColumnNumbers ? 3 + 5 : 0);
+			for (OrderedText line : footerList) {
+				y += 9;
+				context.drawTextWithShadow(this.client.textRenderer, line, scaledWindowWidth / 2 - client.textRenderer.getWidth(line) / 2, y, -1);
+			}
 		}
 		ci.cancel();
 	}
@@ -291,13 +302,17 @@ public abstract class PlayerListHudMixin {
 			MAX_ROW_HEIGHT = configFile.getAsJsonObject().get("max_row_height").getAsDouble();
 			MAX_WIDTH = configFile.getAsJsonObject().get("max_width").getAsDouble();
 			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
+			RENDER_HEADER = configFile.getAsJsonObject().get("render_header").getAsBoolean();
+			RENDER_FOOTER = configFile.getAsJsonObject().get("render_footer").getAsBoolean();
 			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
 			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
+			SCROLL_INDICATORS = configFile.getAsJsonObject().get("scroll_indicators").getAsBoolean();
 			NUMERIC_FORMAT = configFile.getAsJsonObject().get("numeric_format").getAsString();
 			COLUMN_NUMBERS = configFile.getAsJsonObject().get("column_numbers").getAsInt();
 			START_Y = configFile.getAsJsonObject().get("start_y").getAsInt();
 			BACKGROUND_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
 			EMPTY_CELL_LINE_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("empty_cell_line_color").getAsString());
+			SCROLL_INDICATOR_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("scroll_indicator_color").getAsString());
 			COLUMN_NUMBER_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("column_number_color").getAsString());
 			CELL_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
 			NAME_COLOR = new BetterTab().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());
@@ -306,9 +321,12 @@ public abstract class PlayerListHudMixin {
 			PING_COLOR_LOW = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_low").getAsString());
 			PING_COLOR_MEDIUM = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_medium").getAsString());
 			PING_COLOR_HIGH = new BetterTab().parseColor(configFile.getAsJsonObject().get("ping_color_high").getAsString());
+			MEDIUM_PING_MINIMUM = configFile.getAsJsonObject().get("medium_ping_minimum").getAsInt();
+			HIGH_PING_MINIMUM = configFile.getAsJsonObject().get("high_ping_minimum").getAsInt();
 			USE_EXAMPLES = configFile.getAsJsonObject().get("use_examples").getAsBoolean();
 			EXAMPLE_TEXT = configFile.getAsJsonObject().get("example_text").getAsString();
 			EXAMPLE_AMOUNT = configFile.getAsJsonObject().get("example_amount").getAsInt();
+			SCROLL_INDICATOR_FLASH_SPEED = configFile.getAsJsonObject().get("scroll_indicator_flash_speed").getAsInt();
 		}
 	}
 
@@ -316,9 +334,9 @@ public abstract class PlayerListHudMixin {
 	private int numericalColoriser(int ping) {
 		if (ping <= 0) {
 			return PING_COLOR_NONE;
-		} else if (ping > 300) {
+		} else if (ping >= HIGH_PING_MINIMUM) {
 			return PING_COLOR_HIGH;
-		} else if (ping > 150) {
+		} else if (ping >= MEDIUM_PING_MINIMUM) {
 			return PING_COLOR_MEDIUM;
 		}
 		return PING_COLOR_LOW;

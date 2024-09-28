@@ -7,6 +7,7 @@
   "render_header": true,
   "render_footer": true,
   "column_numbers": 1,
+  "scroll_indicators": true,
   "start_y": 10,
   "scroll_with_mouse": true,
 
@@ -16,6 +17,7 @@
   "spectator_color": "#FFFFFF90",
   "column_number_color": "#FFFFFF66",
   "empty_cell_line_color": "#FFFFFF25",
+  "scroll_indicator_color": "#FFFFFFFF",
 
   "render_ping": true,
   "use_numeric": true,
@@ -24,8 +26,11 @@
   "ping_color_low": "#7EFF70FF",
   "ping_color_medium": "#FFCD70FF",
   "ping_color_high": "#FF7070FF",
+  "medium_ping_minimum": 150,
+  "high_ping_minimum": 300,
 
   "use_examples": false,
   "example_text": "ExamplePlayer%d",
-  "example_amount": 200
+  "example_amount": 200,
+  "scroll_indicator_flash_speed": 530
 }

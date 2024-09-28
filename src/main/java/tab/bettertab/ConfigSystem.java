@@ -62,6 +62,9 @@ public class ConfigSystem {
                 obj.get("use_numeric").getAsBoolean();
                 obj.get("numeric_format").getAsBoolean();
                 obj.get("render_ping").getAsBoolean();
+                obj.get("render_header").getAsBoolean();
+                obj.get("render_footer").getAsBoolean();
+                obj.get("scroll_indicators").getAsBoolean();
                 obj.get("background_color").getAsString();
                 obj.get("cell_color").getAsString();
                 obj.get("name_color").getAsString();
@@ -73,6 +76,7 @@ public class ConfigSystem {
                 obj.get("scroll_with_mouse").getAsBoolean();
                 obj.get("empty_cell_line_color").getAsString();
                 obj.get("column_number_color").getAsString();
+                obj.get("scroll_indicator_color").getAsString();
                 if (!new ArrayList<>(List.of(0, 1, 2)).contains(obj.get("column_numbers").getAsInt())) {
                     // 0: Disabled, 1: Render on scroll, 2: Render Always (1 default)
                     throw new RuntimeException("Invalid column number");
@@ -94,6 +98,15 @@ public class ConfigSystem {
                 }
                 if (!(obj.get("start_y").getAsInt() >= 0 && obj.get("start_y").getAsInt() <= 200)) {
                     throw new RuntimeException("Invalid example amount, 0 <= start_y <= 200");
+                }
+                if (!(obj.get("scroll_indicator_flash_speed").getAsInt() >= 1 && obj.get("scroll_indicator_flash_speed").getAsInt() <= 4000)) {
+                    throw new RuntimeException("Invalid example amount, 1 <= scroll_indicator_flash_speed <= 4000");
+                }
+                if (!(obj.get("medium_ping_minimum").getAsInt() >= 5 && obj.get("medium_ping_minimum").getAsInt() <= 2000)) {
+                    throw new RuntimeException("Invalid example amount, 5 <= medium_ping_minimum <= 2000");
+                }
+                if (!(obj.get("high_ping_minimum").getAsInt() >= 10 && obj.get("high_ping_minimum").getAsInt() <= 4000)) {
+                    throw new RuntimeException("Invalid example amount, 10 <= high_ping_minimum <= 4000");
                 }
             } catch (Exception e) {
                 LOGGER.error("BetterTab: The configuration file does not appear to follow the required format. This might be caused by a missing key or similar. For help, join our discord server. You can try to delete the configuration file and than restart your game.");
