@@ -29,8 +29,9 @@
   "medium_ping_minimum": 150,
   "high_ping_minimum": 300,
 
+  "save_scroll": false,
+  "scroll_indicator_flash_speed": 530,
   "use_examples": false,
   "example_text": "ExamplePlayer%d",
-  "example_amount": 200,
-  "scroll_indicator_flash_speed": 530
+  "example_amount": 200
 }

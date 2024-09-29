@@ -44,8 +44,9 @@
   "tab.bettertab.config.option.medium_ping_minimum": "Medium Ping Minimum",
   "tab.bettertab.config.option.high_ping_minimum": "High Ping Minimum",
 
+  "tab.bettertab.config.option.save_scroll": "Save Scroll",
+  "tab.bettertab.config.option.scroll_indicator_flash_speed": "Scroll Indicator Flash Speed",
   "tab.bettertab.config.option.use_examples": "Use Examples",
   "tab.bettertab.config.option.example_text": "Example Text",
-  "tab.bettertab.config.option.example_amount": "Example Amount",
-  "tab.bettertab.config.option.scroll_indicator_flash_speed": "Scroll Indicator Flash Speed"
+  "tab.bettertab.config.option.example_amount": "Example Amount"
 }

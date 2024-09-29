@@ -290,7 +290,9 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "setVisible", at = @At("HEAD"))
 	private void onEnable(boolean visible, CallbackInfo ci) {
 		if (this.visible != visible) {
-			tabScroll = 0;
+			if (!configFile.getAsJsonObject().get("save_scroll").getAsBoolean()) {
+				tabScroll = 0;
+			}
 			ENABLE_MOD = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
 			SCROLL_TYPE = configFile.getAsJsonObject().get("scroll_type").getAsInt();
 			MAX_ROW_HEIGHT = configFile.getAsJsonObject().get("max_row_height").getAsDouble();

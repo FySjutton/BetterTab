@@ -8,8 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static tab.bettertab.BetterTab.LOGGER;
-import static tab.bettertab.BetterTab.tabScroll;
+import static tab.bettertab.BetterTab.*;
 import static tab.bettertab.ConfigSystem.configFile;
 
 @Mixin(Mouse.class)

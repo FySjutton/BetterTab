@@ -91,6 +91,7 @@ public class ConfigSystem {
                 if (!(obj.get("max_width").getAsDouble() > 0 && obj.get("max_width").getAsDouble() < 2)) {
                     throw new RuntimeException("Invalid max width, 0 < max_width < 2");
                 }
+                obj.get("save_scroll").getAsBoolean();
                 obj.get("use_examples").getAsBoolean();
                 obj.get("example_text").getAsString();
                 if (!(obj.get("example_amount").getAsInt() > 0 && obj.get("example_amount").getAsInt() <= 500)) {
