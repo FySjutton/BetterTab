@@ -1,15 +1,10 @@
 package tab.bettertab.config;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.option.GameOptions;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 
-import static tab.bettertab.BetterTab.LOGGER;
 import static tab.bettertab.ConfigSystem.defaultConfig;
 
 public class CustomSliderWidget extends SliderWidget {

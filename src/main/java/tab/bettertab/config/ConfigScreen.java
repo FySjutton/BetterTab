@@ -33,7 +33,6 @@ public class ConfigScreen extends Screen {
         tabs[1] = new newTab(Text.translatable("tab.bettertab.config.tabs.styling").getString(), new ArrayList<>(List.of("background_color", "cell_color", "name_color", "spectator_color", "column_number_color", "empty_cell_line_color", "scroll_indicator_color")));
         tabs[2] = new newTab(Text.translatable("tab.bettertab.config.tabs.ping").getString(), new ArrayList<>(List.of("render_ping", "use_numeric", "numeric_format", "ping_color_none", "ping_color_low", "ping_color_medium", "ping_color_high", "high_ping_minimum", "medium_ping_minimum")));
         tabs[3] = new newTab(Text.translatable("tab.bettertab.config.tabs.advanced").getString(), new ArrayList<>(List.of("save_scroll", "scroll_indicator_flash_speed", "use_examples", "example_text", "example_amount")));
-        // Bypass scroll-with-mouse: ctrl
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
         this.addDrawableChild(tabNavigation);
@@ -48,6 +47,11 @@ public class ConfigScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return false;
     }
 
     @Override

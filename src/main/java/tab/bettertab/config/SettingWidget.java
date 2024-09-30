@@ -7,14 +7,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.*;
-import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static tab.bettertab.ConfigSystem.configFile;
-
 import static tab.bettertab.ConfigSystem.defaultConfig;
 
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
