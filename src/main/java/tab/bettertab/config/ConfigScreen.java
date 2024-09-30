@@ -46,8 +46,12 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackgroundTexture(context);
         super.render(context, mouseX, mouseY, delta);
     }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {}
 
     @Override
     public boolean shouldCloseOnEsc() {

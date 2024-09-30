@@ -137,7 +137,7 @@ public abstract class PlayerListHudMixin {
 		}
 		if (!column.isEmpty() && !correctPage) {
 			if (!columns.isEmpty()) {
-				int emptyLinesNeeded = columns.getFirst().size() - column.size();
+				int emptyLinesNeeded = columns.get(0).size() - column.size();
 				for (int i = 0; i < emptyLinesNeeded; i++) {
 					column.add(fakePlayer(""));
 				}
@@ -184,7 +184,7 @@ public abstract class PlayerListHudMixin {
 
 		int x = (scaledWindowWidth - pageWidth) / 2;
 		int startY = START_Y;
-		int totalRowHeight = columns.getFirst().size() * (entryHeight + 1);
+		int totalRowHeight = columns.get(0).size() * (entryHeight + 1);
 
 		boolean renderColumnNumbers = ((canScrollRight || canScrollLeft) && COLUMN_NUMBERS == 1) || COLUMN_NUMBERS == 2;
 

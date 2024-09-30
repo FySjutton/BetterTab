@@ -33,7 +33,7 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     }
 
     @Override
-    protected int getScrollbarX() {
+    protected int getScrollbarPositionX() {
         return width - 15;
     }
 
