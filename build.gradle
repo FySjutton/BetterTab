@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.7-SNAPSHOT'
+	id 'fabric-loom' version '1.8-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -26,8 +26,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	def modMenuVersion = project.minecraft_version.startsWith("1.21") ? "11.0.0" : "10.0.0"
-	modImplementation "com.terraformersmc:modmenu:$modMenuVersion"
+	modImplementation "com.terraformersmc:modmenu:12.0.0-beta.1"
 }
 
 processResources {

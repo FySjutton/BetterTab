@@ -230,7 +230,7 @@ public abstract class PlayerListHudMixin {
 
                 if (!playerName.getString().isEmpty()) {
                     if (RENDER_HEADS) {
-                        PlayerSkinDrawer.draw(context, playerListEntry.getSkinTextures().texture(), x, y + 1, 8, true, false);
+                        PlayerSkinDrawer.draw(context, playerListEntry.getSkinTextures().texture(), x, y + 1, 8, true, false, -1);
                     }
                     context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, playerListEntry.getGameMode() == GameMode.SPECTATOR ? SPECTATOR_COLOR : NAME_COLOR);
                     if (RENDER_PING) {
