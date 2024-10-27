@@ -20,10 +20,9 @@ public class ConfigScreen extends Screen {
     private final TabManager tabManager = new TabManager(this::addDrawableChild, this::remove);
     private final JsonObject editedConfigFile = new JsonObject();
     private final Screen PARENT;
-    private TabNavigationWidget navigationWidget;
 
     public ConfigScreen(Screen screen) {
-        super(Text.of("BetterTab"));
+        super(Text.of("BetterStats"));
         this.PARENT = screen;
     }
 
@@ -36,9 +35,7 @@ public class ConfigScreen extends Screen {
         tabs[3] = new newTab(Text.translatable("tab.bettertab.config.tabs.advanced").getString(), new ArrayList<>(List.of("save_scroll", "scroll_indicator_flash_speed", "use_examples", "example_text", "example_amount")));
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
-//        this.addDrawableChild(tabNavigation);
-        this.addSelectableChild(tabNavigation);
-        navigationWidget = tabNavigation;
+        this.addDrawableChild(tabNavigation);
 
         ButtonWidget saveButton = ButtonWidget.builder(Text.translatable("tab.bettertab.config.button_text.done"), btn -> saveFile()).dimensions(width / 4, height - 25, width / 2, 20).build();
         this.addDrawableChild(saveButton);
@@ -51,8 +48,10 @@ public class ConfigScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackgroundTexture(context);
         super.render(context, mouseX, mouseY, delta);
-        navigationWidget.render(context, mouseX, mouseY, delta);
     }
+
+    @Override
+    public void renderBackground(DrawContext context) {}
 
     @Override
     public boolean shouldCloseOnEsc() {
@@ -71,7 +70,7 @@ public class ConfigScreen extends Screen {
             GridWidget.Adder adder = grid.createAdder(1);
 
             settingWidget = new SettingWidget(width, height, settings, editedConfigFile);
-            adder.add(new Wrapper(settingWidget));
+            adder.add(new SettingWidgetWrapper(settingWidget));
         }
     }
 

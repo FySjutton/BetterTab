@@ -110,7 +110,7 @@ public abstract class PlayerListHudMixin {
 			Text playerName = this.getPlayerName(player);
 			if (columnHeight + entryHeight + 1 >= windowHeight * MAX_ROW_HEIGHT) {
 				columnHeight = 0;
-				if (Collections.max(widths) + pageWidth + 20 + charWidth * 2 > scaledWindowWidth * MAX_WIDTH) {
+				if (Collections.max(widths) + pageWidth + 10 + charWidth * 2 > scaledWindowWidth * MAX_WIDTH) {
 					if (SCROLL_TYPE == 1) {
 						if (tabScroll == pages) {
 							correctPage = true;

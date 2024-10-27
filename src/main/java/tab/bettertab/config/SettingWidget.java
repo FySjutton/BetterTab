@@ -1,30 +1,28 @@
 package tab.bettertab.config;
 
+import static tab.bettertab.ConfigSystem.configFile;
+import static tab.bettertab.ConfigSystem.defaultConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.JsonObject;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.ConfigSystem.defaultConfig;
 
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;
 
-    public int width;
-    public int height;
-
     public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF) {
         super(MinecraftClient.getInstance(), width, height - 24 - 35, 24, height - 35, 25);
-        this.width = width;
-        this.height = height;
 
         editedConfigFile = eCF;
         JsonObject obj = configFile.getAsJsonObject();
@@ -45,6 +43,18 @@ public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     @Override
     public int getRowWidth() {
         return width - 15;
+    }
+    
+    public int getY() {
+    	return top;
+    }
+    
+    public int getWidth() {
+    	return width;
+    }
+    
+    public int getHeight() {
+    	return height;
     }
 
     public class Entry extends ElementListWidget.Entry<Entry> {
