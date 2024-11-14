@@ -110,7 +110,7 @@ public abstract class PlayerListHudMixin {
 			Text playerName = this.getPlayerName(player);
 			if (columnHeight + entryHeight + 1 >= windowHeight * MAX_ROW_HEIGHT) {
 				columnHeight = 0;
-				if (Collections.max(widths) + pageWidth + 10 + charWidth * 2 > scaledWindowWidth * MAX_WIDTH) {
+				if (Collections.max(widths) + pageWidth + 20 + charWidth * 2 > scaledWindowWidth * MAX_WIDTH) {
 					if (SCROLL_TYPE == 1) {
 						if (tabScroll == pages) {
 							correctPage = true;
@@ -230,7 +230,7 @@ public abstract class PlayerListHudMixin {
 
                 if (!playerName.getString().isEmpty()) {
                     if (RENDER_HEADS) {
-                        PlayerSkinDrawer.draw(context, playerListEntry.getSkinTextures().texture(), x, y + 1, 8, true, false);
+                        PlayerSkinDrawer.draw(context, playerListEntry.getSkinTexture(), x, y + 1, 8, true, false);
                     }
                     context.drawTextWithShadow(this.client.textRenderer, playerName, x + 2 + (RENDER_HEADS ? 8 : 0), y + 2, playerListEntry.getGameMode() == GameMode.SPECTATOR ? SPECTATOR_COLOR : NAME_COLOR);
                     if (RENDER_PING) {
