@@ -20,9 +20,10 @@ public class ConfigScreen extends Screen {
     private final TabManager tabManager = new TabManager(this::addDrawableChild, this::remove);
     private final JsonObject editedConfigFile = new JsonObject();
     private final Screen PARENT;
+    private TabNavigationWidget navigationWidget;
 
     public ConfigScreen(Screen screen) {
-        super(Text.of("BetterStats"));
+        super(Text.of("BetterTab"));
         this.PARENT = screen;
     }
 
@@ -35,7 +36,9 @@ public class ConfigScreen extends Screen {
         tabs[3] = new newTab(Text.translatable("tab.bettertab.config.tabs.advanced").getString(), new ArrayList<>(List.of("save_scroll", "scroll_indicator_flash_speed", "use_examples", "example_text", "example_amount")));
 
         TabNavigationWidget tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(tabs).build();
-        this.addDrawableChild(tabNavigation);
+//        this.addDrawableChild(tabNavigation);
+        this.addSelectableChild(tabNavigation);
+        navigationWidget = tabNavigation;
 
         ButtonWidget saveButton = ButtonWidget.builder(Text.translatable("tab.bettertab.config.button_text.done"), btn -> saveFile()).dimensions(width / 4, height - 25, width / 2, 20).build();
         this.addDrawableChild(saveButton);
@@ -48,6 +51,7 @@ public class ConfigScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackgroundTexture(context);
         super.render(context, mouseX, mouseY, delta);
+        navigationWidget.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class ConfigScreen extends Screen {
             GridWidget.Adder adder = grid.createAdder(1);
 
             settingWidget = new SettingWidget(width, height, settings, editedConfigFile);
-            adder.add(settingWidget);
+            adder.add(new Wrapper(settingWidget));
         }
     }
 

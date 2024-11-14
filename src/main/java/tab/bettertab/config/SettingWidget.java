@@ -18,8 +18,13 @@ import static tab.bettertab.ConfigSystem.defaultConfig;
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;
 
+    public int width;
+    public int height;
+
     public SettingWidget(int width, int height, ArrayList<String> settings, JsonObject eCF) {
-        super(MinecraftClient.getInstance(), width, height - 24 - 35, 24, 25);
+        super(MinecraftClient.getInstance(), width, height - 24 - 35, 24, height - 35, 25);
+        this.width = width;
+        this.height = height;
 
         editedConfigFile = eCF;
         JsonObject obj = configFile.getAsJsonObject();
