@@ -11,7 +11,7 @@
 		"issues": "https://discord.gg/6gBT2CgqQj",
 		"sources": "https://github.com/FySjutton/BetterTab"
 	},
-	"license": "CC0-1.0",
+	"license": "BetterTab License",
 	"icon": "assets/better-tab/mod_icon.png",
 	"environment": "client",
 	"entrypoints": {
@@ -27,11 +27,11 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.5",
-		"minecraft": ">=1.21.2",
+		"minecraft": ">=1.21.4",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
 	"recommends": {
-		"modmenu": ">=12.0.0"
+		"modmenu": ">=13.0.0"
 	}
 }

@@ -201,10 +201,10 @@ public abstract class PlayerListHudMixin {
 		context.fill(x - 5 - (canScrollLeft && SCROLL_INDICATORS ? 5 + charWidth : 0), startY - 5, x + pageWidth + 5 + (canScrollRight && SCROLL_INDICATORS? 5 + charWidth : 0), startY + headerList.size() * 9 + footerList.size() * 9 + totalRowHeight + 5 + (renderColumnNumbers ? 3 + 5 : 0), BACKGROUND_COLOR);
 		if (showArrows && SCROLL_INDICATORS) {
 			if (canScrollLeft) {
-				context.drawTextWrapped(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, SCROLL_INDICATOR_COLOR);
+				context.drawWrappedText(client.textRenderer, StringVisitable.plain("<<<"), x - 5 - charWidth, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, SCROLL_INDICATOR_COLOR, true);
 			}
 			if (canScrollRight) {
-				context.drawTextWrapped(client.textRenderer, StringVisitable.plain(">>>"), x + pageWidth + 5, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, SCROLL_INDICATOR_COLOR);
+				context.drawWrappedText(client.textRenderer, StringVisitable.plain(">>>"), x + pageWidth + 5, startY + headerList.size() * 9 + totalRowHeight / 2 - 4 - 9, charWidth, SCROLL_INDICATOR_COLOR, true);
 			}
 		}
 
