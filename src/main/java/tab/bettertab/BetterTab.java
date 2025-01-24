@@ -20,6 +20,7 @@ public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "better-tab";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static PlayerList playerList;
 	public static double tabScroll = 0;
 
 	public static final KeyBinding toggleMod = KeyBindingHelper.registerKeyBinding(new KeyBinding(
