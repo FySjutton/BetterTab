@@ -82,7 +82,7 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
 		if (lastCheck + 250 < System.currentTimeMillis()) {
-			new PlayerManager().update(this.collectPlayerEntries());
+			new PlayerManager().update(client, this.collectPlayerEntries());
 			lastCheck = System.currentTimeMillis();
 		}
 
@@ -112,36 +112,36 @@ public abstract class PlayerListHudMixin {
 			if (!configFile.getAsJsonObject().get("save_scroll").getAsBoolean()) {
 				tabScroll = 0;
 			}
-//			ENABLE_MOD = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
-//			SCROLL_TYPE = configFile.getAsJsonObject().get("scroll_type").getAsInt();
-//			MAX_ROW_HEIGHT = configFile.getAsJsonObject().get("max_row_height").getAsDouble();
-//			MAX_WIDTH = configFile.getAsJsonObject().get("max_width").getAsDouble();
-//			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
-//			RENDER_HEADER = configFile.getAsJsonObject().get("render_header").getAsBoolean();
-//			RENDER_FOOTER = configFile.getAsJsonObject().get("render_footer").getAsBoolean();
-//			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
-//			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
-//			SCROLL_INDICATORS = configFile.getAsJsonObject().get("scroll_indicators").getAsBoolean();
-//			NUMERIC_FORMAT = configFile.getAsJsonObject().get("numeric_format").getAsString();
-//			COLUMN_NUMBERS = configFile.getAsJsonObject().get("column_numbers").getAsInt();
-//			START_Y = configFile.getAsJsonObject().get("start_y").getAsInt();
-//			BACKGROUND_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
-//			EMPTY_CELL_LINE_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("empty_cell_line_color").getAsString());
-//			SCROLL_INDICATOR_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("scroll_indicator_color").getAsString());
-//			COLUMN_NUMBER_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("column_number_color").getAsString());
-//			CELL_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
-//			NAME_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());
-//			SPECTATOR_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("spectator_color").getAsString());
-//			PING_COLOR_NONE = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_none").getAsString());
-//			PING_COLOR_LOW = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_low").getAsString());
-//			PING_COLOR_MEDIUM = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_medium").getAsString());
-//			PING_COLOR_HIGH = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_high").getAsString());
-//			MEDIUM_PING_MINIMUM = configFile.getAsJsonObject().get("medium_ping_minimum").getAsInt();
-//			HIGH_PING_MINIMUM = configFile.getAsJsonObject().get("high_ping_minimum").getAsInt();
-//			USE_EXAMPLES = configFile.getAsJsonObject().get("use_examples").getAsBoolean();
-//			EXAMPLE_TEXT = configFile.getAsJsonObject().get("example_text").getAsString();
-//			EXAMPLE_AMOUNT = configFile.getAsJsonObject().get("example_amount").getAsInt();
-//			SCROLL_INDICATOR_FLASH_SPEED = configFile.getAsJsonObject().get("scroll_indicator_flash_speed").getAsInt();
+			ENABLE_MOD = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
+			SCROLL_TYPE = configFile.getAsJsonObject().get("scroll_type").getAsInt();
+			MAX_ROW_HEIGHT = configFile.getAsJsonObject().get("max_row_height").getAsDouble();
+			MAX_WIDTH = configFile.getAsJsonObject().get("max_width").getAsDouble();
+			RENDER_HEADS = configFile.getAsJsonObject().get("render_heads").getAsBoolean();
+			RENDER_HEADER = configFile.getAsJsonObject().get("render_header").getAsBoolean();
+			RENDER_FOOTER = configFile.getAsJsonObject().get("render_footer").getAsBoolean();
+			RENDER_PING = configFile.getAsJsonObject().get("render_ping").getAsBoolean();
+			USE_NUMERIC = configFile.getAsJsonObject().get("use_numeric").getAsBoolean();
+			SCROLL_INDICATORS = configFile.getAsJsonObject().get("scroll_indicators").getAsBoolean();
+			NUMERIC_FORMAT = configFile.getAsJsonObject().get("numeric_format").getAsString();
+			COLUMN_NUMBERS = configFile.getAsJsonObject().get("column_numbers").getAsInt();
+			START_Y = configFile.getAsJsonObject().get("start_y").getAsInt();
+			BACKGROUND_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("background_color").getAsString());
+			EMPTY_CELL_LINE_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("empty_cell_line_color").getAsString());
+			SCROLL_INDICATOR_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("scroll_indicator_color").getAsString());
+			COLUMN_NUMBER_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("column_number_color").getAsString());
+			CELL_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("cell_color").getAsString());
+			NAME_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("name_color").getAsString());
+			SPECTATOR_COLOR = new Tools().parseColor(configFile.getAsJsonObject().get("spectator_color").getAsString());
+			PING_COLOR_NONE = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_none").getAsString());
+			PING_COLOR_LOW = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_low").getAsString());
+			PING_COLOR_MEDIUM = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_medium").getAsString());
+			PING_COLOR_HIGH = new Tools().parseColor(configFile.getAsJsonObject().get("ping_color_high").getAsString());
+			MEDIUM_PING_MINIMUM = configFile.getAsJsonObject().get("medium_ping_minimum").getAsInt();
+			HIGH_PING_MINIMUM = configFile.getAsJsonObject().get("high_ping_minimum").getAsInt();
+			USE_EXAMPLES = configFile.getAsJsonObject().get("use_examples").getAsBoolean();
+			EXAMPLE_TEXT = configFile.getAsJsonObject().get("example_text").getAsString();
+			EXAMPLE_AMOUNT = configFile.getAsJsonObject().get("example_amount").getAsInt();
+			SCROLL_INDICATOR_FLASH_SPEED = configFile.getAsJsonObject().get("scroll_indicator_flash_speed").getAsInt();
 		}
 	}
 

@@ -5,11 +5,13 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.Text;
 
 public class TabEntry {
-    private Text name;
-    private int textWidth;
+    public Text name;
+    public int textWidth;
+    public int textHeight;
 
-    public TabEntry(MinecraftClient client, PlayerListEntry entry, Text name) {
+    public TabEntry(MinecraftClient client, Text name, int width, int height) {
         this.name = name;
-        this.textWidth = client.textRenderer.getWidth(name);
+        this.textWidth = width;
+        this.textHeight = height;
     }
 }
