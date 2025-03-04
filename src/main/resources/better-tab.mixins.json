@@ -3,11 +3,14 @@
   "package": "tab.bettertab.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "PlayerListHudMixin",
     "MouseMixin",
-    "PlayerListHudAccess"
+    "PlayerListHudAccess",
+    "PlayerListHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+    "MinecraftClientMixin"
+  ]
 }

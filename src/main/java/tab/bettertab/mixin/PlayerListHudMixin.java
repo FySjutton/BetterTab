@@ -82,7 +82,7 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
 		if (lastCheck + 250 < System.currentTimeMillis()) {
-			new PlayerManager().update(client, this.collectPlayerEntries());
+			PlayerManager.update(client, this.collectPlayerEntries());
 			lastCheck = System.currentTimeMillis();
 		}
 

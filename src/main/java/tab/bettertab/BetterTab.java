@@ -2,6 +2,7 @@ package tab.bettertab;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -51,6 +52,9 @@ public class BetterTab implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		new ConfigSystem().checkConfig();
+		ClientLifecycleEvents.CLIENT_STARTED.register(d -> {
+			PlayerManager.updateMaxColumns(MinecraftClient.getInstance());
+		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (openConfig.wasPressed()) {
@@ -73,4 +77,6 @@ public class BetterTab implements ModInitializer {
 			}
 		});
 	}
+
+
 }

@@ -22,11 +22,12 @@ public class PlayerList {
         int x = 0;
         int y = 0;
         for (TabColumn column : renderColumns) {
-            for (TabEntry entry : column.entries) {
-                context.drawWrappedTextWithShadow(textRenderer, entry.name, x, y, column.width, 0xFFFFFFFF);
-                y += entry.textHeight;
-            }
-            y = 0;
+            column.render(context, x, y);
+//            for (TabEntry entry : column.entries) {
+//                context.drawWrappedTextWithShadow(textRenderer, entry.name, x, y, column.width, 0xFFFFFFFF);
+//                y += entry.textHeight;
+//            }
+//            y = 0;
             x += column.width;
         }
     }
