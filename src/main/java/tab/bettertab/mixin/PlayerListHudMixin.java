@@ -32,6 +32,7 @@ import tab.bettertab.TabEntry;
 import tab.bettertab.Tools;
 import static tab.bettertab.BetterTab.*;
 import static tab.bettertab.ConfigSystem.configFile;
+import static tab.bettertab.PlayerList.immediatelyUpdate;
 
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
@@ -44,7 +45,6 @@ public abstract class PlayerListHudMixin {
 	@Shadow private boolean visible;
 	@Shadow public abstract Text getPlayerName(PlayerListEntry entry);
 	@Shadow protected abstract void renderLatencyIcon(DrawContext context, int width, int x, int y, PlayerListEntry entry);
-
 	@Unique private boolean showArrows = false;
 	@Unique private long lastCheck = 0;
 
@@ -81,9 +81,10 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
-		if (lastCheck + 250 < System.currentTimeMillis()) {
+		if (immediatelyUpdate || (lastCheck + 250 < System.currentTimeMillis())) {
 			PlayerManager.update(client, this.collectPlayerEntries());
 			lastCheck = System.currentTimeMillis();
+			immediatelyUpdate = false;
 		}
 
 		playerList.render(client, context, scaledWindowWidth, scoreboard, objective);
@@ -92,18 +93,7 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "collectPlayerEntries", at = @At("HEAD"), cancellable = true)
 	private void onCollectPlayerEntries(CallbackInfoReturnable<List<PlayerListEntry>> cir) {
-		List<PlayerListEntry> playerList = new ArrayList<>(client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList());
-
-		if (ENABLE_MOD) {
-			if (USE_EXAMPLES) {
-				for (int i = 0; i < EXAMPLE_AMOUNT; i++) {
-					playerList.add(new FakePlayer(String.format(EXAMPLE_TEXT, i + 1)));
-				}
-			}
-			cir.setReturnValue(playerList);
-		} else {
-			cir.setReturnValue(playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList());
-		}
+		cir.setReturnValue(Tools.getPlayerEntries(client, ENABLE_MOD, USE_EXAMPLES, EXAMPLE_AMOUNT, EXAMPLE_TEXT, ENTRY_ORDERING));
 	}
 
 	@Inject(method = "setVisible", at = @At("HEAD"))

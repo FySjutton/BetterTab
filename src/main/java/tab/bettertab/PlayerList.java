@@ -3,32 +3,34 @@ package tab.bettertab;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.text.StringVisitable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static tab.bettertab.PlayerManager.renderColumns;
 import static tab.bettertab.BetterTab.LOGGER;
+import static tab.bettertab.PlayerManager.*;
 
 public class PlayerList {
+    public static boolean immediatelyUpdate = false;
 
     public void render(MinecraftClient client, DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
         TextRenderer textRenderer = client.textRenderer;
 
-        int x = 0;
-        int y = 0;
+        int x = startTextX;
+        int y = 10;
+
+        context.fill(startBoxX, y, startBoxX + totalWidth, y + totalHeight, 0x80000000);
+
+        if (canScrollLeft) {
+            context.drawCenteredTextWithShadow(textRenderer, "<", startBoxX + 7, y + totalHeight / 2 - 4, 0xFFFFFFFF);
+        }
+        if (canScrollRight) {
+            context.drawCenteredTextWithShadow(textRenderer, ">", startBoxX + totalWidth - 7, y + totalHeight / 2 - 4, 0xFFFFFFFF);
+        }
         for (TabColumn column : renderColumns) {
             column.render(context, x, y);
-//            for (TabEntry entry : column.entries) {
-//                context.drawWrappedTextWithShadow(textRenderer, entry.name, x, y, column.width, 0xFFFFFFFF);
-//                y += entry.textHeight;
-//            }
-//            y = 0;
-            x += column.width;
+            x += column.totalWidth;
         }
     }
 

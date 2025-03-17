@@ -40,13 +40,13 @@ public class TabEntry {
 
         if (hasName) {
             List<OrderedText> lines = textRenderer.wrapLines(name, maxColumnWidth);
+            textHeight = textRenderer.getWrappedLinesHeight(name, maxColumnWidth);
             textWidth = Collections.max(lines.stream().map(textRenderer::getWidth).toList());
-            textHeight = lines.size() * textRenderer.fontHeight;
         }
 
         renderHead = true;
         headTexture = entry.getSkinTextures().texture();
-        renderHeadY = (textHeight - 8) / 2;
+        renderHeadY = (textHeight - 8) / 2 + 1;
 
         textStartX = 2 + (renderHead ? 10 : 0);
 
@@ -54,8 +54,8 @@ public class TabEntry {
         totalHeight = (2 + textHeight + 2);
     }
 
-    public void render(DrawContext context, int x1, int y1) {
-        context.fill(x1, y1, x1 + totalWidth, y1 + textHeight, 0x20FFFFFF);
+    public void render(DrawContext context, int x1, int y1, int columnWidth) {
+        context.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, 0x20FFFFFF);
         if (renderHead) {
             PlayerSkinDrawer.draw(context, headTexture, x1 + 2, y1 + renderHeadY, 8, true, false, -1);
         }

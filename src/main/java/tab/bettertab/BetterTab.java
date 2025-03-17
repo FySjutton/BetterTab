@@ -16,6 +16,7 @@ import tab.bettertab.config.ConfigScreen;
 import tab.bettertab.mixin.PlayerListHudAccess;
 
 import static tab.bettertab.ConfigSystem.configFile;
+import static tab.bettertab.PlayerList.immediatelyUpdate;
 
 public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "better-tab";
@@ -52,9 +53,6 @@ public class BetterTab implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		new ConfigSystem().checkConfig();
-		ClientLifecycleEvents.CLIENT_STARTED.register(d -> {
-			PlayerManager.updateMaxColumns(MinecraftClient.getInstance());
-		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (openConfig.wasPressed()) {
@@ -70,13 +68,13 @@ public class BetterTab implements ModInitializer {
 			if (((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible()) {
 				if (rightScroll.wasPressed()) {
 					tabScroll ++;
+					immediatelyUpdate = true;
 				}
 				if (leftScroll.wasPressed()) {
 					tabScroll --;
+					immediatelyUpdate = true;
 				}
 			}
 		});
 	}
-
-
 }

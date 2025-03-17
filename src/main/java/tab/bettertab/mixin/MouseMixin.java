@@ -7,9 +7,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tab.bettertab.PlayerManager;
 
 import static tab.bettertab.BetterTab.*;
 import static tab.bettertab.ConfigSystem.configFile;
+import static tab.bettertab.PlayerList.immediatelyUpdate;
 
 @Mixin(Mouse.class)
 public class MouseMixin {
@@ -21,6 +23,7 @@ public class MouseMixin {
 
             if (((PlayerListHudAccess)playerListHud).getVisible()) {
                 tabScroll -= vertical;
+                immediatelyUpdate = true;
                 ci.cancel();
             }
         }

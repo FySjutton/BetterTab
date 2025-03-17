@@ -1,8 +1,13 @@
 package tab.bettertab;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import static tab.bettertab.BetterTab.LOGGER;
 
@@ -44,6 +49,28 @@ public class Tools {
             return (alpha << 24) | (red << 16) | (green << 8) | blue;
         } catch (Exception e) {
             return 0;
+        }
+    }
+
+    public static List<PlayerListEntry> getPlayerEntries(MinecraftClient client, boolean ENABLE_MOD, boolean USE_EXAMPLES, int EXAMPLE_AMOUNT, String EXAMPLE_TEXT, Comparator<PlayerListEntry> ENTRY_ORDERING) {
+        List<PlayerListEntry> playerList = new ArrayList<>(client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList());
+
+        if (ENABLE_MOD) {
+            if (USE_EXAMPLES) {
+                int exampels = 0;
+                for (int i = 0; i < EXAMPLE_AMOUNT / 2; i++) {
+                    exampels ++;
+                    playerList.add(new FakePlayer(String.format(EXAMPLE_TEXT, exampels)));
+                }
+                playerList.add(new FakePlayer("OMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOM"));
+                for (int i = 0; i < EXAMPLE_AMOUNT / 2; i++) {
+                    exampels ++;
+                    playerList.add(new FakePlayer(String.format(EXAMPLE_TEXT, exampels)));
+                }
+            }
+            return playerList;
+        } else {
+           return playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList();
         }
     }
 }
