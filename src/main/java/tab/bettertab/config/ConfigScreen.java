@@ -9,12 +9,12 @@ import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
+import tab.bettertab.config.widgets.SettingWidget;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static tab.bettertab.ConfigSystem.configFile;
-import tab.bettertab.ConfigSystem;
+import static tab.bettertab.config.ConfigSystem.configFile;
 
 public class ConfigScreen extends Screen {
     private final TabManager tabManager = new TabManager(this::addDrawableChild, this::remove);

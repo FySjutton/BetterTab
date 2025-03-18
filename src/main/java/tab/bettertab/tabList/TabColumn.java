@@ -1,4 +1,4 @@
-package tab.bettertab;
+package tab.bettertab.tabList;
 
 import net.minecraft.client.gui.DrawContext;
 
@@ -14,7 +14,7 @@ public class TabColumn {
     public TabColumn(ArrayList<TabEntry> entries) {
         this.entries = new ArrayList<>(entries);
         this.width = Collections.max(this.entries.stream().map(entry -> entry.totalWidth).toList());
-        this.totalWidth = width + 2;
+        this.totalWidth = width + 1;
         this.totalHeight = this.entries.stream().mapToInt(entry -> entry.totalHeight).sum();
     }
 

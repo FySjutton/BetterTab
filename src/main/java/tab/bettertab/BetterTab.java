@@ -8,20 +8,24 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tab.bettertab.config.ConfigScreen;
+import tab.bettertab.config.ConfigSystem;
 import tab.bettertab.mixin.PlayerListHudAccess;
+import tab.bettertab.tabList.TabRenderer;
 
-import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.Renderer.immediatelyUpdate;
+import static tab.bettertab.tabList.BadgeManager.registerBadgeProvider;
+import static tab.bettertab.config.ConfigSystem.configFile;
+import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;
 
 public class BetterTab implements ModInitializer {
-	public static final String MOD_ID = "better-tab";
+	public static final String MOD_ID = "bettertab";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static Renderer playerList = new Renderer();
+	public static TabRenderer playerList = new TabRenderer();
 	public static double tabScroll = 0;
 
 	public static final KeyBinding toggleMod = KeyBindingHelper.registerKeyBinding(new KeyBinding(

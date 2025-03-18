@@ -1,4 +1,4 @@
-package tab.bettertab.config;
+package tab.bettertab.config.widgets;
 
 import com.google.gson.JsonObject;
 import net.minecraft.client.MinecraftClient;
@@ -12,8 +12,8 @@ import net.minecraft.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.ConfigSystem.defaultConfig;
+import static tab.bettertab.config.ConfigSystem.configFile;
+import static tab.bettertab.config.ConfigSystem.defaultConfig;
 
 public class SettingWidget extends ElementListWidget<SettingWidget.Entry> {
     private final JsonObject editedConfigFile;

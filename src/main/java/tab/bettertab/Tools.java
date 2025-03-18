@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
+import tab.bettertab.tabList.FakePlayer;
 
 import java.util.ArrayList;
 import java.util.Comparator;

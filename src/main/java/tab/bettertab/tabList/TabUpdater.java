@@ -1,4 +1,4 @@
-package tab.bettertab;
+package tab.bettertab.tabList;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
@@ -8,16 +8,15 @@ import net.minecraft.text.Text;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static tab.bettertab.BetterTab.LOGGER;
 import static tab.bettertab.BetterTab.tabScroll;
 
-public class PlayerManager {
+public class TabUpdater {
     public static ArrayList<TabColumn> renderColumns = new ArrayList<>();
 
     public static int totalWidth;
     public static int totalHeight;
+    public static int columnsHeight;
 
     public static int startBoxX;
     public static int startBoxY;
@@ -37,6 +36,11 @@ public class PlayerManager {
     private static int maxScreenWidth;
 
     public static void update(MinecraftClient client, List<PlayerListEntry> playerEntries, Text header, Text footer) {
+        if (playerEntries.isEmpty()) {
+            renderColumns = new ArrayList<>();
+            return;
+        }
+
         maxScreenWidth = client.getWindow().getScaledWidth() - 10;
         headerList = client.textRenderer.wrapLines(header, maxScreenWidth);
         int headerHeight = 5 + headerList.size() * client.textRenderer.fontHeight;
@@ -118,20 +122,27 @@ public class PlayerManager {
 
         int offset = (canScrollLeft ? 10 : 0) + (canScrollRight ? 10 : 0);
         int columnsWidth = renderColumns.stream().mapToInt(col -> col.totalWidth).sum();
-        totalWidth = Math.max(
-                columnsWidth + offset + 10,
-                Math.max(
-                        Collections.max(headerList.stream().map(client.textRenderer::getWidth).toList()),
-                        Collections.max(footerList.stream().map(client.textRenderer::getWidth).toList())
-                ) + 10
-        );
-        totalHeight = headerHeight + Collections.max(renderColumns.stream().map(col -> col.totalHeight).toList()) + footerHeight;
 
-        footerStartY = totalHeight - footerHeight;
+        int colTotWidth = columnsWidth + offset + 10;
+        int serverInfoWidth = Math.max(
+                Collections.max(headerList.stream().map(client.textRenderer::getWidth).toList()),
+                Collections.max(footerList.stream().map(client.textRenderer::getWidth).toList())
+        ) + 10;
+
+        boolean useColumnWidth = colTotWidth > serverInfoWidth;
+        totalWidth = useColumnWidth ? colTotWidth : serverInfoWidth;
+
+        columnsHeight = Collections.max(renderColumns.stream().map(col -> col.totalHeight).toList());
+        totalHeight = headerHeight + columnsHeight + footerHeight;
+
+        footerStartY = totalHeight - footerHeight + 13;
         startBoxX = (client.getWindow().getScaledWidth() - totalWidth) / 2;
         startBoxY = 10;
-        // RENDER IN MIDDLE OF BOX; NOT boxX +5!!!! NOT SUPER EASY...
-        startTextX = startBoxX + 5 + (canScrollLeft ? 10 : 0);
+        if (useColumnWidth) {
+            startTextX = startBoxX + 5 + (canScrollLeft ? 10 : 0);
+        } else {
+            startTextX = startBoxX + ((totalWidth - columnsWidth) / 2);
+        }
         startTextY = headerHeight;
     }
 }

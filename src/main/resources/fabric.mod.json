@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "better-tab",
+	"id": "bettertab",
 	"version": "${version}",
 	"name": "Better Tab",
 	"description": "Makes the playerlist scrollable and adds numeric ping display.",
@@ -12,7 +12,7 @@
 		"sources": "https://github.com/FySjutton/BetterTab"
 	},
 	"license": "BetterTab License",
-	"icon": "assets/better-tab/mod_icon.png",
+	"icon": "assets/bettertab/mod_icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
@@ -23,7 +23,7 @@
 		]
 	},
 	"mixins": [
-		"better-tab.mixins.json"
+		"bettertab.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.5",

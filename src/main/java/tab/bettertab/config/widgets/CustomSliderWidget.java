@@ -1,11 +1,11 @@
-package tab.bettertab.config;
+package tab.bettertab.config.widgets;
 
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
-import static tab.bettertab.ConfigSystem.defaultConfig;
+import static tab.bettertab.config.ConfigSystem.defaultConfig;
 
 public class CustomSliderWidget extends SliderWidget {
     private final double max;

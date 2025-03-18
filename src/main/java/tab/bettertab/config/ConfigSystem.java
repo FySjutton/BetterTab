@@ -1,4 +1,4 @@
-package tab.bettertab;
+package tab.bettertab.config;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonWriter;
@@ -24,7 +24,7 @@ public class ConfigSystem {
         if (Files.notExists(configDir.resolve("betterTab.json"))) {
             LOGGER.warn("BetterTab: Configuration file not found - generating new config file.");
             try {
-                InputStream resource = ConfigSystem.class.getResourceAsStream("/assets/better-tab/default_config/betterTab.json");
+                InputStream resource = ConfigSystem.class.getResourceAsStream("/assets/bettertab/default_config/betterTab.json");
                 FileUtils.copyInputStreamToFile(resource, new File(configDir + "/betterTab.json"));
             } catch (Exception e) {
                 LOGGER.error("BetterTab - Could not generate a new betterTab.json file (config), the program will now close. This error should not normally occur, and if you need help, please join our discord server. This error indicates that there's something wrong with the jar file, or the program doesn't have access to write files.");
@@ -37,7 +37,7 @@ public class ConfigSystem {
     }
 
     private void generateConfigArray() {
-        InputStream resource = ConfigSystem.class.getResourceAsStream("/assets/better-tab/default_config/betterTab.json");
+        InputStream resource = ConfigSystem.class.getResourceAsStream("/assets/bettertab/default_config/betterTab.json");
         Reader reader = new InputStreamReader(resource);
         defaultConfig = JsonParser.parseReader(reader).getAsJsonObject();
         try {

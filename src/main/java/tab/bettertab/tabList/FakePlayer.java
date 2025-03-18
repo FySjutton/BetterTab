@@ -1,4 +1,4 @@
-package tab.bettertab;
+package tab.bettertab.tabList;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.network.PlayerListEntry;

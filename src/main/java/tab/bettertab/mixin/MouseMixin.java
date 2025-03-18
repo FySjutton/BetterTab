@@ -9,8 +9,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static tab.bettertab.BetterTab.*;
-import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.Renderer.immediatelyUpdate;
+import static tab.bettertab.config.ConfigSystem.configFile;
+import static tab.bettertab.tabList.TabUpdater.canScrollLeft;
+import static tab.bettertab.tabList.TabUpdater.canScrollRight;
+import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;
 
 @Mixin(Mouse.class)
 public class MouseMixin {
@@ -20,7 +22,7 @@ public class MouseMixin {
             MinecraftClient client = MinecraftClient.getInstance();
             PlayerListHud playerListHud = client.inGameHud.getPlayerListHud();
 
-            if (((PlayerListHudAccess)playerListHud).getVisible()) {
+            if (((PlayerListHudAccess)playerListHud).getVisible() && (canScrollLeft || canScrollRight)) {
                 tabScroll -= vertical;
                 immediatelyUpdate = true;
                 ci.cancel();
