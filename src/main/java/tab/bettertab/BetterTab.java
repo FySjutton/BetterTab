@@ -2,7 +2,6 @@ package tab.bettertab;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -16,13 +15,13 @@ import tab.bettertab.config.ConfigScreen;
 import tab.bettertab.mixin.PlayerListHudAccess;
 
 import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.PlayerList.immediatelyUpdate;
+import static tab.bettertab.Renderer.immediatelyUpdate;
 
 public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "better-tab";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static PlayerList playerList = new PlayerList();
+	public static Renderer playerList = new Renderer();
 	public static double tabScroll = 0;
 
 	public static final KeyBinding toggleMod = KeyBindingHelper.registerKeyBinding(new KeyBinding(

@@ -7,11 +7,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tab.bettertab.PlayerManager;
 
 import static tab.bettertab.BetterTab.*;
 import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.PlayerList.immediatelyUpdate;
+import static tab.bettertab.Renderer.immediatelyUpdate;
 
 @Mixin(Mouse.class)
 public class MouseMixin {

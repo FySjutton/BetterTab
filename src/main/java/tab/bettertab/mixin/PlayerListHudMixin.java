@@ -1,19 +1,12 @@
 package tab.bettertab.mixin;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,13 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
-import tab.bettertab.FakePlayer;
 import tab.bettertab.PlayerManager;
-import tab.bettertab.TabEntry;
 import tab.bettertab.Tools;
 import static tab.bettertab.BetterTab.*;
 import static tab.bettertab.ConfigSystem.configFile;
-import static tab.bettertab.PlayerList.immediatelyUpdate;
+import static tab.bettertab.Renderer.immediatelyUpdate;
 
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
@@ -82,7 +73,7 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
 		if (immediatelyUpdate || (lastCheck + 250 < System.currentTimeMillis())) {
-			PlayerManager.update(client, this.collectPlayerEntries());
+			PlayerManager.update(client, this.collectPlayerEntries(), this.header, this.footer);
 			lastCheck = System.currentTimeMillis();
 			immediatelyUpdate = false;
 		}
