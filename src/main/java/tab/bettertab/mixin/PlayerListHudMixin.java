@@ -74,7 +74,7 @@ public abstract class PlayerListHudMixin {
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
 		if (ENABLE_MOD) {
 			if (immediatelyUpdate || (lastCheck + 250 < System.currentTimeMillis())) {
-				TabUpdater.update(client, this.collectPlayerEntries(), this.header, this.footer);
+				TabUpdater.update(client, this.collectPlayerEntries(), this.header, this.footer, scoreboard, objective);
 				lastCheck = System.currentTimeMillis();
 				immediatelyUpdate = false;
 			}

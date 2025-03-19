@@ -6,9 +6,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.scoreboard.*;
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameMode;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,8 +44,10 @@ public class TabEntry {
 
     private Identifier pingTexture;
 
+    private Text scoreText;
 
-    public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth) {
+
+    public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective) {
         this.client = client;
         this.maxColumnWidth = maxColumnWidth;
         TextRenderer textRenderer = client.textRenderer;
@@ -57,6 +64,23 @@ public class TabEntry {
 
         badges = BadgeManager.getBadges(entry);
         int badgeWidth = badges.size() * 10;
+
+        if (objective != null && entry.getGameMode() != GameMode.SPECTATOR) {
+            ScoreHolder scoreHolder = ScoreHolder.fromProfile(entry.getProfile());
+            ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
+            if (readableScoreboardScore != null) {
+
+                if (objective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
+                    NumberFormat numberFormat = objective.getNumberFormatOr(StyledNumberFormat.YELLOW);
+                    scoreText = ReadableScoreboardScore.getFormattedScore(readableScoreboardScore, numberFormat);
+                }
+            }
+
+
+//            if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
+//            } else if (scoreDisplayEntry.formattedScore != null) {
+//            }
+        }
 
         renderHead = true;
         headTexture = entry.getSkinTextures().texture();
@@ -83,9 +107,10 @@ public class TabEntry {
             }
         }
 
+
+
         totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 2 : 0) + 5 + pingWidth + 2);
         totalHeight = (2 + textHeight);
-
     }
 
     public void render(DrawContext context, int x1, int y1, int columnWidth) {

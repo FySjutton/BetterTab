@@ -2,6 +2,8 @@ package tab.bettertab.tabList;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import tab.bettertab.mixin.PlayerListHudMixin;
@@ -36,7 +38,7 @@ public class TabUpdater {
 
     private static int maxScreenWidth;
 
-    public static void update(MinecraftClient client, List<PlayerListEntry> playerEntries, Text header, Text footer) {
+    public static void update(MinecraftClient client, List<PlayerListEntry> playerEntries, Text header, Text footer, Scoreboard scoreboard, ScoreboardObjective objective) {
         if (playerEntries.isEmpty()) {
             renderColumns = new ArrayList<>();
             return;
@@ -64,7 +66,7 @@ public class TabUpdater {
         int maxColumnHeight = (client.getWindow().getScaledHeight() - headerHeight - footerHeight) / 2;
 
         for (PlayerListEntry entry : playerEntries) {
-            TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth);
+            TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth, scoreboard, objective);
             tabEntries.add(tabEntry);
         }
 
