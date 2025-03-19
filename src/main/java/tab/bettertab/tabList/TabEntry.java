@@ -32,6 +32,14 @@ public class TabEntry {
 
     private List<Identifier> badges;
 
+    private boolean useNumericPing = false;
+    private String pingText;
+    private int pingWidth = 10;
+    private int pingColor = 0xFFFFFFFF;
+
+    private Identifier pingTexture;
+
+
     public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth) {
         this.client = client;
         this.maxColumnWidth = maxColumnWidth;
@@ -56,8 +64,28 @@ public class TabEntry {
 
         textStartX = 2  + (renderHead ? 10 : 0);
 
-        totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 2 : 0) + 2);
+        if (useNumericPing) {
+            pingText = String.valueOf(entry.getLatency()) + "ms";
+            pingWidth = textRenderer.getWidth(pingText);
+        } else {
+            if (entry.getLatency() < 0) {
+                pingTexture = Identifier.ofVanilla("icon/ping_unknown");
+            } else if (entry.getLatency() < 150) {
+                pingTexture = Identifier.ofVanilla("icon/ping_5");
+            } else if (entry.getLatency() < 300) {
+                pingTexture = Identifier.ofVanilla("icon/ping_4");
+            } else if (entry.getLatency() < 600) {
+                pingTexture = Identifier.ofVanilla("icon/ping_3");
+            } else if (entry.getLatency() < 1000) {
+                pingTexture = Identifier.ofVanilla("icon/ping_2");
+            } else {
+                pingTexture = Identifier.ofVanilla("icon/ping_1");
+            }
+        }
+
+        totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 2 : 0) + 5 + pingWidth + 2);
         totalHeight = (2 + textHeight);
+
     }
 
     public void render(DrawContext context, int x1, int y1, int columnWidth) {
@@ -75,6 +103,12 @@ public class TabEntry {
 
         if (hasName) {
             context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, 0xFFFFFFFF, true);
+        }
+
+        if (useNumericPing) {
+            context.drawTextWithShadow(client.textRenderer, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
+        } else {
+            context.drawGuiTexture(RenderLayer::getGuiTextured, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
         }
     }
 }

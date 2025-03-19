@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import tab.bettertab.mixin.PlayerListHudMixin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,16 +43,25 @@ public class TabUpdater {
         }
 
         maxScreenWidth = client.getWindow().getScaledWidth() - 10;
-        headerList = client.textRenderer.wrapLines(header, maxScreenWidth);
+        if (header != null) {
+            headerList = client.textRenderer.wrapLines(header, maxScreenWidth);
+        } else {
+            headerList = new ArrayList<>();
+        }
         int headerHeight = 5 + headerList.size() * client.textRenderer.fontHeight;
-        footerList = client.textRenderer.wrapLines(footer, maxScreenWidth);
+        if (footer != null) {
+            footerList = client.textRenderer.wrapLines(footer, maxScreenWidth);
+        } else {
+            footerList = new ArrayList<>();
+        }
         int footerHeight = footerList.size() * client.textRenderer.fontHeight + 5;
+
 
         // Generate all tab entries
         List<TabEntry> tabEntries = new ArrayList<>();
 
         int maxColumnWidth = client.textRenderer.getWidth("W".repeat(32));
-        int maxColumnHeight = client.getWindow().getScaledHeight() / 3;
+        int maxColumnHeight = (client.getWindow().getScaledHeight() - headerHeight - footerHeight) / 2;
 
         for (PlayerListEntry entry : playerEntries) {
             TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth);
@@ -125,8 +135,8 @@ public class TabUpdater {
 
         int colTotWidth = columnsWidth + offset + 10;
         int serverInfoWidth = Math.max(
-                Collections.max(headerList.stream().map(client.textRenderer::getWidth).toList()),
-                Collections.max(footerList.stream().map(client.textRenderer::getWidth).toList())
+                headerList.isEmpty() ? 0 : Collections.max(headerList.stream().map(client.textRenderer::getWidth).toList()),
+                footerList.isEmpty() ? 0 : Collections.max(footerList.stream().map(client.textRenderer::getWidth).toList())
         ) + 10;
 
         boolean useColumnWidth = colTotWidth > serverInfoWidth;

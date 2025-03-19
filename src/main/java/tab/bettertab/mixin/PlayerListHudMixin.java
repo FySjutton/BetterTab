@@ -72,14 +72,16 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
-		if (immediatelyUpdate || (lastCheck + 250 < System.currentTimeMillis())) {
-			TabUpdater.update(client, this.collectPlayerEntries(), this.header, this.footer);
-			lastCheck = System.currentTimeMillis();
-			immediatelyUpdate = false;
-		}
+		if (ENABLE_MOD) {
+			if (immediatelyUpdate || (lastCheck + 250 < System.currentTimeMillis())) {
+				TabUpdater.update(client, this.collectPlayerEntries(), this.header, this.footer);
+				lastCheck = System.currentTimeMillis();
+				immediatelyUpdate = false;
+			}
 
-		playerList.render(client, context, scaledWindowWidth, scoreboard, objective);
-		ci.cancel();
+			playerList.render(client, context, scaledWindowWidth, scoreboard, objective);
+			ci.cancel();
+		}
 	}
 
 	@Inject(method = "collectPlayerEntries", at = @At("HEAD"), cancellable = true)
