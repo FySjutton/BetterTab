@@ -44,8 +44,9 @@ public class TabEntry {
 
     private Identifier pingTexture;
 
+    private boolean renderScore = false;
     private Text scoreText;
-
+    private int scoreLength = 0;
 
     public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective) {
         this.client = client;
@@ -73,20 +74,17 @@ public class TabEntry {
                 if (objective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
                     NumberFormat numberFormat = objective.getNumberFormatOr(StyledNumberFormat.YELLOW);
                     scoreText = ReadableScoreboardScore.getFormattedScore(readableScoreboardScore, numberFormat);
+                    renderScore = true;
+                    scoreLength = client.textRenderer.getWidth(scoreText);
                 }
             }
-
-
-//            if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-//            } else if (scoreDisplayEntry.formattedScore != null) {
-//            }
         }
 
         renderHead = true;
         headTexture = entry.getSkinTextures().texture();
         iconY = (textHeight - 8) / 2 + 1;
 
-        textStartX = 2  + (renderHead ? 10 : 0);
+        textStartX = 2  + (renderHead ? 9 : 0);
 
         if (useNumericPing) {
             pingText = String.valueOf(entry.getLatency()) + "ms";
@@ -109,7 +107,7 @@ public class TabEntry {
 
 
 
-        totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 2 : 0) + 5 + pingWidth + 2);
+        totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 1 : 0) + 5 + scoreLength + pingWidth + 2);
         totalHeight = (2 + textHeight);
     }
 
@@ -128,6 +126,10 @@ public class TabEntry {
 
         if (hasName) {
             context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, 0xFFFFFFFF, true);
+        }
+
+        if (renderScore) {
+            context.drawTextWithShadow(client.textRenderer, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);
         }
 
         if (useNumericPing) {
