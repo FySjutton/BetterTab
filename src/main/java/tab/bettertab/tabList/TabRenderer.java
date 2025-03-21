@@ -13,8 +13,10 @@ import static tab.bettertab.tabList.TabUpdater.*;
 
 public class TabRenderer {
     public static boolean immediatelyUpdate = false;
+    private static long scrollIndicatorLast = 0;
+    private static boolean showScrollingIndicator = false;
 
-    public void render(MinecraftClient client, DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
+    public static void render(MinecraftClient client, DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
         if (renderColumns.isEmpty()) {
             return;
         }
@@ -28,7 +30,16 @@ public class TabRenderer {
         y = renderHeader(textRenderer, context, y);
         renderFooter(textRenderer, context);
 
-        renderPageArrows(textRenderer, context, y);
+        if (BetterTabConfig.CONFIG.instance().renderScrollIndicator) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - scrollIndicatorLast > BetterTabConfig.CONFIG.instance().scrollIndicatorSpeed) {
+                showScrollingIndicator = !showScrollingIndicator;
+                scrollIndicatorLast = currentTime;
+            }
+            if (showScrollingIndicator) {
+                renderPageArrows(textRenderer, context, y);
+            }
+        }
 
         for (TabColumn column : renderColumns) {
             column.render(context, x, y);
@@ -36,7 +47,7 @@ public class TabRenderer {
         }
     }
 
-    private int renderHeader(TextRenderer textRenderer, DrawContext context, int y) {
+    private static int renderHeader(TextRenderer textRenderer, DrawContext context, int y) {
         for (OrderedText text : headerList) {
             context.drawCenteredTextWithShadow(textRenderer, text, startBoxX + totalWidth / 2, y, 0xffffffff);
             y += textRenderer.fontHeight;
@@ -44,7 +55,7 @@ public class TabRenderer {
         return y;
     }
 
-    private void renderFooter(TextRenderer textRenderer, DrawContext context) {
+    private static void renderFooter(TextRenderer textRenderer, DrawContext context) {
         int footerHeight = footerStartY;
         for (OrderedText text : footerList) {
             context.drawCenteredTextWithShadow(textRenderer, text, startBoxX + totalWidth / 2, footerHeight, 0xffffffff);
@@ -52,7 +63,7 @@ public class TabRenderer {
         }
     }
 
-    private void renderPageArrows(TextRenderer textRenderer, DrawContext context, int y) {
+    private static void renderPageArrows(TextRenderer textRenderer, DrawContext context, int y) {
         if (canScrollLeft) {
             context.drawCenteredTextWithShadow(textRenderer, "<", startBoxX + 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
         }

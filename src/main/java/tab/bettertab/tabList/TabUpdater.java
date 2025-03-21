@@ -66,7 +66,9 @@ public class TabUpdater {
 
         for (PlayerListEntry entry : playerEntries) {
             TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth, scoreboard, objective);
-            tabEntries.add(tabEntry);
+            if (tabEntry.validEntry) {
+                tabEntries.add(tabEntry);
+            }
         }
 
         // Sort all entries into columns
@@ -76,7 +78,7 @@ public class TabUpdater {
 
         for (TabEntry tabEntry : tabEntries) {
             if (columnHeight + tabEntry.textHeight > maxColumnHeight) {
-                columns.add(new TabColumn(columnEntries));
+                columns.add(new TabColumn(columnEntries, columns.size()));
                 columnEntries.clear();
                 columnHeight = 0;
             }
@@ -85,7 +87,7 @@ public class TabUpdater {
             columnEntries.add(tabEntry);
         }
         if (!columnEntries.isEmpty()) {
-            columns.add(new TabColumn(columnEntries));
+            columns.add(new TabColumn(columnEntries, columns.size()));
         }
 
         // Calculate which columns are to be displayed

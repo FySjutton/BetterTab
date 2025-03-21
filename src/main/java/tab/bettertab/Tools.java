@@ -7,12 +7,16 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.NotNull;
+import tab.bettertab.config.BetterTabConfig;
 import tab.bettertab.tabList.FakePlayer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static tab.bettertab.BetterTab.LOGGER;
 
@@ -35,42 +39,15 @@ public class Tools {
         }
     }
 
-    public int parseColor(String colorString) {
-        try {
-            if (colorString.startsWith("#")) {
-                colorString = colorString.substring(1);
-            }
-
-            int alpha = 255;
-            if (colorString.length() == 8) {
-                alpha = Integer.parseInt(colorString.substring(6, 8), 16);
-                colorString = colorString.substring(0, 6);
-            }
-
-            int red = Integer.parseInt(colorString.substring(0, 2), 16);
-            int green = Integer.parseInt(colorString.substring(2, 4), 16);
-            int blue = Integer.parseInt(colorString.substring(4, 6), 16);
-
-            return (alpha << 24) | (red << 16) | (green << 8) | blue;
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
     public static List<PlayerListEntry> getPlayerEntries(MinecraftClient client, boolean ENABLE_MOD, boolean USE_EXAMPLES, int EXAMPLE_AMOUNT, String EXAMPLE_TEXT, Comparator<PlayerListEntry> ENTRY_ORDERING) {
-        List<PlayerListEntry> playerList = new ArrayList<>(client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList());
+        Comparator<PlayerListEntry> comparator = getPlayerListEntryComparator(client);
+
+        List<PlayerListEntry> playerList = new ArrayList<>(client.player.networkHandler.getListedPlayerListEntries().stream().sorted(comparator).toList());
 
         if (ENABLE_MOD) {
             if (USE_EXAMPLES) {
-                int exampels = 0;
-                for (int i = 0; i < EXAMPLE_AMOUNT / 2; i++) {
-                    exampels ++;
-                    playerList.add(new FakePlayer(String.format(EXAMPLE_TEXT, exampels)));
-                }
-                playerList.add(new FakePlayer("OMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOMOMGOMGOMGOMGOMGOMGOMGOMGOM"));
-                for (int i = 0; i < EXAMPLE_AMOUNT / 2; i++) {
-                    exampels ++;
-                    playerList.add(new FakePlayer(String.format(EXAMPLE_TEXT, exampels)));
+                for (int i = 0; i < EXAMPLE_AMOUNT; i++) {
+                    playerList.add(new FakePlayer(String.format(EXAMPLE_TEXT, i + 1)));
                 }
             }
             return playerList;
@@ -79,11 +56,33 @@ public class Tools {
         }
     }
 
+    private static @NotNull Comparator<PlayerListEntry> getPlayerListEntryComparator(MinecraftClient client) {
+        UUID clientUUID = client.player.getUuid();
+        boolean forceClientFirst = BetterTabConfig.CONFIG.instance().forceClientFirst;
+
+        return Comparator
+                .comparingInt((PlayerListEntry entry) -> (forceClientFirst && entry.getProfile().getId().equals(clientUUID)) ? Integer.MIN_VALUE : -entry.getListOrder())
+                .thenComparingInt((entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
+                .thenComparing((entry) -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
+                .thenComparing((entry) -> entry.getProfile().getName(), String::compareToIgnoreCase);
+    }
+
     public static Text getPlayerName(PlayerListEntry entry) {
         return entry.getDisplayName() != null ? applyGameModeFormatting(entry, entry.getDisplayName().copy()) : applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().getName())));
     }
 
     private static Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {
         return entry.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name;
+    }
+
+    public static int numericalColorizer(int ping) {
+        if (ping <= 0) {
+            return BetterTabConfig.CONFIG.instance().pingColorNone.getRGB();
+        } else if (ping >= BetterTabConfig.CONFIG.instance().highPingMin) {
+            return BetterTabConfig.CONFIG.instance().pingColorHigh.getRGB();
+        } else if (ping >= BetterTabConfig.CONFIG.instance().mediumPingMin) {
+            return BetterTabConfig.CONFIG.instance().pingColorMedium.getRGB();
+        }
+        return BetterTabConfig.CONFIG.instance().pingColorLow.getRGB();
     }
 }

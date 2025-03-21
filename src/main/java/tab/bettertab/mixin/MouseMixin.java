@@ -22,7 +22,7 @@ public class MouseMixin {
             MinecraftClient client = MinecraftClient.getInstance();
             PlayerListHud playerListHud = client.inGameHud.getPlayerListHud();
 
-            if (((PlayerListHudAccess)playerListHud).getVisible() && (canScrollLeft || canScrollRight)) {
+            if (((PlayerListHudAccess)playerListHud).getVisible() && (!BetterTabConfig.CONFIG.instance().hotBarScroll || (canScrollLeft || canScrollRight))) {
                 tabScroll -= vertical;
                 immediatelyUpdate = true;
                 ci.cancel();

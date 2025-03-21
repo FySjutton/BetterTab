@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.*;
 
 import tab.bettertab.config.BetterTabConfig;
+import tab.bettertab.tabList.TabRenderer;
 import tab.bettertab.tabList.TabUpdater;
 import tab.bettertab.Tools;
 import static tab.bettertab.BetterTab.*;
@@ -46,7 +47,7 @@ public abstract class PlayerListHudMixin {
 				immediatelyUpdate = false;
 			}
 
-			playerList.render(client, context, scaledWindowWidth, scoreboard, objective);
+			TabRenderer.render(client, context, scaledWindowWidth, scoreboard, objective);
 			ci.cancel();
 		}
 	}
@@ -58,7 +59,10 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "setVisible", at = @At("HEAD"))
 	private void onEnable(boolean visible, CallbackInfo ci) {
-		if (this.visible != visible) {
+		if (!this.visible && visible) {
+			if (!BetterTabConfig.CONFIG.instance().saveScroll) {
+				tabScroll = 0;
+			}
 			config = BetterTabConfig.CONFIG.instance();
 		}
 	}

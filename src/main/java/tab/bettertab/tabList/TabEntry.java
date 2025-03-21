@@ -22,38 +22,36 @@ import java.util.List;
 
 public class TabEntry {
     private final MinecraftClient client;
+    public boolean validEntry = true;
 
     private final boolean renderHead = BetterTabConfig.CONFIG.instance().renderHeads;
-    private final boolean renderBadges = BetterTabConfig.CONFIG.instance().renderBadges;
-    private final boolean renderScoreboardNumber = BetterTabConfig.CONFIG.instance().renderScoreboardNumber;
+    private final boolean renderPing = BetterTabConfig.CONFIG.instance().renderPing;
+    private final boolean useNumericPing = BetterTabConfig.CONFIG.instance().numericalPing;
 
     public int totalWidth;
     public int totalHeight;
 
     public Text name;
+    private List<OrderedText> lines;
     public int textWidth = 0;
     public int textHeight = 0;
-    private int maxColumnWidth;
-    private int textStartX;
-
+    private final int maxColumnWidth;
+    private int textStartX = 0;
 
     private Identifier headTexture;
-    private int iconY;
-
+    private int iconY = 0;
+    private final GameMode gameMode;
     private List<Identifier> badges;
 
-    private boolean useNumericPing = false;
     private String pingText;
-    private int pingWidth = 10;
-    private int pingColor = 0xFFFFFFFF;
-
+    private int pingWidth = 0;
+    private int pingColor;
     private Identifier pingTexture;
 
     private boolean renderScore = false;
-    private Text scoreText;
     private int scoreLength = 0;
+    private Text scoreText;
 
-    private GameMode gameMode;
 
     public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective) {
         this.client = client;
@@ -62,18 +60,21 @@ public class TabEntry {
         this.gameMode = entry.getGameMode();
 
         name = Tools.getPlayerName(entry);
-
-        List<OrderedText> lines = textRenderer.wrapLines(name, maxColumnWidth);
-        textHeight = textRenderer.getWrappedLinesHeight(name, maxColumnWidth);
+        if (name == null) {
+            validEntry = false;
+            return;
+        }
+        lines = textRenderer.wrapLines(name, maxColumnWidth);
+        textHeight = textRenderer.getWrappedLinesHeight(name, maxColumnWidth) + (lines.size() > 1 ? (lines.size() - 1) * 2 : 0);
         textWidth = Collections.max(lines.stream().map(textRenderer::getWidth).toList());
 
         int badgeWidth = 0;
-        if (renderBadges) {
+        if (BetterTabConfig.CONFIG.instance().renderBadges) {
             badges = BadgeManager.getBadges(entry);
             badgeWidth = badges.size() * 10;
         }
 
-        if (renderScoreboardNumber && objective != null && entry.getGameMode() != GameMode.SPECTATOR) {
+        if (BetterTabConfig.CONFIG.instance().renderScoreboardNumber && objective != null && entry.getGameMode() != GameMode.SPECTATOR) {
             ScoreHolder scoreHolder = ScoreHolder.fromProfile(entry.getProfile());
             ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
             if (readableScoreboardScore != null) {
@@ -87,33 +88,37 @@ public class TabEntry {
             }
         }
 
+        iconY = (textHeight - 8) / 2 + 1;
         if (renderHead) {
             headTexture = entry.getSkinTextures().texture();
         }
-        iconY = (textHeight - 8) / 2 + 1;
 
-        textStartX = 2  + (renderHead ? 9 : 0);
-
-        if (useNumericPing) {
-            pingText = String.valueOf(entry.getLatency()) + "ms";
-            pingWidth = textRenderer.getWidth(pingText);
-        } else {
-            if (entry.getLatency() < 0) {
-                pingTexture = Identifier.ofVanilla("icon/ping_unknown");
-            } else if (entry.getLatency() < 150) {
-                pingTexture = Identifier.ofVanilla("icon/ping_5");
-            } else if (entry.getLatency() < 300) {
-                pingTexture = Identifier.ofVanilla("icon/ping_4");
-            } else if (entry.getLatency() < 600) {
-                pingTexture = Identifier.ofVanilla("icon/ping_3");
-            } else if (entry.getLatency() < 1000) {
-                pingTexture = Identifier.ofVanilla("icon/ping_2");
+        if (renderPing) {
+            if (useNumericPing) {
+                pingText = String.format(BetterTabConfig.CONFIG.instance().numericFormat, entry.getLatency());
+                pingWidth = textRenderer.getWidth(pingText);
+                pingColor = Tools.numericalColorizer(entry.getLatency());
             } else {
-                pingTexture = Identifier.ofVanilla("icon/ping_1");
+                pingWidth = 10;
+                if (entry.getLatency() < 0) {
+                    pingTexture = Identifier.ofVanilla("icon/ping_unknown");
+                } else if (entry.getLatency() < 150) {
+                    pingTexture = Identifier.ofVanilla("icon/ping_5");
+                } else if (entry.getLatency() < 300) {
+                    pingTexture = Identifier.ofVanilla("icon/ping_4");
+                } else if (entry.getLatency() < 600) {
+                    pingTexture = Identifier.ofVanilla("icon/ping_3");
+                } else if (entry.getLatency() < 1000) {
+                    pingTexture = Identifier.ofVanilla("icon/ping_2");
+                } else {
+                    pingTexture = Identifier.ofVanilla("icon/ping_1");
+                }
             }
         }
 
-        totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 1 : 0) + 5 + scoreLength + pingWidth + 2);
+        textStartX = 2 + (renderHead ? 9 : 0);
+
+        totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 1 : 0) + ((scoreLength > 0 || pingWidth > 0) ? 5 : 0) + scoreLength + pingWidth + 2);
         totalHeight = (2 + textHeight);
     }
 
@@ -130,16 +135,18 @@ public class TabEntry {
             PlayerSkinDrawer.draw(context, headTexture, x1, y1 + iconY, 8, true, false, -1);
         }
 
-        context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, gameMode == GameMode.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
+        context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2 + (lines.size() > 1 ? lines.size() - 1 : 0), maxColumnWidth, gameMode == GameMode.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
 
         if (renderScore) {
             context.drawTextWithShadow(client.textRenderer, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);
         }
 
-        if (useNumericPing) {
-            context.drawTextWithShadow(client.textRenderer, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
-        } else {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
+        if (renderPing) {
+            if (useNumericPing) {
+                context.drawTextWithShadow(client.textRenderer, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
+            } else {
+                context.drawGuiTexture(RenderLayer::getGuiTextured, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
+            }
         }
     }
 }
