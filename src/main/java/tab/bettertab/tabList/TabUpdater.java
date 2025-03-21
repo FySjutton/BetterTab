@@ -130,6 +130,8 @@ public class TabUpdater {
 
         renderColumns = new ArrayList<>(columns.subList(startIndex, endIndex));
 
+
+
         canScrollLeft = startIndex > 0;
         canScrollRight = endIndex < columns.size();
 

@@ -12,6 +12,7 @@ import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 import tab.bettertab.Tools;
@@ -78,13 +79,15 @@ public class TabEntry {
             ScoreHolder scoreHolder = ScoreHolder.fromProfile(entry.getProfile());
             ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
             if (readableScoreboardScore != null) {
-
-                if (objective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
+                if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
+                    scoreText = Text.literal(String.format(BetterTabConfig.CONFIG.instance().healthFormat, readableScoreboardScore.getScore())).formatted(Formatting.RED);
+                } else {
                     NumberFormat numberFormat = objective.getNumberFormatOr(StyledNumberFormat.YELLOW);
                     scoreText = ReadableScoreboardScore.getFormattedScore(readableScoreboardScore, numberFormat);
-                    renderScore = true;
-                    scoreLength = client.textRenderer.getWidth(scoreText);
                 }
+
+                renderScore = true;
+                scoreLength = client.textRenderer.getWidth(scoreText);
             }
         }
 

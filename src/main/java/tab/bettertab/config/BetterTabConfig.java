@@ -55,7 +55,6 @@ public class BetterTabConfig {
     @SerialEntry public Color pingColorHigh = new Color(0xFFFF7070, true);
 
     // Advanced
-    @SerialEntry public int scrollIndicatorSpeed = 530;
     @SerialEntry public boolean useExamples = false;
     @SerialEntry public String exampleText = "ExamplePlayer%d";
     @SerialEntry public int exampleAmount = 200;
@@ -63,6 +62,9 @@ public class BetterTabConfig {
     @SerialEntry public String numericFormat = "%dms";
     @SerialEntry public int mediumPingMin = 150;
     @SerialEntry public int highPingMin = 300;
+
+    @SerialEntry public int scrollIndicatorSpeed = 530;
+    @SerialEntry public String healthFormat = "%dhp";
 
     public static Screen configScreen(Screen parent) {
         return YetAnotherConfigLib.create(CONFIG, ((defaults, config, builder) -> builder
@@ -329,6 +331,12 @@ public class BetterTabConfig {
                                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
                                                 .range(100, 2000)
                                                 .step(10))
+                                        .build())
+                                .option(Option.<String>createBuilder()
+                                        .name(Text.of("Scoreboard Health Text"))
+                                        .description(OptionDescription.of(Text.of("The format of the scoreboard health text. \"%d\" to get the health.")))
+                                        .binding("%dhp", () -> config.healthFormat, newVal -> config.healthFormat = newVal)
+                                        .controller(StringControllerBuilder::create)
                                         .build())
                             .build())
                     .build())
