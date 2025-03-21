@@ -7,6 +7,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.OrderedText;
 import org.jetbrains.annotations.Nullable;
+import tab.bettertab.config.BetterTabConfig;
 
 import static tab.bettertab.tabList.TabUpdater.*;
 
@@ -22,7 +23,7 @@ public class TabRenderer {
         int x = startTextX;
         int y = startBoxY + 5;
 
-        context.fill(startBoxX, startBoxY, startBoxX + totalWidth, startBoxY + totalHeight, 0x80000000);
+        context.fill(startBoxX, startBoxY, startBoxX + totalWidth, startBoxY + totalHeight, BetterTabConfig.CONFIG.instance().backgroundColor.getRGB());
 
         y = renderHeader(textRenderer, context, y);
         renderFooter(textRenderer, context);
@@ -53,10 +54,10 @@ public class TabRenderer {
 
     private void renderPageArrows(TextRenderer textRenderer, DrawContext context, int y) {
         if (canScrollLeft) {
-            context.drawCenteredTextWithShadow(textRenderer, "<", startBoxX + 7, y + columnsHeight / 2 - 4, 0xFFFFFFFF);
+            context.drawCenteredTextWithShadow(textRenderer, "<", startBoxX + 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
         }
         if (canScrollRight) {
-            context.drawCenteredTextWithShadow(textRenderer, ">", startBoxX + totalWidth - 7, y + columnsHeight / 2 - 4, 0xFFFFFFFF);
+            context.drawCenteredTextWithShadow(textRenderer, ">", startBoxX + totalWidth - 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
         }
     }
 }

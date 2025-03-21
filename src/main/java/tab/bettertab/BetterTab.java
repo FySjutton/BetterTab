@@ -17,7 +17,6 @@ import tab.bettertab.tabList.TabRenderer;
 
 import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;
 
-
 public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "bettertab";
 

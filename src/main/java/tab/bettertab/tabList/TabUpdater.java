@@ -6,6 +6,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import tab.bettertab.config.BetterTabConfig;
 import tab.bettertab.mixin.PlayerListHudMixin;
 
 import java.util.ArrayList;
@@ -36,22 +37,20 @@ public class TabUpdater {
     public static List<OrderedText> footerList;
     public static int footerStartY;
 
-    private static int maxScreenWidth;
-
     public static void update(MinecraftClient client, List<PlayerListEntry> playerEntries, Text header, Text footer, Scoreboard scoreboard, ScoreboardObjective objective) {
         if (playerEntries.isEmpty()) {
             renderColumns = new ArrayList<>();
             return;
         }
 
-        maxScreenWidth = client.getWindow().getScaledWidth() - 10;
-        if (header != null) {
+        int maxScreenWidth = (int) (client.getWindow().getScaledWidth() * BetterTabConfig.CONFIG.instance().maxWidth);
+        if (BetterTabConfig.CONFIG.instance().renderHeader && header != null) {
             headerList = client.textRenderer.wrapLines(header, maxScreenWidth);
         } else {
             headerList = new ArrayList<>();
         }
         int headerHeight = 5 + headerList.size() * client.textRenderer.fontHeight;
-        if (footer != null) {
+        if (BetterTabConfig.CONFIG.instance().renderFooter && footer != null) {
             footerList = client.textRenderer.wrapLines(footer, maxScreenWidth);
         } else {
             footerList = new ArrayList<>();
@@ -62,8 +61,8 @@ public class TabUpdater {
         // Generate all tab entries
         List<TabEntry> tabEntries = new ArrayList<>();
 
-        int maxColumnWidth = client.textRenderer.getWidth("W".repeat(32));
-        int maxColumnHeight = (client.getWindow().getScaledHeight() - headerHeight - footerHeight) / 2;
+        int maxColumnWidth = (int) (maxScreenWidth * BetterTabConfig.CONFIG.instance().maxColumnWidth);
+        int maxColumnHeight = (int) ((client.getWindow().getScaledHeight() - headerHeight - footerHeight) * BetterTabConfig.CONFIG.instance().maxColumnHeight);
 
         for (PlayerListEntry entry : playerEntries) {
             TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth, scoreboard, objective);
@@ -94,7 +93,7 @@ public class TabUpdater {
 
         int startIndex = 0;
         int endIndex = 0;
-        int availableWidth = client.getWindow().getScaledWidth() - 10 - 30; // margin, arrows
+        int availableWidth = maxScreenWidth - 30; // arrows
 
         // If we're at the beginning of the scrolling, go from left to right instead of right to left
         if (tabScroll == 0) {

@@ -23,6 +23,10 @@ import java.util.List;
 public class TabEntry {
     private final MinecraftClient client;
 
+    private final boolean renderHead = BetterTabConfig.CONFIG.instance().renderHeads;
+    private final boolean renderBadges = BetterTabConfig.CONFIG.instance().renderBadges;
+    private final boolean renderScoreboardNumber = BetterTabConfig.CONFIG.instance().renderScoreboardNumber;
+
     public int totalWidth;
     public int totalHeight;
 
@@ -32,7 +36,7 @@ public class TabEntry {
     private int maxColumnWidth;
     private int textStartX;
 
-    private final boolean renderHead = BetterTabConfig.CONFIG.instance().renderHeads;
+
     private Identifier headTexture;
     private int iconY;
 
@@ -49,10 +53,13 @@ public class TabEntry {
     private Text scoreText;
     private int scoreLength = 0;
 
+    private GameMode gameMode;
+
     public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective) {
         this.client = client;
         this.maxColumnWidth = maxColumnWidth;
         TextRenderer textRenderer = client.textRenderer;
+        this.gameMode = entry.getGameMode();
 
         name = Tools.getPlayerName(entry);
 
@@ -60,10 +67,13 @@ public class TabEntry {
         textHeight = textRenderer.getWrappedLinesHeight(name, maxColumnWidth);
         textWidth = Collections.max(lines.stream().map(textRenderer::getWidth).toList());
 
-        badges = BadgeManager.getBadges(entry);
-        int badgeWidth = badges.size() * 10;
+        int badgeWidth = 0;
+        if (renderBadges) {
+            badges = BadgeManager.getBadges(entry);
+            badgeWidth = badges.size() * 10;
+        }
 
-        if (objective != null && entry.getGameMode() != GameMode.SPECTATOR) {
+        if (renderScoreboardNumber && objective != null && entry.getGameMode() != GameMode.SPECTATOR) {
             ScoreHolder scoreHolder = ScoreHolder.fromProfile(entry.getProfile());
             ReadableScoreboardScore readableScoreboardScore = scoreboard.getScore(scoreHolder, objective);
             if (readableScoreboardScore != null) {
@@ -108,7 +118,7 @@ public class TabEntry {
     }
 
     public void render(DrawContext context, int x1, int y1, int columnWidth) {
-        context.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, 0x20FFFFFF);
+        context.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, BetterTabConfig.CONFIG.instance().cellColor.getRGB());
 
         x1 += 2;
         for (Identifier badge : badges) {
@@ -120,7 +130,7 @@ public class TabEntry {
             PlayerSkinDrawer.draw(context, headTexture, x1, y1 + iconY, 8, true, false, -1);
         }
 
-        context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, 0xFFFFFFFF, true);
+        context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, gameMode == GameMode.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
 
         if (renderScore) {
             context.drawTextWithShadow(client.textRenderer, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);
