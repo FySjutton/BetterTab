@@ -1,10 +1,22 @@
-mod info
-
 <details>
 <summary>Developer Documentation</summary>
 BetterTab also includes a "library" that can help you render icons next to a player on the player list.
 
 This could for example be useful if you want to have a synced logo for everyone using your mod or modpack. BetterTab can then help you with the rendering part.
 
-To insert a badge, simply use a mixin on the `tab.bettertab.PlayerBages` class, and edit the "List<Identifier> getBadges(PlayerListEntry player)" method to add an Identifier to the badge list if the player is supposed to have it, and BetterTab will then take care of the rest! 
+To insert a badge, simply register a badge provider, and insert your icons into the badge array. This could look like this:
+```java
+import static tab.bettertab.tabList.BadgeManager.registerBadgeProvider;
+
+public class BadgeExample() {
+    public void badgeCallback() {
+        // You can easily add your own badges by registering a provider like the following example.
+        registerBadgeProvider((player, badgeList) -> {
+            if (player.getProfile().getName().equals("Fy17")) {
+                badgeList.add(Identifier.of("myMod", "textures/gui/example.png"));
+            }
+        });
+    }
+}
+```
 </details>

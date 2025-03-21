@@ -3,7 +3,11 @@ package tab.bettertab;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.world.GameMode;
 import tab.bettertab.tabList.FakePlayer;
 
 import java.util.ArrayList;
@@ -73,5 +77,13 @@ public class Tools {
         } else {
            return playerList.stream().sorted(ENTRY_ORDERING).limit(80L).toList();
         }
+    }
+
+    public static Text getPlayerName(PlayerListEntry entry) {
+        return entry.getDisplayName() != null ? applyGameModeFormatting(entry, entry.getDisplayName().copy()) : applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().getName())));
+    }
+
+    private static Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {
+        return entry.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name;
     }
 }

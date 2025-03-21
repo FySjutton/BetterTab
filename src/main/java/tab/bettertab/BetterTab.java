@@ -8,18 +8,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tab.bettertab.config.ConfigScreen;
-import tab.bettertab.config.ConfigSystem;
+import tab.bettertab.config.BetterTabConfig;
 import tab.bettertab.mixin.PlayerListHudAccess;
 import tab.bettertab.tabList.TabRenderer;
 
-import static tab.bettertab.tabList.BadgeManager.registerBadgeProvider;
-import static tab.bettertab.config.ConfigSystem.configFile;
 import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;
+
 
 public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "bettertab";
@@ -55,17 +52,17 @@ public class BetterTab implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		new ConfigSystem().checkConfig();
+		BetterTabConfig.CONFIG.load();
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (openConfig.wasPressed()) {
-				MinecraftClient.getInstance().setScreen(new ConfigScreen(null));
+				MinecraftClient.getInstance().setScreen(BetterTabConfig.configScreen(null));
 			}
 			if (toggleMod.wasPressed()) {
-				boolean modEnabled = configFile.getAsJsonObject().get("enable_mod").getAsBoolean();
-				configFile.getAsJsonObject().addProperty("enable_mod", !modEnabled);
-				new ConfigSystem().saveElementFiles(configFile);
-				new Tools().sendToast("BetterTab has been toggled!", "The mod is now " + (modEnabled ? "disabled." : "enabled."));
+				boolean currentValue = BetterTabConfig.CONFIG.instance().enableMod;
+				BetterTabConfig.CONFIG.instance().enableMod = !currentValue;
+				BetterTabConfig.CONFIG.save();
+				new Tools().sendToast("BetterTab has been toggled!", "The mod is now " + (currentValue ? "disabled." : "enabled."));
 				client.inGameHud.getPlayerListHud().setVisible(false);
 			}
 			if (((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible()) {

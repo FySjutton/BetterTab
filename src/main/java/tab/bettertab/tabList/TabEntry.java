@@ -14,24 +14,25 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
+import tab.bettertab.Tools;
+import tab.bettertab.config.BetterTabConfig;
 
 import java.util.Collections;
 import java.util.List;
 
 public class TabEntry {
-    private MinecraftClient client;
+    private final MinecraftClient client;
 
     public int totalWidth;
     public int totalHeight;
 
-    private boolean hasName;
     public Text name;
     public int textWidth = 0;
     public int textHeight = 0;
     private int maxColumnWidth;
     private int textStartX;
 
-    private boolean renderHead;
+    private final boolean renderHead = BetterTabConfig.CONFIG.instance().renderHeads;
     private Identifier headTexture;
     private int iconY;
 
@@ -53,15 +54,11 @@ public class TabEntry {
         this.maxColumnWidth = maxColumnWidth;
         TextRenderer textRenderer = client.textRenderer;
 
-        Text displayName = entry.getDisplayName();
-        name = displayName != null ? displayName : Text.of(entry.getProfile().getName());
-        hasName = name == null || !name.getString().isEmpty();
+        name = Tools.getPlayerName(entry);
 
-        if (hasName) {
-            List<OrderedText> lines = textRenderer.wrapLines(name, maxColumnWidth);
-            textHeight = textRenderer.getWrappedLinesHeight(name, maxColumnWidth);
-            textWidth = Collections.max(lines.stream().map(textRenderer::getWidth).toList());
-        }
+        List<OrderedText> lines = textRenderer.wrapLines(name, maxColumnWidth);
+        textHeight = textRenderer.getWrappedLinesHeight(name, maxColumnWidth);
+        textWidth = Collections.max(lines.stream().map(textRenderer::getWidth).toList());
 
         badges = BadgeManager.getBadges(entry);
         int badgeWidth = badges.size() * 10;
@@ -80,8 +77,9 @@ public class TabEntry {
             }
         }
 
-        renderHead = true;
-        headTexture = entry.getSkinTextures().texture();
+        if (renderHead) {
+            headTexture = entry.getSkinTextures().texture();
+        }
         iconY = (textHeight - 8) / 2 + 1;
 
         textStartX = 2  + (renderHead ? 9 : 0);
@@ -105,8 +103,6 @@ public class TabEntry {
             }
         }
 
-
-
         totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 1 : 0) + 5 + scoreLength + pingWidth + 2);
         totalHeight = (2 + textHeight);
     }
@@ -124,9 +120,7 @@ public class TabEntry {
             PlayerSkinDrawer.draw(context, headTexture, x1, y1 + iconY, 8, true, false, -1);
         }
 
-        if (hasName) {
-            context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, 0xFFFFFFFF, true);
-        }
+        context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2, maxColumnWidth, 0xFFFFFFFF, true);
 
         if (renderScore) {
             context.drawTextWithShadow(client.textRenderer, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);

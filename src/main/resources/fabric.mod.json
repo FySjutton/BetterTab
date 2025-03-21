@@ -19,7 +19,7 @@
 			"tab.bettertab.BetterTab"
 		],
 		"modmenu": [
-			"tab.bettertab.ModMenuIntegration"
+			"tab.bettertab.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -29,7 +29,8 @@
 		"fabricloader": ">=0.16.5",
 		"minecraft": ">=1.21.4",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"yet_another_config_lib_v3": ">=3.6.2"
 	},
 	"recommends": {
 		"modmenu": ">=13.0.0"
