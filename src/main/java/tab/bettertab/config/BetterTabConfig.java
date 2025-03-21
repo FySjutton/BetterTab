@@ -18,11 +18,11 @@ public class BetterTabConfig {
                     .build())
             .build();
 
+    // General
     @SerialEntry public boolean enableMod = true;
     @SerialEntry public float maxWidth = 0.9f;
     @SerialEntry public float maxColumnWidth = 0.5f;
     @SerialEntry public float maxColumnHeight = 0.5f;
-    @SerialEntry public boolean scrollWithMouse = true;
 
     @SerialEntry public boolean renderHeader = true;
     @SerialEntry public boolean renderFooter = true;
@@ -30,11 +30,19 @@ public class BetterTabConfig {
     @SerialEntry public boolean renderBadges = true;
     @SerialEntry public boolean renderScoreboardNumber = true;
 
+    @SerialEntry public boolean scrollWithMouse = true;
+
+    // Colors
     @SerialEntry public Color backgroundColor = new Color(0x80000000, true);
     @SerialEntry public Color cellColor = new Color(0x20FFFFFF, true);
     @SerialEntry public Color nameColor = new Color(0xFFFFFFFF, true);
     @SerialEntry public Color spectatorColor = new Color(0x90FFFFFF, true);
     @SerialEntry public Color scrollIndicatorColor = new Color(0xFFFFFFFF, true);
+
+    // Advanced
+    @SerialEntry public boolean useExamples = false;
+    @SerialEntry public String exampleText = "ExamplePlayer%d";
+    @SerialEntry public int exampleAmount = 200;
 
     public static Screen configScreen(Screen parent) {
         return YetAnotherConfigLib.create(CONFIG, ((defaults, config, builder) -> builder
@@ -75,12 +83,6 @@ public class BetterTabConfig {
                                         .step(0.01f)
                                         .formatValue(val -> Text.of(String.format("%.0f", val * 100) + "%")))
                                 .build())
-                        .option(Option.<Boolean>createBuilder()
-                                .name(Text.of("Scroll with mouse"))
-                                .description(OptionDescription.of(Text.of("If you can use the mouse to scroll on tab")))
-                                .binding(true, () -> config.scrollWithMouse, newVal -> config.scrollWithMouse = newVal)
-                                .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
-                                .build())
 
                         // Rendering
                         .group(OptionGroup.createBuilder()
@@ -116,7 +118,19 @@ public class BetterTabConfig {
                                         .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
                                         .build())
                                 .build())
+                        // Other
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.of("Other"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.of("Scroll with mouse"))
+                                        .description(OptionDescription.of(Text.of("If you can use the mouse to scroll on tab")))
+                                        .binding(true, () -> config.scrollWithMouse, newVal -> config.scrollWithMouse = newVal)
+                                        .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
+                                        .build())
+                            .build())
+
                     .build())
+
                 // Colors
                 .category(ConfigCategory.createBuilder()
                         .name(Text.of("Colors"))
@@ -151,6 +165,35 @@ public class BetterTabConfig {
                                 .binding(new Color(0xFFFFFFFF, true), () -> config.scrollIndicatorColor, newVal -> config.scrollIndicatorColor = newVal)
                                 .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
                                 .build())
+                    .build())
+
+                // Advanced
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.of("Advanced"))
+
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.of("Examples"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.of("Use Examples"))
+                                        .description(OptionDescription.of(Text.of("Whether or not examples should be used")))
+                                        .binding(false, () -> config.useExamples, newVal -> config.useExamples = newVal)
+                                        .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
+                                        .build())
+                                .option(Option.<String>createBuilder()
+                                        .name(Text.of("Example Text"))
+                                        .description(OptionDescription.of(Text.of("The name of the example. \"%d\" to get the number.")))
+                                        .binding("ExamplePlayer%d", () -> config.exampleText, newVal -> config.exampleText = newVal)
+                                        .controller(StringControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Integer>createBuilder()
+                                        .name(Text.of("Example Amount"))
+                                        .description(OptionDescription.of(Text.of("The amount of examples.")))
+                                        .binding(200, () -> config.exampleAmount, newVal -> config.exampleAmount = newVal)
+                                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                                .range(1, 2000)
+                                                .step(1))
+                                        .build())
+                            .build())
                     .build())
             )).generateScreen(parent);
     }

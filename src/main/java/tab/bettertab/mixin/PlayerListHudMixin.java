@@ -53,7 +53,7 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "collectPlayerEntries", at = @At("HEAD"), cancellable = true)
 	private void onCollectPlayerEntries(CallbackInfoReturnable<List<PlayerListEntry>> cir) {
-		cir.setReturnValue(Tools.getPlayerEntries(client, config.enableMod, false, 0, "", ENTRY_ORDERING));
+		cir.setReturnValue(Tools.getPlayerEntries(client, config.enableMod, config.useExamples, config.exampleAmount, config.exampleText, ENTRY_ORDERING));
 	}
 
 	@Inject(method = "setVisible", at = @At("HEAD"))
