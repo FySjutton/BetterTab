@@ -18,6 +18,7 @@ import net.minecraft.world.GameMode;
 import tab.bettertab.Tools;
 import tab.bettertab.config.BetterTabConfig;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class TabEntry {
     private Identifier headTexture;
     private int iconY = 0;
     private final GameMode gameMode;
-    private List<Identifier> badges;
+    private List<Identifier> badges = new ArrayList<>();
 
     private String pingText;
     private int pingWidth = 0;
@@ -52,7 +53,6 @@ public class TabEntry {
     private boolean renderScore = false;
     private int scoreLength = 0;
     private Text scoreText;
-
 
     public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective) {
         this.client = client;
