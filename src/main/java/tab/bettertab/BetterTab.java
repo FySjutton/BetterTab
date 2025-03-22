@@ -8,11 +8,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tab.bettertab.config.BetterTabConfig;
 import tab.bettertab.mixin.PlayerListHudAccess;
+import tab.bettertab.tabList.BadgeManager;
 import tab.bettertab.tabList.TabRenderer;
 
 import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;

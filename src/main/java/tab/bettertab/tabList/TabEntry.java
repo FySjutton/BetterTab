@@ -61,7 +61,7 @@ public class TabEntry {
         this.gameMode = entry.getGameMode();
 
         name = Tools.getPlayerName(entry);
-        if (name == null) {
+        if (name == null || name.getString().isEmpty()) {
             validEntry = false;
             return;
         }
@@ -119,7 +119,7 @@ public class TabEntry {
             }
         }
 
-        textStartX = 2 + (renderHead ? 9 : 0);
+        textStartX = 2 + (renderHead ? 9 : 0) + badgeWidth;
 
         totalWidth = (2 + textWidth + badgeWidth + (renderHead ? 2 + 8 + 1 : 0) + ((scoreLength > 0 || pingWidth > 0) ? 5 : 0) + scoreLength + pingWidth + 2);
         totalHeight = (2 + textHeight);
@@ -129,13 +129,14 @@ public class TabEntry {
         context.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, BetterTabConfig.CONFIG.instance().cellColor.getRGB());
 
         x1 += 2;
+        int iconX = x1;
         for (Identifier badge : badges) {
-            context.drawTexture(RenderLayer::getGuiTextured, badge, x1, y1 + iconY, 0, 0, 8, 8, 8, 8);
-            x1 += 10;
+            context.drawTexture(RenderLayer::getGuiTextured, badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
+            iconX += 10;
         }
 
         if (renderHead) {
-            PlayerSkinDrawer.draw(context, headTexture, x1, y1 + iconY, 8, true, false, -1);
+            PlayerSkinDrawer.draw(context, headTexture, iconX, y1 + iconY, 8, true, false, -1);
         }
 
         context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2 + (lines.size() > 1 ? lines.size() - 1 : 0), maxColumnWidth, gameMode == GameMode.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
