@@ -48,6 +48,7 @@ public class BetterTabConfig {
     @SerialEntry public Color spectatorColor = new Color(0x90FFFFFF, true);
     @SerialEntry public Color scrollIndicatorColor = new Color(0xFFFFFFFF, true);
     @SerialEntry public Color columnNumberColor = new Color(0x66FFFFFF, true);
+    @SerialEntry public Color emptyLineColor = new Color(0x25FFFFFF, true);
 
     @SerialEntry public Color pingColorNone = new Color(0xFFB0B0B0, true);
     @SerialEntry public Color pingColorLow = new Color(0xFF7EFF70, true);
@@ -236,6 +237,12 @@ public class BetterTabConfig {
                                 .name(Text.translatable("tab.bettertab.config.option.column_number_color"))
                                 .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.column_number_color")))
                                 .binding(new Color(0x66FFFFFF, true), () -> config.columnNumberColor, newVal -> config.columnNumberColor = newVal)
+                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                .build())
+                        .option(Option.<Color>createBuilder()
+                                .name(Text.translatable("tab.bettertab.config.option.empty_line_color"))
+                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.empty_line_color")))
+                                .binding(new Color(0x25FFFFFF, true), () -> config.emptyLineColor, newVal -> config.emptyLineColor = newVal)
                                 .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
                                 .build())
                         .group(OptionGroup.createBuilder()

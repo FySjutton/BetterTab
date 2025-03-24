@@ -65,7 +65,7 @@ public class TabUpdater {
         int maxColumnHeight = (int) ((client.getWindow().getScaledHeight() - headerHeight - footerHeight) * BetterTabConfig.CONFIG.instance().maxColumnHeight);
 
         for (PlayerListEntry entry : playerEntries) {
-            TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth, scoreboard, objective);
+            TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth, scoreboard, objective, false);
             if (tabEntry.validEntry) {
                 tabEntries.add(tabEntry);
             }
@@ -130,7 +130,18 @@ public class TabUpdater {
 
         renderColumns = new ArrayList<>(columns.subList(startIndex, endIndex));
 
-
+        if (renderColumns.size() > 1 && renderColumns.getLast().totalHeight < renderColumns.getFirst().totalHeight) {
+            TabColumn lastColumn = renderColumns.getLast();
+            int fakeEntries = renderColumns.getFirst().entries.size() - lastColumn.entries.size();
+            if (fakeEntries > 0) {
+                ArrayList<TabEntry> entries = lastColumn.entries;
+                for (int i = 0; i < fakeEntries; i++) {
+                    entries.add(new TabEntry(client, new FakePlayer("empty"), lastColumn.width, scoreboard, objective, true));
+                }
+                renderColumns.removeLast();
+                renderColumns.add(new TabColumn(entries, lastColumn.columnNumber));
+            }
+        }
 
         canScrollLeft = startIndex > 0;
         canScrollRight = endIndex < columns.size();

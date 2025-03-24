@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TabEntry {
-    private final MinecraftClient client;
+    private MinecraftClient client;
     public boolean validEntry = true;
 
     private final boolean renderHead = BetterTabConfig.CONFIG.instance().renderHeads;
@@ -37,12 +37,12 @@ public class TabEntry {
     private List<OrderedText> lines;
     public int textWidth = 0;
     public int textHeight = 0;
-    private final int maxColumnWidth;
+    private int maxColumnWidth;
     private int textStartX = 0;
 
     private Identifier headTexture;
     private int iconY = 0;
-    private final GameMode gameMode;
+    private GameMode gameMode;
     private List<Identifier> badges = new ArrayList<>();
 
     private String pingText;
@@ -54,7 +54,16 @@ public class TabEntry {
     private int scoreLength = 0;
     private Text scoreText;
 
-    public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective) {
+    private boolean lineEntry = false;
+
+    public TabEntry(MinecraftClient client, PlayerListEntry entry, int maxColumnWidth, Scoreboard scoreboard, ScoreboardObjective objective, boolean lineEntry) {
+        if (lineEntry) {
+            this.totalWidth = maxColumnWidth;
+            this.textHeight = client.textRenderer.fontHeight;
+            this.totalHeight = textHeight + 2;
+            this.lineEntry = true;
+            return;
+        }
         this.client = client;
         this.maxColumnWidth = maxColumnWidth;
         TextRenderer textRenderer = client.textRenderer;
@@ -128,6 +137,10 @@ public class TabEntry {
     public void render(DrawContext context, int x1, int y1, int columnWidth) {
         context.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, BetterTabConfig.CONFIG.instance().cellColor.getRGB());
 
+        if (lineEntry) {
+            context.fill(x1 + 2, y1 + (textHeight + 1) / 2, x1 + columnWidth - 2, y1 + (textHeight + 1) / 2 + 1, BetterTabConfig.CONFIG.instance().emptyLineColor.getRGB());
+            return;
+        }
         x1 += 2;
         int iconX = x1;
         for (Identifier badge : badges) {
