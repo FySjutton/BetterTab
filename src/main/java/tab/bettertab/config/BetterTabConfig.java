@@ -56,6 +56,8 @@ public class BetterTabConfig {
     @SerialEntry public Color pingColorHigh = new Color(0xFFFF7070, true);
 
     // Advanced
+    @SerialEntry public int refreshCooldown = 250;
+
     @SerialEntry public boolean useExamples = false;
     @SerialEntry public String exampleText = "ExamplePlayer%d";
     @SerialEntry public int exampleAmount = 200;
@@ -278,6 +280,15 @@ public class BetterTabConfig {
                 .category(ConfigCategory.createBuilder()
                         .name(Text.translatable("tab.bettertab.config.category.advanced"))
 
+                        .option(Option.<Integer>createBuilder()
+                                .name(Text.translatable("tab.bettertab.config.option.refresh_cooldown"))
+                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.refresh_cooldown")))
+                                .binding(250, () -> config.refreshCooldown, newVal -> config.refreshCooldown = newVal)
+                                .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                        .range(0, 2000)
+                                        .step(1)
+                                        .formatValue(val -> Text.of(val + "ms")))
+                                .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("tab.bettertab.config.group.examples"))
                                 .option(Option.<Boolean>createBuilder()

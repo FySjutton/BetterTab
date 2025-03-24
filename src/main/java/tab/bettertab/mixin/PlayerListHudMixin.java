@@ -41,7 +41,7 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
 		if (config.enableMod) {
-			if (immediatelyUpdate || (lastCheck + 250 < System.currentTimeMillis())) {
+			if (immediatelyUpdate || (lastCheck + BetterTabConfig.CONFIG.instance().refreshCooldown < System.currentTimeMillis())) {
 				TabUpdater.update(client, this.collectPlayerEntries(), this.header, this.footer, scoreboard, objective);
 				lastCheck = System.currentTimeMillis();
 				immediatelyUpdate = false;
