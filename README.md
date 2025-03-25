@@ -8,8 +8,9 @@ To insert a badge, simply register a badge provider, and insert your icons into 
 ```java
 import static tab.bettertab.tabList.BadgeManager.registerBadgeProvider;
 
-public class BadgeExample() {
-    public void badgeCallback() {
+public class MyMod implements ModInitializer {
+    @Override
+    public void onInitialize() {
         // You can easily add your own badges by registering a provider like the following example.
         registerBadgeProvider((player, badgeList) -> {
             if (player.getProfile().getName().equals("Fy17")) {
