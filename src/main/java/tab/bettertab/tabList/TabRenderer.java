@@ -15,6 +15,7 @@ public class TabRenderer {
     public static boolean immediatelyUpdate = false;
     private static long scrollIndicatorLast = 0;
     private static boolean showScrollingIndicator = false;
+    private static final int columnNumberColor = BetterTabConfig.CONFIG.instance().columnNumberColor.getRGB();
 
     public static void render(MinecraftClient client, DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
         if (renderColumns.isEmpty()) {
@@ -44,6 +45,10 @@ public class TabRenderer {
         for (TabColumn column : renderColumns) {
             column.render(context, x, y);
             x += column.totalWidth;
+        }
+
+        if (BetterTabConfig.CONFIG.instance().scrollingType.equals(BetterTabConfig.ScrollingType.Page)) {
+            context.drawCenteredTextWithShadow(client.textRenderer, String.valueOf(pageNumber), startBoxX + totalWidth / 2, footerStartY - 11, columnNumberColor);
         }
     }
 

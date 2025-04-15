@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static tab.bettertab.BetterTab.LOGGER;
 import static tab.bettertab.BetterTab.tabScroll;
 
 public class TabUpdater {
@@ -36,6 +37,8 @@ public class TabUpdater {
     public static List<OrderedText> headerList;
     public static List<OrderedText> footerList;
     public static int footerStartY;
+
+    public static int pageNumber;
 
     public static void update(MinecraftClient client, List<PlayerListEntry> playerEntries, Text header, Text footer, Scoreboard scoreboard, ScoreboardObjective objective) {
         if (playerEntries.isEmpty()) {
@@ -90,40 +93,62 @@ public class TabUpdater {
             columns.add(new TabColumn(columnEntries, columns.size()));
         }
 
-        // Calculate which columns are to be displayed
-        tabScroll = Math.min(Math.max(0, tabScroll), columns.size());
-
         int startIndex = 0;
         int endIndex = 0;
-        int availableWidth = maxScreenWidth - 30; // arrows
-
-        // If we're at the beginning of the scrolling, go from left to right instead of right to left
-        if (tabScroll == 0) {
-            while (endIndex < columns.size() && availableWidth - columns.get(endIndex).totalWidth > 0) {
-                availableWidth -= columns.get(endIndex).totalWidth;
-                endIndex ++;
-            }
-            atZeroEndIndex = endIndex;
-            wasAtZero = true;
-        } else {
-            if (wasAtZero) {
-                tabScroll = atZeroEndIndex + 1;
-                wasAtZero = false;
-            }
-            int scroll = (int) tabScroll;
-            startIndex = scroll;
-            endIndex = scroll;
-
-            while (startIndex > 0 && availableWidth - columns.get(startIndex - 1).totalWidth > 0) {
-                availableWidth -= columns.get(startIndex - 1).totalWidth;
-                startIndex --;
-            }
-
-            if (startIndex == 0) {
-                tabScroll = 0;
+        if (BetterTabConfig.CONFIG.instance().scrollingType.equals(BetterTabConfig.ScrollingType.Page)) {
+            int page = 0;
+            int lastStart;
+            tabScroll = Math.max(tabScroll, 0);
+            while (page <= tabScroll) {
+                lastStart = startIndex;
+                startIndex = endIndex;
+                int availableWidth = maxScreenWidth - 30; // arrows
                 while (endIndex < columns.size() && availableWidth - columns.get(endIndex).totalWidth > 0) {
                     availableWidth -= columns.get(endIndex).totalWidth;
-                    endIndex ++;
+                    endIndex++;
+                }
+                if (startIndex == endIndex) {
+                    startIndex = lastStart;
+                    tabScroll = page - 1;
+                    break;
+                }
+                page ++;
+            }
+            pageNumber = page;
+        } else {
+// Calculate which columns are to be displayed
+            tabScroll = Math.min(Math.max(0, tabScroll), columns.size());
+
+            int availableWidth = maxScreenWidth - 30; // arrows
+
+            // If we're at the beginning of the scrolling, go from left to right instead of right to left
+            if (tabScroll == 0) {
+                while (endIndex < columns.size() && availableWidth - columns.get(endIndex).totalWidth > 0) {
+                    availableWidth -= columns.get(endIndex).totalWidth;
+                    endIndex++;
+                }
+                atZeroEndIndex = endIndex;
+                wasAtZero = true;
+            } else {
+                if (wasAtZero) {
+                    tabScroll = atZeroEndIndex + 1;
+                    wasAtZero = false;
+                }
+                int scroll = (int) tabScroll;
+                startIndex = scroll;
+                endIndex = scroll;
+
+                while (startIndex > 0 && availableWidth - columns.get(startIndex - 1).totalWidth > 0) {
+                    availableWidth -= columns.get(startIndex - 1).totalWidth;
+                    startIndex--;
+                }
+
+                if (startIndex == 0) {
+                    tabScroll = 0;
+                    while (endIndex < columns.size() && availableWidth - columns.get(endIndex).totalWidth > 0) {
+                        availableWidth -= columns.get(endIndex).totalWidth;
+                        endIndex++;
+                    }
                 }
             }
         }
