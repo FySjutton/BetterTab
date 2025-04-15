@@ -29,6 +29,8 @@ public class TabEntry {
     private final boolean renderHead = BetterTabConfig.CONFIG.instance().renderHeads;
     private final boolean renderPing = BetterTabConfig.CONFIG.instance().renderPing;
     private final boolean useNumericPing = BetterTabConfig.CONFIG.instance().numericalPing;
+    
+    private static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 
     public int totalWidth;
     public int totalHeight;
@@ -48,7 +50,7 @@ public class TabEntry {
     private String pingText;
     private int pingWidth = 0;
     private int pingColor;
-    private Identifier pingTexture;
+    private int v;
 
     private boolean renderScore = false;
     private int scoreLength = 0;
@@ -112,17 +114,17 @@ public class TabEntry {
             } else {
                 pingWidth = 10;
                 if (entry.getLatency() < 0) {
-                    pingTexture = Identifier.of("minecraft", "icon/ping_unknown");
+                    v = 5;
                 } else if (entry.getLatency() < 150) {
-                    pingTexture = Identifier.of("minecraft", "icon/ping_5");
+                    v = 0;
                 } else if (entry.getLatency() < 300) {
-                    pingTexture = Identifier.of("minecraft", "icon/ping_4");
+                    v = 1;
                 } else if (entry.getLatency() < 600) {
-                    pingTexture = Identifier.of("minecraft", "icon/ping_3");
+                    v = 2;
                 } else if (entry.getLatency() < 1000) {
-                    pingTexture = Identifier.of("minecraft", "icon/ping_2");
+                    v = 3;
                 } else {
-                    pingTexture = Identifier.of("minecraft", "icon/ping_1");
+                    v = 4;
                 }
             }
         }
@@ -162,7 +164,10 @@ public class TabEntry {
             if (useNumericPing) {
                 context.drawTextWithShadow(client.textRenderer, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
             } else {
-                context.drawTexture(pingTexture, x1 + columnWidth - 14, y1 + 2, 0, 0, 10, 8);
+                context.getMatrices().push();
+        		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
+        		context.drawTexture(ICONS_TEXTURE, x1 + columnWidth - 14, y1 + 2, 0, 176 + v * 8, 10, 8);
+        		context.getMatrices().pop();
             }
         }
     }
