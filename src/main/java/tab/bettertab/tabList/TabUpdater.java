@@ -139,7 +139,7 @@ public class TabUpdater {
                     entries.add(new TabEntry(client, new FakePlayer("empty"), lastColumn.width, scoreboard, objective, true));
                 }
                 renderColumns.removeLast();
-                renderColumns.add(new TabColumn(entries, lastColumn.columnNumber));
+                renderColumns.add(new TabColumn(entries, lastColumn.columnNumber - 1));
             }
         }
 
