@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "better-tab",
+	"id": "bettertab",
 	"version": "${version}",
 	"name": "Better Tab",
 	"description": "Makes the playerlist scrollable and adds numeric ping display.",
@@ -11,27 +11,28 @@
 		"issues": "https://discord.gg/6gBT2CgqQj",
 		"sources": "https://github.com/FySjutton/BetterTab"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/better-tab/mod_icon.png",
+	"license": "BetterTab License",
+	"icon": "assets/bettertab/mod_icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"tab.bettertab.BetterTab"
 		],
 		"modmenu": [
-			"tab.bettertab.ModMenuIntegration"
+			"tab.bettertab.config.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"better-tab.mixins.json"
+		"bettertab.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.5",
-		"minecraft": ">=1.20",
-		"java": ">=17",
-		"fabric-api": "*"
+		"minecraft": ">=1.21.4",
+		"java": ">=21",
+		"fabric-api": "*",
+		"yet_another_config_lib_v3": ">=3.6.2"
 	},
 	"recommends": {
-		"modmenu": ">=9.0.0"
+		"modmenu": ">=14.0.0-"
 	}
 }
