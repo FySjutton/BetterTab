@@ -2,18 +2,8 @@ package tab.bettertab.config;
 
 import java.awt.Color;
 
-import dev.isxander.yacl3.api.ConfigCategory;
-import dev.isxander.yacl3.api.NameableEnum;
-import dev.isxander.yacl3.api.Option;
-import dev.isxander.yacl3.api.OptionDescription;
-import dev.isxander.yacl3.api.OptionGroup;
-import dev.isxander.yacl3.api.YetAnotherConfigLib;
-import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
-import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
-import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
-import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.StringControllerBuilder;
+import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.controller.*;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
