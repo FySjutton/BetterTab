@@ -1,17 +1,26 @@
 package tab.bettertab.config;
 
-import dev.isxander.yacl3.api.*;
-import dev.isxander.yacl3.api.controller.*;
+import java.awt.Color;
+
+import dev.isxander.yacl3.api.ConfigCategory;
+import dev.isxander.yacl3.api.NameableEnum;
+import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.OptionDescription;
+import dev.isxander.yacl3.api.OptionGroup;
+import dev.isxander.yacl3.api.YetAnotherConfigLib;
+import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
+import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
+import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
+import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
-
-import java.awt.*;
 
 public class BetterTabConfig {
     public static final ConfigClassHandler<BetterTabConfig> CONFIG = ConfigClassHandler.createBuilder(BetterTabConfig.class)
@@ -22,6 +31,8 @@ public class BetterTabConfig {
 
     // General
     @SerialEntry public boolean enableMod = true;
+    @SerialEntry public ScrollingType scrollingType = ScrollingType.Column;
+    
     @SerialEntry public float maxWidth = 0.9f;
     @SerialEntry public float maxColumnWidth = 0.5f;
     @SerialEntry public float maxColumnHeight = 0.5f;
@@ -81,8 +92,14 @@ public class BetterTabConfig {
                                 .binding(true, () -> config.enableMod, newVal -> config.enableMod = newVal)
                                 .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
                                 .build())
+                        .option(Option.<ScrollingType>createBuilder()
+                                .name(Text.translatable("tab.bettertab.config.option.scrolling_type"))
+                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.scrolling_type")))
+                                .binding(ScrollingType.Column, () -> config.scrollingType, newVal -> config.scrollingType = newVal)
+                                .controller(opt -> EnumControllerBuilder.create(opt).enumClass(ScrollingType.class))
+                                .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.group.ping_colors"))
+                                .name(Text.translatable("tab.bettertab.config.group.sizes"))
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("tab.bettertab.config.option.max_width"))
                                         .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.max_width")))
@@ -205,48 +222,51 @@ public class BetterTabConfig {
                 .category(ConfigCategory.createBuilder()
                         .name(Text.translatable("tab.bettertab.config.category.colors"))
 
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.background_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.background_color")))
-                                .binding(new Color(0x80000000, true), () -> config.backgroundColor, newVal -> config.backgroundColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.cell_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.cell_color")))
-                                .binding(new Color(0x20FFFFFF, true), () -> config.cellColor, newVal -> config.cellColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.name_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.name_color")))
-                                .binding(new Color(0xFFFFFFFF, true), () -> config.nameColor, newVal -> config.nameColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.spectator_name_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.spectator_name_color")))
-                                .binding(new Color(0x90FFFFFF, true), () -> config.spectatorColor, newVal -> config.spectatorColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.scroll_indicator_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.scroll_indicator_color")))
-                                .binding(new Color(0xFFFFFFFF, true), () -> config.scrollIndicatorColor, newVal -> config.scrollIndicatorColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.column_number_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.column_number_color")))
-                                .binding(new Color(0x66FFFFFF, true), () -> config.columnNumberColor, newVal -> config.columnNumberColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
-                        .option(Option.<Color>createBuilder()
-                                .name(Text.translatable("tab.bettertab.config.option.empty_line_color"))
-                                .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.empty_line_color")))
-                                .binding(new Color(0x25FFFFFF, true), () -> config.emptyLineColor, newVal -> config.emptyLineColor = newVal)
-                                .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("tab.bettertab.config.group.ping_colors"))
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.background_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.background_color")))
+                                    .binding(new Color(0x80000000, true), () -> config.backgroundColor, newVal -> config.backgroundColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.cell_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.cell_color")))
+                                    .binding(new Color(0x20FFFFFF, true), () -> config.cellColor, newVal -> config.cellColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.name_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.name_color")))
+                                    .binding(new Color(0xFFFFFFFF, true), () -> config.nameColor, newVal -> config.nameColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.spectator_name_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.spectator_name_color")))
+                                    .binding(new Color(0x90FFFFFF, true), () -> config.spectatorColor, newVal -> config.spectatorColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.scroll_indicator_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.scroll_indicator_color")))
+                                    .binding(new Color(0xFFFFFFFF, true), () -> config.scrollIndicatorColor, newVal -> config.scrollIndicatorColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.column_number_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.column_number_color")))
+                                    .binding(new Color(0x66FFFFFF, true), () -> config.columnNumberColor, newVal -> config.columnNumberColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .option(Option.<Color>createBuilder()
+                                    .name(Text.translatable("tab.bettertab.config.option.empty_line_color"))
+                                    .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.empty_line_color")))
+                                    .binding(new Color(0x25FFFFFF, true), () -> config.emptyLineColor, newVal -> config.emptyLineColor = newVal)
+                                    .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                    .build())
+                            .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("tab.bettertab.config.group.ping_text_colors"))
                                 .option(Option.<Color>createBuilder()
@@ -369,6 +389,16 @@ public class BetterTabConfig {
         @Override
         public Text getDisplayName() {
             return Text.literal(name().replace("_", " ")).formatted(name().equals("Always") ? Formatting.GREEN : (name().equals("On_Scroll") ? Formatting.YELLOW : Formatting.RED));
+        }
+    }
+    
+    public enum ScrollingType implements NameableEnum {
+        Column,
+        Page;
+
+        @Override
+        public Text getDisplayName() {
+            return Text.literal(name());
         }
     }
 }

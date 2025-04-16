@@ -20,6 +20,7 @@ public class TabColumn {
     public boolean renderColumnNumber = false;
     public int columnNumber;
     private final int columnNumberColor = BetterTabConfig.CONFIG.instance().columnNumberColor.getRGB();
+    private final BetterTabConfig.ScrollingType scrollingType = BetterTabConfig.CONFIG.instance().scrollingType;
 
     public TabColumn(ArrayList<TabEntry> entries, int columnNumber) {
         this.columnNumber = columnNumber + 1;
@@ -42,7 +43,7 @@ public class TabColumn {
             y += entry.totalHeight;
         }
 
-        if (renderColumnNumber) {
+        if (renderColumnNumber && scrollingType.equals(BetterTabConfig.ScrollingType.Column)) {
             context.drawCenteredTextWithShadow(client.textRenderer, String.valueOf(columnNumber), startX + (width) / 2, startY + columnsHeight - client.textRenderer.fontHeight + client.textRenderer.fontHeight / 2 - 3, columnNumberColor);
         }
     }
