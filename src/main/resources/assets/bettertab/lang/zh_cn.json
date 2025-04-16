@@ -14,8 +14,8 @@
   "tab.bettertab.config.group.sizes": "最大尺寸设置",
   "tab.bettertab.config.group.rendering": "渲染设置",
   "tab.bettertab.config.group.other": "其它",
-  "tab.bettertab.config.group.ping_colors": "延迟颜色",
-  "tab.bettertab.config.group.ping_text_colors": "延迟文本颜色",
+  "tab.bettertab.config.group.ping_colors": "玩家列表颜色设置",
+  "tab.bettertab.config.group.ping_text_colors": "延迟文本颜色设置",
   "tab.bettertab.config.group.examples": "玩家样例",
   "tab.bettertab.config.group.ping": "延迟",
 
@@ -79,7 +79,7 @@
   "tab.bettertab.config.option.desc.background_color": "背景颜色",
   "tab.bettertab.config.option.desc.cell_color": "单元格的颜色",
   "tab.bettertab.config.option.desc.name_color": "玩家名称的颜色",
-  "tab.bettertab.config.option.desc.spectator_name_color": "旁观玩家名称的颜色",
+  "tab.bettertab.config.option.desc.spectator_name_color": "旁观模式玩家名称的颜色",
   "tab.bettertab.config.option.desc.scroll_indicator_color": "滚动指示器的颜色",
   "tab.bettertab.config.option.desc.column_number_color": "列号的颜色",
   "tab.bettertab.config.option.desc.empty_line_color": "空单元格中占位线的颜色",
@@ -88,12 +88,15 @@
   "tab.bettertab.config.option.desc.medium_ping_color": "中延迟时的文本颜色",
   "tab.bettertab.config.option.desc.high_ping_color": "高延迟时的文本颜色",
   "tab.bettertab.config.option.desc.refresh_cooldown": "玩家列表刷新的时间间隔",
-  "tab.bettertab.config.option.desc.use_examples": "是否使用样例",
+  "tab.bettertab.config.option.desc.use_examples": "是否显示样例玩家",
   "tab.bettertab.config.option.desc.example_text": "样例玩家显示名称的格式，以格式化符\"%d\"获取样例序号",
   "tab.bettertab.config.option.desc.example_amount": "样例的数量",
   "tab.bettertab.config.option.desc.numeric_ping_format": "数字延迟文本的格式，以格式化符\"%d\"获取延迟数值",
   "tab.bettertab.config.option.desc.medium_ping_minimum": "延迟超过此值时延迟文本使用\"中延迟\"颜色",
   "tab.bettertab.config.option.desc.high_ping_minimum": "延迟超过此值时延迟文本使用\"高延迟\"颜色，该值需高于中延迟阈值",
   "tab.bettertab.config.option.desc.scrolling_indicator_flash_speed": "滚动指示器的闪烁速度（单位：毫秒）",
-  "tab.bettertab.config.option.desc.scoreboard_health_text": "计分板生命值文本的格式，以格式化符\"%d\"获取生命值"
+  "tab.bettertab.config.option.desc.scoreboard_health_text": "计分板生命值文本的格式，以格式化符\"%d\"获取生命值",
+  
+  "modmenu.descriptionTranslation.modmenu": "使玩家列表可分页滚动并添加数字化延迟显示",
+  "modmenu.summaryTranslation.modmenu": "使玩家列表可分页滚动并添加数字化延迟显示"
 }
