@@ -97,6 +97,6 @@
   "tab.bettertab.config.option.desc.scrolling_indicator_flash_speed": "滚动指示器的闪烁速度（单位：毫秒）",
   "tab.bettertab.config.option.desc.scoreboard_health_text": "计分板生命值文本的格式，以格式化符\"%d\"获取生命值",
   
-  "modmenu.descriptionTranslation.modmenu": "使玩家列表可分页滚动并添加数字化延迟显示",
-  "modmenu.summaryTranslation.modmenu": "使玩家列表可分页滚动并添加数字化延迟显示"
+  "modmenu.descriptionTranslation.bettertab": "使玩家列表可分页滚动并添加数字化延迟显示",
+  "modmenu.summaryTranslation.bettertab": "使玩家列表可分页滚动并添加数字化延迟显示"
 }
