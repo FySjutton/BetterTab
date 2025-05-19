@@ -134,7 +134,7 @@ public class TabUpdater {
                     tabScroll = atZeroEndIndex + 1;
                     wasAtZero = false;
                 }
-                int scroll = (int) tabScroll;
+                int scroll = (int) Math.min(tabScroll, columns.size());
                 startIndex = scroll;
                 endIndex = scroll;
 

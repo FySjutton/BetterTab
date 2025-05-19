@@ -34,7 +34,7 @@ public class BetterTabConfig {
     @SerialEntry public boolean renderBadges = true;
     @SerialEntry public boolean renderScoreboardNumber = true;
     @SerialEntry public boolean renderScrollIndicator = true;
-    @SerialEntry public RenderColumnNumberEnum renderColumnNumbers = RenderColumnNumberEnum.Always;
+    @SerialEntry public RenderColumnNumberEnum renderColumnNumbers = RenderColumnNumberEnum.On_Scroll;
 
     @SerialEntry public boolean numericalPing = true;
     @SerialEntry public boolean forceClientFirst = false;
@@ -167,7 +167,7 @@ public class BetterTabConfig {
                                 .option(Option.<RenderColumnNumberEnum>createBuilder()
                                         .name(Text.translatable("tab.bettertab.config.option.render_column_numbers"))
                                         .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.render_column_numbers")))
-                                        .binding(RenderColumnNumberEnum.Always, () -> config.renderColumnNumbers, newVal -> config.renderColumnNumbers = newVal)
+                                        .binding(RenderColumnNumberEnum.On_Scroll, () -> config.renderColumnNumbers, newVal -> config.renderColumnNumbers = newVal)
                                         .controller(opt -> EnumControllerBuilder.create(opt).enumClass(RenderColumnNumberEnum.class))
                                         .build())
                                 .build())
