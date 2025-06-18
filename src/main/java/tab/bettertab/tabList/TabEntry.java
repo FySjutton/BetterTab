@@ -2,6 +2,7 @@ package tab.bettertab.tabList;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
@@ -144,7 +145,7 @@ public class TabEntry {
         x1 += 2;
         int iconX = x1;
         for (Identifier badge : badges) {
-            context.drawTexture(RenderLayer::getGuiTextured, badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
             iconX += 10;
         }
 
@@ -162,7 +163,7 @@ public class TabEntry {
             if (useNumericPing) {
                 context.drawTextWithShadow(client.textRenderer, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
             } else {
-                context.drawGuiTexture(RenderLayer::getGuiTextured, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
             }
         }
     }
