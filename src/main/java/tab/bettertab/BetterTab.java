@@ -54,9 +54,9 @@ public class BetterTab implements ModInitializer {
 	public void onInitialize() {
 		BetterTabConfig.CONFIG.load();
 
-		BadgeManager.registerBadgeProvider((a, b) -> {
-			b.add(Identifier.of("bettertab", "/mod_icon.png"));
-		});
+//		BadgeManager.registerBadgeProvider((a, b) -> {
+//			b.add(Identifier.of("bettertab", "/mod_icon.png"));
+//		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (openConfig.wasPressed()) {
