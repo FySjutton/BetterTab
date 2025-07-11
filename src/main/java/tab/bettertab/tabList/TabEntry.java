@@ -111,17 +111,17 @@ public class TabEntry {
             } else {
                 pingWidth = 10;
                 if (entry.getLatency() < 0) {
-                    pingTexture = new Identifier("icon/ping_unknown");
+                    pingTexture = Identifier.ofVanilla("icon/ping_unknown");
                 } else if (entry.getLatency() < 150) {
-                    pingTexture = new Identifier("icon/ping_5");
+                    pingTexture = Identifier.ofVanilla("icon/ping_5");
                 } else if (entry.getLatency() < 300) {
-                    pingTexture = new Identifier("icon/ping_4");
+                    pingTexture = Identifier.ofVanilla("icon/ping_4");
                 } else if (entry.getLatency() < 600) {
-                    pingTexture = new Identifier("icon/ping_3");
+                    pingTexture = Identifier.ofVanilla("icon/ping_3");
                 } else if (entry.getLatency() < 1000) {
-                    pingTexture = new Identifier("icon/ping_2");
+                    pingTexture = Identifier.ofVanilla("icon/ping_2");
                 } else {
-                    pingTexture = new Identifier("icon/ping_1");
+                    pingTexture = Identifier.ofVanilla("icon/ping_1");
                 }
             }
         }
