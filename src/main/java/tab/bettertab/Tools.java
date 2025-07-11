@@ -59,12 +59,11 @@ public class Tools {
     private static @NotNull Comparator<PlayerListEntry> getPlayerListEntryComparator(MinecraftClient client) {
         UUID clientUUID = client.player.getUuid();
         boolean forceClientFirst = BetterTabConfig.CONFIG.instance().forceClientFirst;
-
         return Comparator
-                .comparingInt((PlayerListEntry entry) -> (forceClientFirst && entry.getProfile().getId().equals(clientUUID)) ? Integer.MIN_VALUE : -entry.getListOrder())
-                .thenComparingInt((entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
-                .thenComparing((entry) -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
-                .thenComparing((entry) -> entry.getProfile().getName(), String::compareToIgnoreCase);
+            .comparingInt((PlayerListEntry entry) -> (forceClientFirst && entry.getProfile().getId().equals(clientUUID)) ? Integer.MIN_VALUE : 0)
+            .thenComparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
+            .thenComparing(entry -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
+            .thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);
     }
 
     public static Text getPlayerName(PlayerListEntry entry) {

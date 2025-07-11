@@ -2,12 +2,9 @@ package tab.bettertab.tabList;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.scoreboard.*;
 import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.StyledNumberFormat;
@@ -114,17 +111,17 @@ public class TabEntry {
             } else {
                 pingWidth = 10;
                 if (entry.getLatency() < 0) {
-                    pingTexture = Identifier.ofVanilla("icon/ping_unknown");
+                    pingTexture = new Identifier("icon/ping_unknown");
                 } else if (entry.getLatency() < 150) {
-                    pingTexture = Identifier.ofVanilla("icon/ping_5");
+                    pingTexture = new Identifier("icon/ping_5");
                 } else if (entry.getLatency() < 300) {
-                    pingTexture = Identifier.ofVanilla("icon/ping_4");
+                    pingTexture = new Identifier("icon/ping_4");
                 } else if (entry.getLatency() < 600) {
-                    pingTexture = Identifier.ofVanilla("icon/ping_3");
+                    pingTexture = new Identifier("icon/ping_3");
                 } else if (entry.getLatency() < 1000) {
-                    pingTexture = Identifier.ofVanilla("icon/ping_2");
+                    pingTexture = new Identifier("icon/ping_2");
                 } else {
-                    pingTexture = Identifier.ofVanilla("icon/ping_1");
+                    pingTexture = new Identifier("icon/ping_1");
                 }
             }
         }
@@ -145,15 +142,15 @@ public class TabEntry {
         x1 += 2;
         int iconX = x1;
         for (Identifier badge : badges) {
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
+            context.drawTexture(badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
             iconX += 10;
         }
 
         if (renderHead) {
-            PlayerSkinDrawer.draw(context, headTexture, iconX, y1 + iconY, 8, true, false, -1);
+            PlayerSkinDrawer.draw(context, headTexture, iconX, y1 + iconY, 8, true, false);
         }
 
-        context.drawWrappedText(client.textRenderer, name, x1 + textStartX, y1 + 2 + (lines.size() > 1 ? lines.size() - 1 : 0), maxColumnWidth, gameMode == GameMode.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
+        context.drawTextWrapped(client.textRenderer, name, x1 + textStartX, y1 + 2 + (lines.size() > 1 ? lines.size() - 1 : 0), maxColumnWidth, gameMode == GameMode.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB());
 
         if (renderScore) {
             context.drawTextWithShadow(client.textRenderer, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);
@@ -163,7 +160,7 @@ public class TabEntry {
             if (useNumericPing) {
                 context.drawTextWithShadow(client.textRenderer, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
             } else {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
+                context.drawGuiTexture(pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
             }
         }
     }
