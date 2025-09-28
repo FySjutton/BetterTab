@@ -1,6 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.10-SNAPSHOT'
+	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 version = project.mod_version
@@ -11,7 +12,8 @@ base {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    gradlePluginPortal()
 	maven {
 		name = "Mod Menu"
 		url = "https://maven.terraformersmc.com/releases/"
@@ -25,12 +27,13 @@ repositories {
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.terraformersmc:modmenu:15.0.0-beta.2"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
+    // Official 1.21.9 not released yet, using local version
+    //	modImplementation "com.terraformersmc:modmenu:16.0.0"
+    modImplementation files("/libs/modmenu.jar")
 }
 
 processResources {
@@ -58,14 +61,25 @@ jar {
 	}
 }
 
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
-			from components.java
-		}
-	}
+def changelogText = ''
+def changelogFile = file('CHANGELOG.md')
+if (changelogFile.exists()) {
+    changelogText = changelogFile.text
+}
 
-	repositories {
-	}
+modrinth {
+    token = System.getenv('MODRINTH_TOKEN')
+    projectId = 'bettertab'
+    versionNumber = project.mod_version
+    versionType = 'release'
+    uploadFile = remapJar
+    gameVersions = ['1.21.9-rc1']
+    loaders = ['fabric']
+    changelog = changelogText
+
+    dependencies {
+        required.project 'fabric-api'
+        required.project 'yacl'
+        optional.project 'modmenu'
+    }
 }

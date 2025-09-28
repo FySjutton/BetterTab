@@ -24,30 +24,31 @@ public class BetterTab implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static double tabScroll = 0;
+    private static final KeyBinding.Category category = KeyBinding.Category.create(Identifier.of(Text.translatable("tab.bettertab.keybind.title").getString()));
 
 	public static final KeyBinding toggleMod = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			Text.translatable("tab.bettertab.keybind.toggle_mod").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_UNKNOWN,
-			Text.translatable("tab.bettertab.keybind.title").getString()
+            category
 	));
 	public static final KeyBinding openConfig = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			Text.translatable("tab.bettertab.keybind.open_config").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_N,
-			Text.translatable("tab.bettertab.keybind.title").getString()
+            category
 	));
 	public static final KeyBinding rightScroll = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			Text.translatable("tab.bettertab.keybind.scroll_right").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_RIGHT,
-			Text.translatable("tab.bettertab.keybind.title").getString()
+            category
 	));
 	public static final KeyBinding leftScroll = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			Text.translatable("tab.bettertab.keybind.scroll_left").getString(),
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_LEFT,
-			Text.translatable("tab.bettertab.keybind.title").getString()
+            category
 	));
 
 	@Override

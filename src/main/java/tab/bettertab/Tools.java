@@ -61,14 +61,14 @@ public class Tools {
         boolean forceClientFirst = BetterTabConfig.CONFIG.instance().forceClientFirst;
 
         return Comparator
-                .comparingInt((PlayerListEntry entry) -> (forceClientFirst && entry.getProfile().getId().equals(clientUUID)) ? Integer.MIN_VALUE : -entry.getListOrder())
+                .comparingInt((PlayerListEntry entry) -> (forceClientFirst && entry.getProfile().id().equals(clientUUID)) ? Integer.MIN_VALUE : -entry.getListOrder())
                 .thenComparingInt((entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
                 .thenComparing((entry) -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
-                .thenComparing((entry) -> entry.getProfile().getName(), String::compareToIgnoreCase);
+                .thenComparing((entry) -> entry.getProfile().name(), String::compareToIgnoreCase);
     }
 
     public static Text getPlayerName(PlayerListEntry entry) {
-        return entry.getDisplayName() != null ? applyGameModeFormatting(entry, entry.getDisplayName().copy()) : applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().getName())));
+        return entry.getDisplayName() != null ? applyGameModeFormatting(entry, entry.getDisplayName().copy()) : applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().name())));
     }
 
     private static Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {

@@ -103,7 +103,7 @@ public class TabEntry {
 
         iconY = (textHeight - 8) / 2 + 1;
         if (renderHead) {
-            headTexture = entry.getSkinTextures().texture();
+            headTexture = entry.getSkinTextures().body().texturePath();
         }
 
         if (renderPing) {
