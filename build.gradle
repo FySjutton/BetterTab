@@ -31,9 +31,7 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
-    // Official 1.21.9 not released yet, using local version
-    //	modImplementation "com.terraformersmc:modmenu:16.0.0"
-    modImplementation files("/libs/modmenu.jar")
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 processResources {
@@ -73,7 +71,7 @@ modrinth {
     versionNumber = project.mod_version
     versionType = 'release'
     uploadFile = remapJar
-    gameVersions = ['1.21.9-rc1']
+    gameVersions = ['1.21.9', "1.21.10"]
     loaders = ['fabric']
     changelog = changelogText
 
