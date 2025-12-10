@@ -1,1 +1,1 @@
-Fixed category keybind name
+Added total player number ([#18](https://github.com/FySjutton/BetterTab/issues/18))

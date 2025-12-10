@@ -34,6 +34,7 @@ public class BetterTabConfig {
     @SerialEntry public boolean renderBadges = true;
     @SerialEntry public boolean renderScoreboardNumber = true;
     @SerialEntry public boolean renderScrollIndicator = true;
+    @SerialEntry public boolean renderTotalPlayers = false;
     @SerialEntry public RenderColumnNumberEnum renderColumnNumbers = RenderColumnNumberEnum.On_Scroll;
 
     @SerialEntry public boolean numericalPing = true;
@@ -69,6 +70,7 @@ public class BetterTabConfig {
 
     @SerialEntry public int scrollIndicatorSpeed = 530;
     @SerialEntry public String healthFormat = "%dhp";
+    @SerialEntry public String totalPlayerFormat = "§7§l(%d online)§r";
 
     public static Screen configScreen(Screen parent) {
         return YetAnotherConfigLib.create(CONFIG, ((defaults, config, builder) -> builder
@@ -169,6 +171,12 @@ public class BetterTabConfig {
                                         .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.render_column_numbers")))
                                         .binding(RenderColumnNumberEnum.On_Scroll, () -> config.renderColumnNumbers, newVal -> config.renderColumnNumbers = newVal)
                                         .controller(opt -> EnumControllerBuilder.create(opt).enumClass(RenderColumnNumberEnum.class))
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("tab.bettertab.config.option.render_total_players"))
+                                        .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.render_total_players")))
+                                        .binding(false, () -> config.renderTotalPlayers, newVal -> config.renderTotalPlayers = newVal)
+                                        .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
                                         .build())
                                 .build())
                         // Other
@@ -364,6 +372,12 @@ public class BetterTabConfig {
                                         .name(Text.translatable("tab.bettertab.config.option.scoreboard_health_text"))
                                         .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.scoreboard_health_text")))
                                         .binding("%dhp", () -> config.healthFormat, newVal -> config.healthFormat = newVal)
+                                        .controller(StringControllerBuilder::create)
+                                        .build())
+                                .option(Option.<String>createBuilder()
+                                        .name(Text.translatable("tab.bettertab.config.option.total_player_format"))
+                                        .description(OptionDescription.of(Text.translatable("tab.bettertab.config.option.desc.total_player_format")))
+                                        .binding("§7§l(%d online)§r", () -> config.totalPlayerFormat, newVal -> config.totalPlayerFormat = newVal)
                                         .controller(StringControllerBuilder::create)
                                         .build())
                             .build())
