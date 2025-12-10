@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import tab.bettertab.config.BetterTabConfig;
@@ -47,8 +48,12 @@ public class TabUpdater {
         }
 
         int maxScreenWidth = (int) (client.getWindow().getScaledWidth() * BetterTabConfig.CONFIG.instance().maxWidth);
-        if (BetterTabConfig.CONFIG.instance().renderHeader && header != null) {
-            headerList = client.textRenderer.wrapLines(header, maxScreenWidth);
+
+        MutableText totalPlayerText = (BetterTabConfig.CONFIG.instance().renderTotalPlayers ? Text.literal((String.format(BetterTabConfig.CONFIG.instance().totalPlayerFormat, playerEntries.size()))) : Text.empty());
+        MutableText headerText = (header == null || !BetterTabConfig.CONFIG.instance().renderHeader) ? Text.empty() : header.copy().append((totalPlayerText.equals(Text.empty()) ? Text.empty() : Text.of(" ")));
+        headerText.append(totalPlayerText);
+        if (!headerText.equals(Text.empty())) {
+            headerList = client.textRenderer.wrapLines(headerText, maxScreenWidth);
         } else {
             headerList = new ArrayList<>();
         }

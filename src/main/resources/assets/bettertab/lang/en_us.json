@@ -32,6 +32,7 @@
   "tab.bettertab.config.option.render_scoreboard_numbers": "Render Scoreboard Numbers",
   "tab.bettertab.config.option.render_scroll_indicator": "Render Scroll Indicator",
   "tab.bettertab.config.option.render_column_numbers": "Render Column Numbers",
+  "tab.bettertab.config.option.render_total_players": "Render Total Players",
   "tab.bettertab.config.option.use_numerical_ping": "Use Numerical Ping",
   "tab.bettertab.config.option.force_client_first": "Force Client First",
   "tab.bettertab.config.option.save_scroll": "Save Scroll",
@@ -57,6 +58,7 @@
   "tab.bettertab.config.option.high_ping_minimum": "High Ping Minimum",
   "tab.bettertab.config.option.scrolling_indicator_flash_speed": "Scrolling Indicator Flash Speed",
   "tab.bettertab.config.option.scoreboard_health_text": "Scoreboard Health Text",
+  "tab.bettertab.config.option.total_player_format": "Total Player Format",
 
   "tab.bettertab.config.option.desc.enable_mod": "Enable and disable the mod",
   "tab.bettertab.config.option.desc.scrolling_type": "What scrolling type should be used",
@@ -71,6 +73,7 @@
   "tab.bettertab.config.option.desc.render_scoreboard_numbers": "Whether the scoreboard number is to be rendered",
   "tab.bettertab.config.option.desc.render_scroll_indicator": "Whether the scroll indicator is to be rendered",
   "tab.bettertab.config.option.desc.render_column_numbers": "When the column index should be rendered",
+  "tab.bettertab.config.option.desc.render_total_players": "Weather the total amount of online players is to be rendered on tab.",
   "tab.bettertab.config.option.desc.use_numerical_ping": "If numerical ping should be used, otherwise normal will be used",
   "tab.bettertab.config.option.desc.force_client_first": "If the client player is to be first on the player list",
   "tab.bettertab.config.option.desc.save_scroll": "If the scroll is to be saved",
@@ -95,5 +98,6 @@
   "tab.bettertab.config.option.desc.medium_ping_minimum": "At what ping the color switches to \"medium\".",
   "tab.bettertab.config.option.desc.high_ping_minimum": "At what ping the color switches to \"high\". To be higher than medium.",
   "tab.bettertab.config.option.desc.scrolling_indicator_flash_speed": "How fast the scroll indicators blink.",
-  "tab.bettertab.config.option.desc.scoreboard_health_text": "The format of the scoreboard health text. \"%d\" to get the health."
+  "tab.bettertab.config.option.desc.scoreboard_health_text": "The format of the scoreboard health text. \"%d\" to get the health.",
+  "tab.bettertab.config.option.desc.total_player_format": "The format of the total amount of online player text. \"%d\" to get the amount."
 }
