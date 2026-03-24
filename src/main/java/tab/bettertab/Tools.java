@@ -24,15 +24,13 @@ public class Tools {
     public void sendToast(String title, String description) {
         try {
             Minecraft client = Minecraft.getInstance();
-            if (client.font != null) {
-                client.getToastManager().clear();
-                client.getToastManager().addToast(
-                        new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
-                                Component.literal(title),
-                                Component.literal(description)
-                        )
-                );
-            }
+            client.getToastManager().clear();
+            client.getToastManager().addToast(
+                new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+                    Component.literal(title),
+                    Component.literal(description)
+                )
+            );
         } catch (Exception e) {
             LOGGER.warn("Failed to display toast! Toast title: " + title + ", toast description: " + description + ". Error:");
             LOGGER.error(String.valueOf(e));
@@ -42,6 +40,7 @@ public class Tools {
     public static List<PlayerInfo> getPlayerEntries(Minecraft client, boolean ENABLE_MOD, boolean USE_EXAMPLES, int EXAMPLE_AMOUNT, String EXAMPLE_TEXT, Comparator<PlayerInfo> ENTRY_ORDERING) {
         Comparator<PlayerInfo> comparator = getPlayerListEntryComparator(client);
 
+        if (client.player == null) return new ArrayList<>();
         List<PlayerInfo> playerList = new ArrayList<>(client.player.connection.getListedOnlinePlayers().stream().sorted(comparator).toList());
 
         if (ENABLE_MOD) {
@@ -57,7 +56,13 @@ public class Tools {
     }
 
     private static @NotNull Comparator<PlayerInfo> getPlayerListEntryComparator(Minecraft client) {
-        UUID clientUUID = client.player.getUUID();
+        UUID clientUUID;
+        if (client.player != null) {
+            clientUUID = client.player.getUUID();
+        } else {
+            clientUUID = UUID.randomUUID();
+        }
+
         boolean forceClientFirst = BetterTabConfig.CONFIG.instance().forceClientFirst;
 
         return Comparator

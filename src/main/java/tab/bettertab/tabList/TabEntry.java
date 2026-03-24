@@ -3,8 +3,8 @@ package tab.bettertab.tabList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -137,35 +137,35 @@ public class TabEntry {
         totalHeight = (2 + textHeight);
     }
 
-    public void render(GuiGraphics context, int x1, int y1, int columnWidth) {
-        context.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, BetterTabConfig.CONFIG.instance().cellColor.getRGB());
+    public void render(GuiGraphicsExtractor graphics, int x1, int y1, int columnWidth) {
+        graphics.fill(x1, y1, x1 + columnWidth, y1 + textHeight + 1, BetterTabConfig.CONFIG.instance().cellColor.getRGB());
 
         if (lineEntry) {
-            context.fill(x1 + 2, y1 + (textHeight + 1) / 2, x1 + columnWidth - 2, y1 + (textHeight + 1) / 2 + 1, BetterTabConfig.CONFIG.instance().emptyLineColor.getRGB());
+            graphics.fill(x1 + 2, y1 + (textHeight + 1) / 2, x1 + columnWidth - 2, y1 + (textHeight + 1) / 2 + 1, BetterTabConfig.CONFIG.instance().emptyLineColor.getRGB());
             return;
         }
         x1 += 2;
         int iconX = x1;
         for (Identifier badge : badges) {
-            context.blit(RenderPipelines.GUI_TEXTURED, badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, badge, iconX, y1 + iconY, 0, 0, 8, 8, 8, 8);
             iconX += 10;
         }
 
         if (renderHead) {
-            PlayerFaceRenderer.draw(context, headTexture, iconX, y1 + iconY, 8, true, false, -1);
+            PlayerFaceExtractor.extractRenderState(graphics, headTexture, iconX, y1 + iconY, 8, true, false, -1);
         }
 
-        context.drawWordWrap(client.font, name, x1 + textStartX, y1 + 2 + (lines.size() > 1 ? lines.size() - 1 : 0), maxColumnWidth, gameMode == GameType.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
+        graphics.textWithWordWrap(client.font, name, x1 + textStartX, y1 + 2 + (lines.size() > 1 ? lines.size() - 1 : 0), maxColumnWidth, gameMode == GameType.SPECTATOR ? BetterTabConfig.CONFIG.instance().spectatorColor.getRGB() : BetterTabConfig.CONFIG.instance().nameColor.getRGB(), true);
 
         if (renderScore) {
-            context.drawString(client.font, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);
+            graphics.text(client.font, scoreText, x1 + columnWidth - pingWidth - scoreLength - 6, y1 + 2, 0xFFFFFFFF);
         }
 
         if (renderPing) {
             if (useNumericPing) {
-                context.drawString(client.font, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
+                graphics.text(client.font, pingText, x1 + columnWidth - pingWidth - 3, y1 + 2, pingColor);
             } else {
-                context.blitSprite(RenderPipelines.GUI_TEXTURED, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, pingTexture, x1 + columnWidth - 14, y1 + 2, 10, 8);
             }
         }
     }

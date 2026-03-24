@@ -1,1 +1,1 @@
-Added total player number ([#18](https://github.com/FySjutton/BetterTab/issues/18))
+Updated the mod to 26.1 (Mojang mappings, java 25)

@@ -3,7 +3,6 @@ package tab.bettertab;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -16,8 +15,6 @@ import tab.bettertab.mixin.PlayerListHudAccess;
 
 import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;
 
-import com.mojang.blaze3d.platform.InputConstants;
-
 public class BetterTab implements ModInitializer {
 	public static final String MOD_ID = "bettertab";
 
@@ -25,34 +22,16 @@ public class BetterTab implements ModInitializer {
 	public static double tabScroll = 0;
     private static final KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("bettertab", "category.bettertab.tab"));
 
-	public static final KeyMapping toggleMod = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-			Component.translatable("tab.bettertab.keybind.toggle_mod").getString(),
-			InputConstants.Type.KEYSYM,
-			GLFW.GLFW_KEY_UNKNOWN,
-            category
-	));
-	public static final KeyMapping openConfig = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-			Component.translatable("tab.bettertab.keybind.open_config").getString(),
-			InputConstants.Type.KEYSYM,
-			GLFW.GLFW_KEY_N,
-            category
-	));
-	public static final KeyMapping rightScroll = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-			Component.translatable("tab.bettertab.keybind.scroll_right").getString(),
-			InputConstants.Type.KEYSYM,
-			GLFW.GLFW_KEY_RIGHT,
-            category
-	));
-	public static final KeyMapping leftScroll = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-			Component.translatable("tab.bettertab.keybind.scroll_left").getString(),
-			InputConstants.Type.KEYSYM,
-			GLFW.GLFW_KEY_LEFT,
-            category
-	));
+	public static final KeyMapping toggleMod = new KeyMapping(Component.translatable("tab.bettertab.keybind.toggle_mod").getString(), GLFW.GLFW_KEY_UNKNOWN, category);
+	public static final KeyMapping openConfig = new KeyMapping(Component.translatable("tab.bettertab.keybind.open_config").getString(), GLFW.GLFW_KEY_N, category);
+	public static final KeyMapping rightScroll = new KeyMapping(Component.translatable("tab.bettertab.keybind.scroll_right").getString(), GLFW.GLFW_KEY_RIGHT, category);
+	public static final KeyMapping leftScroll = new KeyMapping(Component.translatable("tab.bettertab.keybind.scroll_left").getString(), GLFW.GLFW_KEY_LEFT, category);
 
 	@Override
 	public void onInitialize() {
 		BetterTabConfig.CONFIG.load();
+
+		// TODO: Merge pull request, add all three issues
 
 //		BadgeManager.registerBadgeProvider((a, b) -> {
 //			b.add(Identifier.of("bettertab", "/mod_icon.png"));

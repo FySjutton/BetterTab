@@ -1,11 +1,11 @@
 package tab.bettertab.tabList;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import tab.bettertab.config.BetterTabConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 
 import static tab.bettertab.tabList.TabUpdater.*;
 
@@ -36,15 +36,15 @@ public class TabColumn {
         this.totalHeight = this.entries.stream().mapToInt(entry -> entry.totalHeight).sum() + (renderColumnNumber ? 10 : 0);
     }
 
-    public void render(GuiGraphics context, int startX, int startY) {
+    public void render(GuiGraphicsExtractor graphics, int startX, int startY) {
         int y = startY;
         for (TabEntry entry : entries) {
-            entry.render(context, startX + 1, y + 1, width);
+            entry.render(graphics, startX + 1, y + 1, width);
             y += entry.totalHeight;
         }
 
         if (renderColumnNumber && scrollingType.equals(BetterTabConfig.ScrollingType.Column)) {
-            context.drawCenteredString(client.font, String.valueOf(columnNumber), startX + (width) / 2, startY + columnsHeight - client.font.lineHeight + client.font.lineHeight / 2 - 3, columnNumberColor);
+            graphics.centeredText(client.font, String.valueOf(columnNumber), startX + (width) / 2, startY + columnsHeight - client.font.lineHeight + client.font.lineHeight / 2 - 3, columnNumberColor);
         }
     }
 }
