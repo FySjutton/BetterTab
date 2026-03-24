@@ -1,15 +1,16 @@
 package tab.bettertab.tabList;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.OrderedText;
 import org.jetbrains.annotations.Nullable;
 import tab.bettertab.config.BetterTabConfig;
 
 import static tab.bettertab.tabList.TabUpdater.*;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 
 public class TabRenderer {
     public static boolean immediatelyUpdate = false;
@@ -17,11 +18,11 @@ public class TabRenderer {
     private static boolean showScrollingIndicator = false;
     private static final int columnNumberColor = BetterTabConfig.CONFIG.instance().columnNumberColor.getRGB();
 
-    public static void render(MinecraftClient client, DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
+    public static void render(Minecraft client, GuiGraphics context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable Objective objective) {
         if (renderColumns.isEmpty()) {
             return;
         }
-        TextRenderer textRenderer = client.textRenderer;
+        Font textRenderer = client.font;
 
         int x = startTextX;
         int y = startBoxY + 5;
@@ -48,32 +49,32 @@ public class TabRenderer {
         }
 
         if (BetterTabConfig.CONFIG.instance().scrollingType.equals(BetterTabConfig.ScrollingType.Page)) {
-            context.drawCenteredTextWithShadow(client.textRenderer, String.valueOf(pageNumber), startBoxX + totalWidth / 2, footerStartY - 11, columnNumberColor);
+            context.drawCenteredString(client.font, String.valueOf(pageNumber), startBoxX + totalWidth / 2, footerStartY - 11, columnNumberColor);
         }
     }
 
-    private static int renderHeader(TextRenderer textRenderer, DrawContext context, int y) {
-        for (OrderedText text : headerList) {
-            context.drawCenteredTextWithShadow(textRenderer, text, startBoxX + totalWidth / 2, y, 0xffffffff);
-            y += textRenderer.fontHeight;
+    private static int renderHeader(Font textRenderer, GuiGraphics context, int y) {
+        for (FormattedCharSequence text : headerList) {
+            context.drawCenteredString(textRenderer, text, startBoxX + totalWidth / 2, y, 0xffffffff);
+            y += textRenderer.lineHeight;
         }
         return y;
     }
 
-    private static void renderFooter(TextRenderer textRenderer, DrawContext context) {
+    private static void renderFooter(Font textRenderer, GuiGraphics context) {
         int footerHeight = footerStartY;
-        for (OrderedText text : footerList) {
-            context.drawCenteredTextWithShadow(textRenderer, text, startBoxX + totalWidth / 2, footerHeight, 0xffffffff);
-            footerHeight += textRenderer.fontHeight;
+        for (FormattedCharSequence text : footerList) {
+            context.drawCenteredString(textRenderer, text, startBoxX + totalWidth / 2, footerHeight, 0xffffffff);
+            footerHeight += textRenderer.lineHeight;
         }
     }
 
-    private static void renderPageArrows(TextRenderer textRenderer, DrawContext context, int y) {
+    private static void renderPageArrows(Font textRenderer, GuiGraphics context, int y) {
         if (canScrollLeft) {
-            context.drawCenteredTextWithShadow(textRenderer, "<", startBoxX + 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
+            context.drawCenteredString(textRenderer, "<", startBoxX + 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
         }
         if (canScrollRight) {
-            context.drawCenteredTextWithShadow(textRenderer, ">", startBoxX + totalWidth - 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
+            context.drawCenteredString(textRenderer, ">", startBoxX + totalWidth - 7, y + columnsHeight / 2 - 4, BetterTabConfig.CONFIG.instance().scrollIndicatorColor.getRGB());
         }
     }
 }

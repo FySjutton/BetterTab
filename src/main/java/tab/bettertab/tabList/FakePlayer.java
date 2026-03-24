@@ -1,11 +1,10 @@
 package tab.bettertab.tabList;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.network.PlayerListEntry;
-
 import java.util.UUID;
+import net.minecraft.client.multiplayer.PlayerInfo;
 
-public class FakePlayer extends PlayerListEntry {
+public class FakePlayer extends PlayerInfo {
     public FakePlayer(String fakePlayerName) {
         super(new GameProfile(UUID.nameUUIDFromBytes(fakePlayerName.getBytes()), fakePlayerName), false);
     }

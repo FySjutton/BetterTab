@@ -1,14 +1,5 @@
 package tab.bettertab;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.scoreboard.Team;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Nullables;
-import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import tab.bettertab.config.BetterTabConfig;
 import tab.bettertab.tabList.FakePlayer;
@@ -17,19 +8,28 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Optionull;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.scores.PlayerTeam;
 
 import static tab.bettertab.BetterTab.LOGGER;
 
 public class Tools {
     public void sendToast(String title, String description) {
         try {
-            MinecraftClient client = MinecraftClient.getInstance();
-            if (client.textRenderer != null) {
+            Minecraft client = Minecraft.getInstance();
+            if (client.font != null) {
                 client.getToastManager().clear();
-                client.getToastManager().add(
-                        new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION,
-                                Text.literal(title),
-                                Text.literal(description)
+                client.getToastManager().addToast(
+                        new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+                                Component.literal(title),
+                                Component.literal(description)
                         )
                 );
             }
@@ -39,10 +39,10 @@ public class Tools {
         }
     }
 
-    public static List<PlayerListEntry> getPlayerEntries(MinecraftClient client, boolean ENABLE_MOD, boolean USE_EXAMPLES, int EXAMPLE_AMOUNT, String EXAMPLE_TEXT, Comparator<PlayerListEntry> ENTRY_ORDERING) {
-        Comparator<PlayerListEntry> comparator = getPlayerListEntryComparator(client);
+    public static List<PlayerInfo> getPlayerEntries(Minecraft client, boolean ENABLE_MOD, boolean USE_EXAMPLES, int EXAMPLE_AMOUNT, String EXAMPLE_TEXT, Comparator<PlayerInfo> ENTRY_ORDERING) {
+        Comparator<PlayerInfo> comparator = getPlayerListEntryComparator(client);
 
-        List<PlayerListEntry> playerList = new ArrayList<>(client.player.networkHandler.getListedPlayerListEntries().stream().sorted(comparator).toList());
+        List<PlayerInfo> playerList = new ArrayList<>(client.player.connection.getListedOnlinePlayers().stream().sorted(comparator).toList());
 
         if (ENABLE_MOD) {
             if (USE_EXAMPLES) {
@@ -56,23 +56,23 @@ public class Tools {
         }
     }
 
-    private static @NotNull Comparator<PlayerListEntry> getPlayerListEntryComparator(MinecraftClient client) {
-        UUID clientUUID = client.player.getUuid();
+    private static @NotNull Comparator<PlayerInfo> getPlayerListEntryComparator(Minecraft client) {
+        UUID clientUUID = client.player.getUUID();
         boolean forceClientFirst = BetterTabConfig.CONFIG.instance().forceClientFirst;
 
         return Comparator
-                .comparingInt((PlayerListEntry entry) -> (forceClientFirst && entry.getProfile().id().equals(clientUUID)) ? Integer.MIN_VALUE : -entry.getListOrder())
-                .thenComparingInt((entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
-                .thenComparing((entry) -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
+                .comparingInt((PlayerInfo entry) -> (forceClientFirst && entry.getProfile().id().equals(clientUUID)) ? Integer.MIN_VALUE : -entry.getTabListOrder())
+                .thenComparingInt((entry) -> entry.getGameMode() == GameType.SPECTATOR ? 1 : 0)
+                .thenComparing((entry) -> Optionull.mapOrDefault(entry.getTeam(), PlayerTeam::getName, ""))
                 .thenComparing((entry) -> entry.getProfile().name(), String::compareToIgnoreCase);
     }
 
-    public static Text getPlayerName(PlayerListEntry entry) {
-        return entry.getDisplayName() != null ? applyGameModeFormatting(entry, entry.getDisplayName().copy()) : applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().name())));
+    public static Component getPlayerName(PlayerInfo entry) {
+        return entry.getTabListDisplayName() != null ? applyGameModeFormatting(entry, entry.getTabListDisplayName().copy()) : applyGameModeFormatting(entry, PlayerTeam.formatNameForTeam(entry.getTeam(), Component.literal(entry.getProfile().name())));
     }
 
-    private static Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {
-        return entry.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name;
+    private static Component applyGameModeFormatting(PlayerInfo entry, MutableComponent name) {
+        return entry.getGameMode() == GameType.SPECTATOR ? name.withStyle(ChatFormatting.ITALIC) : name;
     }
 
     public static int numericalColorizer(int ping) {

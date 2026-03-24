@@ -1,12 +1,5 @@
 package tab.bettertab.mixin;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.PlayerListHud;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +11,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.PlayerTabOverlay;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import tab.bettertab.config.BetterTabConfig;
 import tab.bettertab.tabList.TabRenderer;
 import tab.bettertab.tabList.TabUpdater;
@@ -26,35 +25,35 @@ import tab.bettertab.Tools;
 import static tab.bettertab.BetterTab.*;
 import static tab.bettertab.tabList.TabRenderer.immediatelyUpdate;
 
-@Mixin(PlayerListHud.class)
+@Mixin(PlayerTabOverlay.class)
 public abstract class PlayerListHudMixin {
-	@Shadow @Final private static Comparator<PlayerListEntry> ENTRY_ORDERING;
-	@Shadow private MinecraftClient client;
-	@Shadow protected abstract List<PlayerListEntry> collectPlayerEntries();
-	@Shadow @Nullable private Text header;
-	@Shadow @Nullable private Text footer;
+	@Shadow @Final private static Comparator<PlayerInfo> PLAYER_COMPARATOR;
+	@Shadow private Minecraft minecraft;
+	@Shadow protected abstract List<PlayerInfo> getPlayerInfos();
+	@Shadow @Nullable private Component header;
+	@Shadow @Nullable private Component footer;
 	@Shadow private boolean visible;
 	@Unique private long lastCheck = 0;
 
 	@Unique private BetterTabConfig config;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-	private void onRender(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci) {
+	private void onRender(GuiGraphics context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable Objective objective, CallbackInfo ci) {
 		if (config.enableMod) {
 			if (immediatelyUpdate || (lastCheck + BetterTabConfig.CONFIG.instance().refreshCooldown < System.currentTimeMillis())) {
-				TabUpdater.update(client, this.collectPlayerEntries(), this.header, this.footer, scoreboard, objective);
+				TabUpdater.update(minecraft, this.getPlayerInfos(), this.header, this.footer, scoreboard, objective);
 				lastCheck = System.currentTimeMillis();
 				immediatelyUpdate = false;
 			}
 
-			TabRenderer.render(client, context, scaledWindowWidth, scoreboard, objective);
+			TabRenderer.render(minecraft, context, scaledWindowWidth, scoreboard, objective);
 			ci.cancel();
 		}
 	}
 
-	@Inject(method = "collectPlayerEntries", at = @At("HEAD"), cancellable = true)
-	private void onCollectPlayerEntries(CallbackInfoReturnable<List<PlayerListEntry>> cir) {
-		cir.setReturnValue(Tools.getPlayerEntries(client, config.enableMod, config.useExamples, config.exampleAmount, config.exampleText, ENTRY_ORDERING));
+	@Inject(method = "getPlayerInfos", at = @At("HEAD"), cancellable = true)
+	private void onCollectPlayerEntries(CallbackInfoReturnable<List<PlayerInfo>> cir) {
+		cir.setReturnValue(Tools.getPlayerEntries(minecraft, config.enableMod, config.useExamples, config.exampleAmount, config.exampleText, PLAYER_COMPARATOR));
 	}
 
 	@Inject(method = "setVisible", at = @At("HEAD"))
