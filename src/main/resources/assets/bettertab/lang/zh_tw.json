@@ -21,6 +21,7 @@
 
   "tab.bettertab.config.option.enable_mod": "啟用模組",
   "tab.bettertab.config.option.scrolling_type": "捲動類型",
+  "tab.bettertab.config.option.scale": "縮放",
   "tab.bettertab.config.option.max_width": "最大寬度",
   "tab.bettertab.config.option.max_column_width": "最大欄位寬度",
   "tab.bettertab.config.option.max_column_height": "最大欄位高度",
@@ -62,6 +63,7 @@
 
   "tab.bettertab.config.option.desc.enable_mod": "啟用或停用此模組",
   "tab.bettertab.config.option.desc.scrolling_type": "應使用哪種捲動類型",
+  "tab.bettertab.config.option.desc.scale": "玩家列表的縮放比例",
   "tab.bettertab.config.option.desc.max_width": "玩家列表的最大寬度",
   "tab.bettertab.config.option.desc.max_column_width": "欄位的最大寬度",
   "tab.bettertab.config.option.desc.max_column_height": "欄位的最大高度",

@@ -21,6 +21,7 @@
 
   "tab.bettertab.config.option.enable_mod": "Enable Mod",
   "tab.bettertab.config.option.scrolling_type": "Scrolling Type",
+  "tab.bettertab.config.option.scale": "Scale",
   "tab.bettertab.config.option.max_width": "Max Width",
   "tab.bettertab.config.option.max_column_width": "Max Column Width",
   "tab.bettertab.config.option.max_column_height": "Max Column Height",
@@ -62,6 +63,7 @@
 
   "tab.bettertab.config.option.desc.enable_mod": "Enable and disable the mod",
   "tab.bettertab.config.option.desc.scrolling_type": "What scrolling type should be used",
+  "tab.bettertab.config.option.desc.scale": "The scale of the tab list",
   "tab.bettertab.config.option.desc.max_width": "The maximum width of the player list",
   "tab.bettertab.config.option.desc.max_column_width": "The maximum width of a column",
   "tab.bettertab.config.option.desc.max_column_height": "The maximum height of a column",

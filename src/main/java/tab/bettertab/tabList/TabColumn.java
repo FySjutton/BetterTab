@@ -12,7 +12,7 @@ import static tab.bettertab.tabList.TabUpdater.*;
 public class TabColumn {
     public Minecraft client = Minecraft.getInstance();
 
-    public ArrayList<tab.bettertab.tabList.TabEntry> entries;
+    public ArrayList<TabEntry> entries;
     public int width;
     public int totalWidth;
     public int totalHeight;
@@ -22,7 +22,7 @@ public class TabColumn {
     private final int columnNumberColor = BetterTabConfig.CONFIG.instance().columnNumberColor.getRGB();
     private final BetterTabConfig.ScrollingType scrollingType = BetterTabConfig.CONFIG.instance().scrollingType;
 
-    public TabColumn(ArrayList<tab.bettertab.tabList.TabEntry> entries, int columnNumber) {
+    public TabColumn(ArrayList<TabEntry> entries, int columnNumber) {
         this.columnNumber = columnNumber + 1;
 
         BetterTabConfig.RenderColumnNumberEnum renderColumnNumbers = BetterTabConfig.CONFIG.instance().renderColumnNumbers;

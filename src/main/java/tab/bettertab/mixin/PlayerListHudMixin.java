@@ -46,7 +46,15 @@ public abstract class PlayerListHudMixin {
 				immediatelyUpdate = false;
 			}
 
+			float scale = config.scale;
+			if (scale != 1.0f) {
+				graphics.pose().pushMatrix();
+				graphics.pose().scale(scale, scale);
+			}
 			TabRenderer.render(minecraft, graphics, screenWidth, scoreboard, displayObjective);
+			if (scale != 1.0f) {
+				graphics.pose().popMatrix();
+			}
 			ci.cancel();
 		}
 	}

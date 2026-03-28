@@ -16,7 +16,7 @@ import net.minecraft.world.scores.Scoreboard;
 import static tab.bettertab.BetterTab.tabScroll;
 
 public class TabUpdater {
-    public static ArrayList<tab.bettertab.tabList.TabColumn> renderColumns = new ArrayList<>();
+    public static ArrayList<TabColumn> renderColumns = new ArrayList<>();
 
     public static int totalWidth;
     public static int totalHeight;
@@ -45,7 +45,11 @@ public class TabUpdater {
             return;
         }
 
-        int maxScreenWidth = (int) (client.getWindow().getGuiScaledWidth() * BetterTabConfig.CONFIG.instance().maxWidth);
+        float scale = BetterTabConfig.CONFIG.instance().scale;
+        int scaledGuiWidth = (int) (client.getWindow().getGuiScaledWidth() / scale);
+        int scaledGuiHeight = (int) (client.getWindow().getGuiScaledHeight() / scale);
+
+        int maxScreenWidth = (int) (scaledGuiWidth * BetterTabConfig.CONFIG.instance().maxWidth);
 
         MutableComponent totalPlayerText = (BetterTabConfig.CONFIG.instance().renderTotalPlayers ? Component.literal((String.format(BetterTabConfig.CONFIG.instance().totalPlayerFormat, playerEntries.size()))) : Component.empty());
         MutableComponent headerText = (header == null || !BetterTabConfig.CONFIG.instance().renderHeader) ? Component.empty() : header.copy().append((totalPlayerText.equals(Component.empty()) ? Component.empty() : Component.nullToEmpty(" ")));
@@ -65,27 +69,29 @@ public class TabUpdater {
 
 
         // Generate all tab entries
-        List<tab.bettertab.tabList.TabEntry> tabEntries = new ArrayList<>();
+        List<TabEntry> tabEntries = new ArrayList<>();
 
         int maxColumnWidth = (int) (maxScreenWidth * BetterTabConfig.CONFIG.instance().maxColumnWidth);
-        int maxColumnHeight = (int) ((client.getWindow().getGuiScaledHeight() - headerHeight - footerHeight) * BetterTabConfig.CONFIG.instance().maxColumnHeight);
+        int maxColumnHeight = (int) ((scaledGuiHeight - headerHeight - footerHeight) * BetterTabConfig.CONFIG.instance().maxColumnHeight);
 
         for (PlayerInfo entry : playerEntries) {
-            tab.bettertab.tabList.TabEntry tabEntry = new tab.bettertab.tabList.TabEntry(client, entry, maxColumnWidth, scoreboard, objective, false);
+            TabEntry tabEntry = new TabEntry(client, entry, maxColumnWidth, scoreboard, objective, false);
             if (tabEntry.validEntry) {
                 tabEntries.add(tabEntry);
             }
         }
 
         // Sort all entries into columns
-        ArrayList<tab.bettertab.tabList.TabColumn> columns = new ArrayList<>();
-        ArrayList<tab.bettertab.tabList.TabEntry> columnEntries = new ArrayList<>();
+        ArrayList<TabColumn> columns = new ArrayList<>();
+        ArrayList<TabEntry> columnEntries = new ArrayList<>();
         int columnHeight = 0;
 
-        for (tab.bettertab.tabList.TabEntry tabEntry : tabEntries) {
+        for (TabEntry tabEntry : tabEntries) {
             if (columnHeight + tabEntry.textHeight > maxColumnHeight) {
-                columns.add(new tab.bettertab.tabList.TabColumn(columnEntries, columns.size()));
-                columnEntries.clear();
+                if (!columnEntries.isEmpty()) {
+                    columns.add(new TabColumn(columnEntries, columns.size()));
+                    columnEntries.clear();
+                }
                 columnHeight = 0;
             }
 
@@ -93,7 +99,7 @@ public class TabUpdater {
             columnEntries.add(tabEntry);
         }
         if (!columnEntries.isEmpty()) {
-            columns.add(new tab.bettertab.tabList.TabColumn(columnEntries, columns.size()));
+            columns.add(new TabColumn(columnEntries, columns.size()));
         }
 
         int startIndex = 0;
@@ -159,10 +165,10 @@ public class TabUpdater {
         renderColumns = new ArrayList<>(columns.subList(startIndex, endIndex));
 
         if (renderColumns.size() > 1 && renderColumns.getLast().totalHeight < renderColumns.getFirst().totalHeight) {
-            tab.bettertab.tabList.TabColumn lastColumn = renderColumns.getLast();
+            TabColumn lastColumn = renderColumns.getLast();
             int fakeEntries = renderColumns.getFirst().entries.size() - lastColumn.entries.size();
             if (fakeEntries > 0) {
-                ArrayList<tab.bettertab.tabList.TabEntry> entries = lastColumn.entries;
+                ArrayList<TabEntry> entries = lastColumn.entries;
                 for (int i = 0; i < fakeEntries; i++) {
                     entries.add(new TabEntry(client, new FakePlayer("empty"), lastColumn.width, scoreboard, objective, true));
                 }
@@ -190,7 +196,7 @@ public class TabUpdater {
         totalHeight = headerHeight + columnsHeight + footerHeight;
 
         footerStartY = totalHeight - footerHeight + 13;
-        startBoxX = (client.getWindow().getGuiScaledWidth() - totalWidth) / 2;
+        startBoxX = (scaledGuiWidth - totalWidth) / 2;
         startBoxY = 10;
         if (useColumnWidth) {
             startTextX = startBoxX + 5 + (canScrollLeft ? 10 : 0);

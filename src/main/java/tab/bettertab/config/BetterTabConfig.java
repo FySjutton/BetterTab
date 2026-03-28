@@ -22,6 +22,8 @@ public class BetterTabConfig {
     @SerialEntry public boolean enableMod = true;
     @SerialEntry public ScrollingType scrollingType = ScrollingType.Column;
 
+    @SerialEntry public float scale = 1.0f;
+
     @SerialEntry public float maxWidth = 0.9f;
     @SerialEntry public float maxColumnWidth = 0.5f;
     @SerialEntry public float maxColumnHeight = 0.5f;
@@ -91,6 +93,15 @@ public class BetterTabConfig {
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("tab.bettertab.config.group.sizes"))
+                                .option(Option.<Float>createBuilder()
+                                        .name(Component.translatable("tab.bettertab.config.option.scale"))
+                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.scale")))
+                                        .binding(1.0f, () -> config.scale, newVal -> config.scale = newVal)
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(0.5f, 2.0f)
+                                                .step(0.05f)
+                                                .formatValue(val -> Component.nullToEmpty(String.format("%.0f", val * 100) + "%")))
+                                        .build())
                                 .option(Option.<Float>createBuilder()
                                         .name(Component.translatable("tab.bettertab.config.option.max_width"))
                                         .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.max_width")))
