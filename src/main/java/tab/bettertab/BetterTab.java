@@ -3,6 +3,7 @@ package tab.bettertab;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -31,11 +32,14 @@ public class BetterTab implements ModInitializer {
 	public void onInitialize() {
 		BetterTabConfig.CONFIG.load();
 
-		// TODO: Merge pull request, add all three issues
-
 //		BadgeManager.registerBadgeProvider((a, b) -> {
 //			b.add(Identifier.of("bettertab", "/mod_icon.png"));
 //		});
+
+		KeyMappingHelper.registerKeyMapping(toggleMod);
+		KeyMappingHelper.registerKeyMapping(openConfig);
+		KeyMappingHelper.registerKeyMapping(rightScroll);
+		KeyMappingHelper.registerKeyMapping(leftScroll);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (openConfig.consumeClick()) {

@@ -70,7 +70,7 @@ modrinth {
     versionNumber = project.mod_version
     versionType = 'release'
     uploadFile = jar
-    gameVersions = ['26.1']
+    gameVersions = ['26.1', '26.1.1', '26.1.2']
     loaders = ['fabric']
     changelog = changelogText
 
