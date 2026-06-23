@@ -22,7 +22,7 @@ public class MouseMixin {
     public void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
         if (BetterTabConfig.CONFIG.instance().scrollWithMouse) {
             Minecraft client = Minecraft.getInstance();
-            PlayerTabOverlay playerListHud = client.gui.getTabList();
+            PlayerTabOverlay playerListHud = client.gui.hud.getTabList();
 
             if (((PlayerListHudAccess)playerListHud).getVisible() && (!BetterTabConfig.CONFIG.instance().hotBarScroll || (canScrollLeft || canScrollRight))) {
                 tabScroll -= vertical;
