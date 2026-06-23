@@ -43,16 +43,16 @@ public class BetterTab implements ModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (openConfig.consumeClick()) {
-				Minecraft.getInstance().setScreen(BetterTabConfig.configScreen(null));
+				Minecraft.getInstance().gui.setScreen(BetterTabConfig.configScreen(null));
 			}
 			if (toggleMod.consumeClick()) {
 				boolean currentValue = BetterTabConfig.CONFIG.instance().enableMod;
 				BetterTabConfig.CONFIG.instance().enableMod = !currentValue;
 				BetterTabConfig.CONFIG.save();
 				new Tools().sendToast("BetterTab has been toggled!", "The mod is now " + (currentValue ? "disabled." : "enabled."));
-				client.gui.getTabList().setVisible(false);
+				client.gui.hud.getTabList().setVisible(false);
 			}
-			if (((PlayerListHudAccess)client.gui.getTabList()).getVisible()) {
+			if (((PlayerListHudAccess)client.gui.hud.getTabList()).getVisible()) {
 				if (rightScroll.consumeClick()) {
 					tabScroll ++;
 					immediatelyUpdate = true;

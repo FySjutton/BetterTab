@@ -24,8 +24,8 @@ public class Tools {
     public void sendToast(String title, String description) {
         try {
             Minecraft client = Minecraft.getInstance();
-            client.getToastManager().clear();
-            client.getToastManager().addToast(
+            client.gui.toastManager().clear();
+            client.gui.toastManager().addToast(
                 new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                     Component.literal(title),
                     Component.literal(description)

@@ -95,7 +95,7 @@ public class TabEntry {
                     scoreText = Component.literal(String.format(BetterTabConfig.CONFIG.instance().healthFormat, readableScoreboardScore.value())).withStyle(ChatFormatting.RED);
                 } else {
                     NumberFormat numberFormat = objective.numberFormatOrDefault(StyledFormat.PLAYER_LIST_DEFAULT);
-                    scoreText = ReadOnlyScoreInfo.safeFormatValue(readableScoreboardScore, numberFormat);
+                    scoreText = readableScoreboardScore.formatValue(numberFormat);
                 }
 
                 renderScore = true;
