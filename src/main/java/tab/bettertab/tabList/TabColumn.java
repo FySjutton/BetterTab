@@ -5,6 +5,8 @@ import tab.bettertab.config.BetterTabConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 
 import static tab.bettertab.tabList.TabUpdater.*;
@@ -31,7 +33,10 @@ public class TabColumn {
         }
 
         this.entries = new ArrayList<>(entries);
-        this.width = Collections.max(this.entries.stream().map(entry -> entry.totalWidth).toList());
+        List<Integer> entryWidths = this.entries.stream().map(entry -> entry.totalWidth).toList();
+        if (!entryWidths.isEmpty()) {
+            this.width = Collections.max(entryWidths);
+        }
         this.totalWidth = width + 1;
         this.totalHeight = this.entries.stream().mapToInt(entry -> entry.totalHeight).sum() + (renderColumnNumber ? 10 : 0);
     }

@@ -3,8 +3,17 @@ package tab.bettertab.tabList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+
+import com.mojang.authlib.services.FriendsService;
+import com.mojang.authlib.services.MinecraftServicesFriendsService;
+import com.mojang.authlib.services.request.FriendActionRequest;
+import com.mojang.authlib.services.response.FriendData;
+import com.mojang.authlib.services.response.FriendDto;
+import com.mojang.authlib.services.response.FriendsListResponse;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.Identifier;
+import org.apache.logging.log4j.util.TriConsumer;
 
 public class BadgeManager {
     private static final List<BiConsumer<PlayerInfo, List<Identifier>>> BADGE_PROVIDERS = new ArrayList<>();

@@ -61,9 +61,7 @@ public class BetterTabConfig {
     // Advanced
     @SerialEntry public int refreshCooldown = 250;
 
-    @SerialEntry public boolean useExamples = false;
-    @SerialEntry public String exampleText = "ExamplePlayer%d";
-    @SerialEntry public int exampleAmount = 200;
+    @SerialEntry public boolean showFriends = true;
 
     @SerialEntry public String numericFormat = "%dms";
     @SerialEntry public int mediumPingMin = 150;
@@ -71,7 +69,11 @@ public class BetterTabConfig {
 
     @SerialEntry public int scrollIndicatorSpeed = 530;
     @SerialEntry public String healthFormat = "%dhp";
-    @SerialEntry public String totalPlayerFormat = "§7§l(%d online)§r";
+    @SerialEntry public String totalPlayerFormat = "§7§l(%d online)§r"; // TODO: fix color code
+
+    @SerialEntry public boolean useExamples = false;
+    @SerialEntry public String exampleText = "ExamplePlayer%d";
+    @SerialEntry public int exampleAmount = 200;
 
     public static Screen configScreen(Screen parent) {
         return YetAnotherConfigLib.create(CONFIG, ((_, config, builder) -> builder
@@ -317,29 +319,17 @@ public class BetterTabConfig {
                                         .step(1)
                                         .formatValue(val -> Component.nullToEmpty(val + "ms")))
                                 .build())
+
                         .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("tab.bettertab.config.group.examples"))
+                                .name(Component.translatable("tab.bettertab.config.group.friends"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Component.translatable("tab.bettertab.config.option.use_examples"))
-                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.use_examples")))
-                                        .binding(false, () -> config.useExamples, newVal -> config.useExamples = newVal)
+                                        .name(Component.translatable("tab.bettertab.config.option.show_friends"))
+                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.show_friends")))
+                                        .binding(true, () -> config.showFriends, newVal -> config.showFriends = newVal)
                                         .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
                                         .build())
-                                .option(Option.<String>createBuilder()
-                                        .name(Component.translatable("tab.bettertab.config.option.example_text"))
-                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.example_text")))
-                                        .binding("ExamplePlayer%d", () -> config.exampleText, newVal -> config.exampleText = newVal)
-                                        .controller(StringControllerBuilder::create)
-                                        .build())
-                                .option(Option.<Integer>createBuilder()
-                                        .name(Component.translatable("tab.bettertab.config.option.example_amount"))
-                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.example_amount")))
-                                        .binding(200, () -> config.exampleAmount, newVal -> config.exampleAmount = newVal)
-                                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
-                                                .range(1, 2000)
-                                                .step(1))
-                                        .build())
                             .build())
+
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("tab.bettertab.config.group.ping"))
                                 .option(Option.<String>createBuilder()
@@ -391,6 +381,29 @@ public class BetterTabConfig {
                                         .controller(StringControllerBuilder::create)
                                         .build())
                             .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Component.translatable("tab.bettertab.config.group.examples"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("tab.bettertab.config.option.use_examples"))
+                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.use_examples")))
+                                        .binding(false, () -> config.useExamples, newVal -> config.useExamples = newVal)
+                                        .controller(opt -> BooleanControllerBuilder.create(opt).coloured(true))
+                                        .build())
+                                .option(Option.<String>createBuilder()
+                                        .name(Component.translatable("tab.bettertab.config.option.example_text"))
+                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.example_text")))
+                                        .binding("ExamplePlayer%d", () -> config.exampleText, newVal -> config.exampleText = newVal)
+                                        .controller(StringControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Integer>createBuilder()
+                                        .name(Component.translatable("tab.bettertab.config.option.example_amount"))
+                                        .description(OptionDescription.of(Component.translatable("tab.bettertab.config.option.desc.example_amount")))
+                                        .binding(200, () -> config.exampleAmount, newVal -> config.exampleAmount = newVal)
+                                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                                .range(1, 2000)
+                                                .step(1))
+                                        .build())
+                                .build())
                     .build())
             )).generateScreen(parent);
     }

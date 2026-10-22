@@ -125,8 +125,8 @@ public class TabUpdater {
             }
             pageNumber = page;
         } else {
-// Calculate which columns are to be displayed
-            tabScroll = Math.min(Math.max(0, tabScroll), columns.size());
+            // Calculate which columns are to be displayed
+            tabScroll = Math.clamp(tabScroll, 0, columns.size());
 
             int availableWidth = maxScreenWidth - 30; // arrows
 
